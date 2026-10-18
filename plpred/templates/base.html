@@ -42,7 +42,7 @@ try { var t = localStorage.getItem('theme'); if (t) document.documentElement.dat
 </div>
 {% endblock %}
 <div class="side">
-<p class="lab muted" style="font-size:12px;font-weight:600;line-height:1.7">Data: football-data.co.uk, API-Football, Understat, FPL.<br>Odds are a benchmark, not betting advice.<br>Club crests belong to their clubs.<br>Updated Thursdays and Saturdays. Built {{ built }}.</p>
+<p class="lab muted" style="font-size:12px;font-weight:600;line-height:1.7">Data: football-data.co.uk, API-Football, Understat, FPL.<br>Odds are a benchmark, not betting advice.<br>Club crests belong to their clubs.<br>Data updated daily, calls every Thursday. Built {{ built }}.</p>
 <p class="lab" style="font-size:13px;font-weight:700;margin-top:12px">Follow us on <a href="https://x.com/InkwellAlgo">X <span class="accent">@InkwellAlgo</span></a> and <a href="https://www.instagram.com/inkwellandalgorithm/">Instagram <span class="accent">@inkwellandalgorithm</span></a></p>
 {% if newsletter_url %}<p class="lab" style="font-size:13px;font-weight:700;margin-top:12px">Every call in your inbox on Thursdays: <a href="{{ newsletter_url }}">get the newsletter</a></p>{% endif %}
 <p class="lab muted" style="font-size:12px;font-weight:600;margin-top:12px"><a href="{{ root }}/about/index.html">About</a> · <a href="{{ root }}/table/index.html">Season projection</a> · <a href="{{ root }}/fpl/index.html">FPL corner</a> · <a href="{{ root }}/club/index.html">Clubs</a> · <a href="{{ root }}/pundits/index.html">V the pundits</a> · <a href="{{ root }}/feed.xml">Feed</a></p>
