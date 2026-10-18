@@ -1,10 +1,11 @@
-"""Build the Inkwell & Algorithm site: a static site from this week's predictions and our record.
+"""Build the Inkwell & Algorithm site: a static site from each week's predictions and our record.
 
     python -m plpred.site            # writes site/
 
-Pages: the front page (this week's calls, our record, charts, last week's verdict,
-the table), one page per match with the full breakdown, and the posting kit for
-social media in social/ (see plpred.social).
+Pages: a home page (what the site is, how it works, the data sources, every matchweek),
+one page per matchweek in matchweek/<n>/ (the calls, our record, charts, last week's
+verdict, the table) with a page per match beside it, and the posting kit for social
+media in social/ for the newest week (see plpred.social).
 """
 import argparse
 import json
@@ -38,6 +39,22 @@ def latest_predictions(data: Path) -> tuple[dict, bool]:
     real = [f for f in files if not f.name.startswith("replay-")]
     chosen = (real or files)[-1]
     return json.loads(chosen.read_text()), not real
+
+
+def all_predictions(data: Path) -> tuple[list[dict], bool]:
+    """Every real predictions file, oldest first. Until one exists, the newest replay alone."""
+    files = sorted((data / "predictions").glob("*.json"))
+    real = [f for f in files if not f.name.startswith("replay-")]
+    chosen = real or files[-1:]
+    return [json.loads(f.read_text()) for f in chosen], not real
+
+
+def matchweek_of(preds: dict, matches: pd.DataFrame, season: int) -> int:
+    mw = re.search(r"(\d+)$", preds.get("round") or "")
+    if mw:
+        return int(mw.group(1))
+    played = explain.table(matches[matches.date < preds["as_of"]], season).played.max()
+    return int(played or 0) + 1
 
 
 def slug(home: str, away: str) -> str:
@@ -199,11 +216,14 @@ def attack_defence(matches: pd.DataFrame, season: int, highlight: set[str]) -> d
             "ymid": round((t["against"].mean() - y0) / ((y1 - y0) or 1) * 100, 1)}
 
 
-def record(data: Path, season: int) -> dict | None:
+def record(data: Path, season: int, before=None) -> dict | None:
+    """Our record this season, from games played before `before` (default: all of them)."""
     path = data / "backtest" / f"predictions_{season}.csv"
     if not path.exists():
         return None
     p = pd.read_csv(path, parse_dates=["date"])
+    if before is not None:
+        p = p[p.date < pd.Timestamp(before)]
     if p.empty:
         return None
     p["right"] = p.call == p.result
@@ -251,54 +271,81 @@ def league_table(matches: pd.DataFrame, season: int) -> list[dict]:
 
 # ---------------------------------------------------------------- build
 
-def build(data: Path, out: Path) -> Path:
-    preds, is_replay = latest_predictions(data)
-    matches = pd.read_csv(data / "matches.csv", parse_dates=["date"])
+def week_context(preds: dict, is_replay: bool, data: Path, matches: pd.DataFrame) -> dict:
+    """Everything one matchweek's pages need."""
     season = int(preds["season"][:4])
+    matchweek = matchweek_of(preds, matches, season)
     views = [game_view(g) for g in preds["games"]]
+    for v in views:
+        v["path"] = f"matchweek/{matchweek}/{v['slug']}.html"
     features = pick_features(views)
     lead = features["lead"]
-    rest = [v for v in views if v is not lead]
-    rnd = preds.get("round") or ""
-    mw = re.search(r"(\d+)$", rnd)
-    matchweek = int(mw.group(1)) if mw else int(explain.table(matches[matches.date < preds["as_of"]], season)
-                                                 .played.max() or 0) + 1
-    ctx = {
+    before = matches[matches.date < preds["as_of"]]
+    return {
         "matchweek": matchweek,
         "season": seasons.label(season),
+        "as_of": pd.Timestamp(preds["as_of"]),
         "date_text": pd.Timestamp(preds["as_of"]).strftime("%A %d %B %Y"),
         "replay": is_replay,
-        "lead": lead, "rest": rest, "features": features,
+        "views": views,
+        "lead": lead, "rest": [v for v in views if v is not lead], "features": features,
         "gaps": gaps(views),
-        "scatter": attack_defence(matches[matches.date < preds["as_of"]], season,
+        "scatter": attack_defence(before, season,
                                   {lead["home_team"], lead["away_team"]} |
                                   ({features["upset"]["home_team"], features["upset"]["away_team"]}
                                    if features["upset"] else set())),
-        "record": record(data, season),
-        "table": league_table(matches[matches.date < preds["as_of"]], season),
+        "record": record(data, season, preds["as_of"]),
+        "table": league_table(before, season),
+    }
+
+
+def build(data: Path, out: Path) -> Path:
+    all_preds, is_replay = all_predictions(data)
+    matches = pd.read_csv(data / "matches.csv", parse_dates=["date"])
+    weeks = {}
+    for preds in all_preds:  # oldest first, so a later run for the same week replaces an earlier one
+        w = week_context(preds, is_replay, data, matches)
+        weeks[(w["season"], w["matchweek"])] = w
+    weeks = sorted(weeks.values(), key=lambda w: w["as_of"])
+    for i, w in enumerate(weeks):
+        w["prev"] = weeks[i - 1] if i else None
+        w["next"] = weeks[i + 1] if i + 1 < len(weeks) else None
+        w["first_kickoff"] = min(pd.Timestamp(v["kickoff"]) for v in w["views"]).strftime("%d %B")
+    latest = weeks[-1]
+    common = {
         "built": datetime.now().strftime("%d %B %Y"),
         "badges": {},
+        "weeks": weeks[::-1],
+        "latest": latest,
     }
     env = Environment(loader=FileSystemLoader(TEMPLATES), autoescape=select_autoescape(["html"]),
                       trim_blocks=True, lstrip_blocks=True)
     if out.exists():
         shutil.rmtree(out)
-    (out / "match").mkdir(parents=True)
+    out.mkdir(parents=True)
     for asset in ("style.css", "favicon.svg"):
         shutil.copy(TEMPLATES / asset, out / asset)
     badge_dir = data / "badges"
     if badge_dir.exists():
         shutil.copytree(badge_dir, out / "badges")
-        ctx["badges"] = {t: f"{api_football.badge_name(t)}.png" for t in
-                         {v["home_team"] for v in views} | {v["away_team"] for v in views} | set(matches.home_team)
-                         if (badge_dir / f"{api_football.badge_name(t)}.png").exists()}
-    (out / "index.html").write_text(env.get_template("index.html").render(**ctx, root="."))
-    for v in views:
-        (out / "match" / f"{v['slug']}.html").write_text(
-            env.get_template("match.html").render(**ctx, g=v, root=".."))
-    social.build_kit(ctx, views, env, out / "social")
+        teams = set(matches.home_team) | {t for w in weeks for v in w["views"] for t in (v["home_team"], v["away_team"])}
+        common["badges"] = {t: f"{api_football.badge_name(t)}.png" for t in teams
+                            if (badge_dir / f"{api_football.badge_name(t)}.png").exists()}
+    (out / "index.html").write_text(env.get_template("home.html").render(
+        **common, record=latest["record"], replay=is_replay, root="."))
+    pages = 1
+    for w in weeks:
+        folder = out / "matchweek" / str(w["matchweek"])
+        folder.mkdir(parents=True)
+        ctx = {**w, **common}
+        (folder / "index.html").write_text(env.get_template("week.html").render(**ctx, root="../.."))
+        for v in w["views"]:
+            (folder / f"{v['slug']}.html").write_text(env.get_template("match.html").render(**ctx, g=v, root="../.."))
+        pages += 1 + len(w["views"])
+    social.build_kit({**latest, **common}, latest["views"], env, out / "social")
     (out / ".nojekyll").write_text("")
-    log.info("Built %d pages into %s (%s)", len(views) + 1, out, "replay" if is_replay else "live")
+    log.info("Built %d pages for %d matchweeks into %s (%s)", pages, len(weeks), out,
+             "replay" if is_replay else "live")
     return out
 
 

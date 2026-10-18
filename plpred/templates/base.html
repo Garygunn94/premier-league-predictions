@@ -21,11 +21,12 @@ try { var t = localStorage.getItem('theme'); if (t) document.documentElement.dat
 {% block masthead %}{% endblock %}
 {% block content %}{% endblock %}
 <footer class="method" id="method">
-<div class="grow">
+{% block method %}<div class="grow">
 <h2 class="lab small-head">How we call it</h2>
 <p class="body" style="font-size:16px;line-height:1.6">Every team gets an attack and a defence rating from this season and the two before it, with recent games counting most. The ratings blend goals with expected goals (xG), which measures the quality of chances. They give each side's expected goals, which become win, draw and loss chances and the single most likely score. Team news from the Fantasy Premier League feed adjusts them. The reasons are the factors that moved each call the most, and the steps always add up to our number.</p>
 {% if record %}<p class="body" style="font-size:16px;line-height:1.6;margin-top:12px">Our record replays the model week by week using only results known before each game, without team news.</p>{% endif %}
 </div>
+{% endblock %}
 <div class="side">
 <p class="lab muted" style="font-size:12px;font-weight:600;line-height:1.7">Data: football-data.co.uk, API-Football, Understat, FPL.<br>Odds are a benchmark, not betting advice.<br>Club crests belong to their clubs.<br>Updated Thursdays and Saturdays. Built {{ built }}.</p>
 <p class="lab" style="font-size:13px;font-weight:700;margin-top:12px">Follow <span class="accent">@InkwellAlgo</span> on <a href="https://x.com/InkwellAlgo">X</a> and <a href="https://www.instagram.com/inkwellalgo/">Instagram</a></p>

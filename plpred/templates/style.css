@@ -31,6 +31,8 @@ nav.sections{border-top:3px solid var(--ink);border-bottom:1px solid var(--ink)}
 nav.sections ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;justify-content:center;gap:4px 28px;font-size:14px;font-weight:700}
 nav.sections a{display:inline-block;padding:12px 0;text-decoration:none}
 .theme-toggle{font:inherit;background:none;border:1px solid var(--ink);color:var(--ink);padding:4px 10px;cursor:pointer;min-height:32px}
+.weeknav{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--ink);font-size:13px;font-weight:700}
+.weeknav a{text-decoration:none}
 .banner{margin-top:16px;padding:10px 14px;border:1px solid var(--accent);color:var(--accent);font-size:15px}
 
 /* call boxes */
@@ -144,3 +146,20 @@ ul.plain{margin:0;padding:0;list-style:none}
 ul.plain li{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--rule);font-size:15px}
 footer.method{padding:32px 0 0;display:flex;flex-wrap:wrap;gap:32px}
 @media (max-width:600px){.gap-row .lbl{width:90px;font-size:12px}.wf-row{gap:8px}.wf-row .lbl{font-size:14px}}
+
+/* home page */
+.homebox{border-top:3px solid var(--ink);padding-top:14px}
+.homebox .split.thin{height:10px;border:1px solid var(--ink)}
+.cta{display:inline-block;padding:10px 16px;background:var(--ink);color:var(--paper);text-decoration:none;font-size:14px;font-weight:700}
+.steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:28px}
+.steps li{border-top:1px solid var(--ink);padding-top:12px}
+.steps .body{font-size:16px;line-height:1.55;margin:0}
+.step-n{display:block;font-size:44px;font-weight:900;font-style:italic;color:var(--accent);line-height:1;margin-bottom:8px}
+table.sources td:first-child{font-weight:600;white-space:nowrap;padding-right:24px}
+table.sources td{vertical-align:top}
+.archive{list-style:none;margin:0;padding:0}
+.archive a{display:grid;grid-template-columns:160px 1fr auto;gap:4px 20px;align-items:baseline;padding:14px 0;border-bottom:1px solid var(--rule);text-decoration:none}
+.aw-num{font-size:14px;font-weight:700;color:var(--accent)}
+.aw-head{font-size:22px;font-weight:800;font-style:italic;line-height:1.2}
+.aw-date{font-size:12px;font-weight:600}
+@media (max-width:600px){.archive a{grid-template-columns:1fr}table.sources td:first-child{white-space:normal;padding-right:12px}}

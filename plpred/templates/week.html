@@ -6,19 +6,21 @@
 <div class="dateline lab">
 <span>{{ date_text }}</span>
 <span>Premier League {{ season }} · Matchweek {{ matchweek }}</span>
-<span class="accent">{% if replay %}Replay of a past week{% else %}This week's calls{% endif %}</span>
+<span class="accent">{% if replay %}Replay of a past week{% elif next %}An earlier week{% else %}This week's calls{% endif %}</span>
 </div>
 <h1 class="masthead disp"><a href="{{ root }}/index.html">{{ wordmark() }}</a></h1>
 <p class="tagline">Data-driven Premier League predictions, with the reasons. New every Thursday.</p>
 <nav class="sections" aria-label="Sections">
 <ul class="lab">
-<li><a href="#this-week" class="accent">This week</a></li>
+<li><a href="{{ root }}/index.html">Home</a></li>
+<li><a href="#this-week" class="accent">The calls</a></li>
 {% if record %}<li><a href="#verdict">Last week's verdict</a></li>
 <li><a href="#record">Our record</a></li>{% endif %}
 <li><a href="#table">Table</a></li>
 <li><a href="#method">How we call it</a></li>
 </ul>
 </nav>
+{% if prev or next %}<nav class="weeknav lab" aria-label="Other matchweeks">{% if prev %}<a href="{{ root }}/matchweek/{{ prev.matchweek }}/index.html">← Matchweek {{ prev.matchweek }}</a>{% else %}<span></span>{% endif %}<a href="{{ root }}/index.html#archive">Every matchweek</a>{% if next %}<a href="{{ root }}/matchweek/{{ next.matchweek }}/index.html">Matchweek {{ next.matchweek }} →</a>{% else %}<span></span>{% endif %}</nav>{% endif %}
 {% if replay %}<p class="banner">No fixtures have been fetched yet, so this page replays a past week to show how it will look. Live calls start after the next weekly update.</p>{% endif %}
 </header>
 {% endblock %}
@@ -52,7 +54,7 @@
 <li><span class="num disp">{{ loop.index }}</span><strong class="disp">{{ r.title }}</strong><span class="t">{{ r.text }}</span></li>
 {% endfor %}
 </ol>
-<p style="margin-top:24px;font-size:17px"><a href="{{ root }}/match/{{ g.slug }}.html">Read the full breakdown: form, xG, team news and head to head</a></p>
+<p style="margin-top:24px;font-size:17px"><a href="{{ g.slug }}.html">Read the full breakdown: form, xG, team news and head to head</a></p>
 </article>
 
 <aside class="side stack" id="record">
@@ -69,14 +71,14 @@
 {% if features.upset %}{% set u = features.upset %}
 <div class="rule-top">
 <h3 class="lab small-head accent">Upset watch</h3>
-<p class="feature-h disp"><a href="{{ root }}/match/{{ u.slug }}.html" style="text-decoration:none">{% if u.call == 'D' %}{{ u.home_team }} and {{ u.away_team }} to draw{% elif u.call == 'A' %}{{ u.away_team }} to win at {{ u.home_team }}{% else %}{{ u.home_team }} to beat {{ u.away_team }}{% endif %}</a></p>
+<p class="feature-h disp"><a href="{{ u.slug }}.html" style="text-decoration:none">{% if u.call == 'D' %}{{ u.home_team }} and {{ u.away_team }} to draw{% elif u.call == 'A' %}{{ u.away_team }} to win at {{ u.home_team }}{% else %}{{ u.home_team }} to beat {{ u.away_team }}{% endif %}</a></p>
 <p class="body" style="font-size:16px;line-height:1.5">The bookmakers lean the other way, but we make it {{ u.our_p }}% to their {{ u.mkt_p }}%. {{ u.headline }}.</p>
 </div>
 {% endif %}
 {% if features.banker %}{% set b = features.banker %}
 <div class="rule-top">
 <h3 class="lab small-head">Banker</h3>
-<p class="feature-h disp"><a href="{{ root }}/match/{{ b.slug }}.html" style="text-decoration:none">{% if b.call == 'D' %}{{ b.home_team }} and {{ b.away_team }} to draw{% else %}{{ b.call_team }} to beat {{ b.away_team if b.call == 'H' else b.home_team }}{% endif %}</a></p>
+<p class="feature-h disp"><a href="{{ b.slug }}.html" style="text-decoration:none">{% if b.call == 'D' %}{{ b.home_team }} and {{ b.away_team }} to draw{% else %}{{ b.call_team }} to beat {{ b.away_team if b.call == 'H' else b.home_team }}{% endif %}</a></p>
 <p class="body" style="font-size:16px;line-height:1.5">Our strongest call this week, at {{ b.our_p }}%.</p>
 </div>
 {% endif %}
@@ -93,7 +95,7 @@
 <article class="card">
 <div class="meta lab"><span>{{ f.kickoff_text }}</span><span>Confidence: {{ f.confidence }}</span></div>
 <div class="line">
-<span class="fx disp"><a href="{{ root }}/match/{{ f.slug }}.html">{{ f.home_team }} <span class="v">v</span> {{ f.away_team }}</a></span>
+<span class="fx disp"><a href="{{ f.slug }}.html">{{ f.home_team }} <span class="v">v</span> {{ f.away_team }}</a></span>
 <span class="sc disp">{{ f.score_text }}</span>
 </div>
 <div style="display:flex;align-items:center;gap:10px">
