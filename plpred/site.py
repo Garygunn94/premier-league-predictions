@@ -211,17 +211,20 @@ def record(data: Path, season: int) -> dict | None:
     mk = p[["mkt_home", "mkt_draw", "mkt_away"]].to_numpy()
     p["fav_right"] = np.where(np.isnan(mk).any(axis=1), np.nan,
                               (np.array(["H", "D", "A"])[np.nan_to_num(mk).argmax(axis=1)] == p.result))
-    p["week"] = p.date.dt.to_period("W-MON").dt.start_time
+    p["fav_call"] = np.where(np.isnan(mk).any(axis=1), None, np.array(["H", "D", "A"])[np.nan_to_num(mk).argmax(axis=1)])
+    # Back-tests number the rounds; older files without it fall back to calendar weeks.
+    p["week"] = p.gameweek if "gameweek" in p else p.date.dt.to_period("W-MON").dt.start_time
     weeks = []
-    for i, (wk, g) in enumerate(p.groupby("week"), start=1):
+    for _, g in p.groupby("week"):
         us, fav, n = int(g.right.sum()), int(np.nansum(g.fav_right)), len(g)
+        wk = g.date.min()
         weeks.append({"label": wk.strftime("%d %b"), "us": us, "fav": fav, "n": n,
                       "us_h": round(us / max(n, 1) * 100), "fav_h": round(fav / max(n, 1) * 100),
-                      "tip": f"Week of {wk.strftime('%d %b')}: us {us} of {n}, bookies' favourite {fav} of {n}"})
+                      "tip": f"Round starting {wk.strftime('%d %b')}: us {us} of {n}, bookies' favourite {fav} of {n}"})
     weeks = weeks[-8:]
     better = sum(w["us"] > w["fav"] for w in weeks)
     worse = sum(w["us"] < w["fav"] for w in weeks)
-    last = p[p.week == p.week.max()]
+    last = p[p.week == p.week.iloc[p.date.argmax()]]
     verdict_rows = []
     for r in last.itertuples():
         verdict = "Exact score" if r.exact else "Right result" if r.right else "Wrong"
@@ -230,7 +233,9 @@ def record(data: Path, season: int) -> dict | None:
                              "result": f"{r.home_goals}–{r.away_goals}", "verdict": verdict,
                              "wrong": verdict == "Wrong"})
     fav_rate = np.nanmean(p.fav_right)
+    split = p[p.fav_call.notna() & (p.call != p.fav_call)]
     return {
+        "disagree": {"n": len(split), "us": int(split.right.sum()), "fav": int(np.nansum(split.fav_right))},
         "n": len(p), "right": int(p.right.sum()), "exact": int(p.exact.sum()),
         "rate": round(p.right.mean() * 100), "fav_rate": round(fav_rate * 100) if not np.isnan(fav_rate) else None,
         "weeks": weeks, "better": better, "worse": worse,

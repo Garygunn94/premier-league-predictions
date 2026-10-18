@@ -5,8 +5,8 @@
   "settings": {
     "half_life_days": 180.0,
     "xg_weight": 0.5,
-    "ridge": 0.05,
-    "rho": -0.08
+    "ridge": 1.0,
+    "rho": -0.13
   },
   "games": [
     {
@@ -16,9 +16,9 @@
       "call_name": "home win",
       "confidence": "solid",
       "probabilities": {
-        "H": 0.597,
-        "D": 0.248,
-        "A": 0.155
+        "H": 0.595,
+        "D": 0.257,
+        "A": 0.148
       },
       "market": {
         "H": 0.683,
@@ -26,7 +26,7 @@
         "A": 0.12
       },
       "expected_goals": {
-        "home": 1.76,
+        "home": 1.78,
         "away": 0.79
       },
       "score": [
@@ -39,7 +39,14 @@
             1,
             0
           ],
-          "probability": 0.129
+          "probability": 0.123
+        },
+        {
+          "score": [
+            1,
+            1
+          ],
+          "probability": 0.122
         },
         {
           "score": [
@@ -47,13 +54,6 @@
             0
           ],
           "probability": 0.121
-        },
-        {
-          "score": [
-            1,
-            1
-          ],
-          "probability": 0.117
         },
         {
           "score": [
@@ -67,47 +67,47 @@
             0,
             0
           ],
-          "probability": 0.087
+          "probability": 0.091
         }
       ],
       "waterfall": {
-        "start": 39.4,
+        "start": 40.0,
         "start_label": "Average home side v average visitor",
         "steps": [
           {
             "label": "Arsenal's attack",
-            "detail": "Arsenal create and score 37% more than an average side",
+            "detail": "Arsenal create and score 34% more than an average side",
             "kind": "attack",
             "team": "Arsenal",
-            "change": 12.2,
+            "change": 11.6,
             "helps": "Arsenal"
           },
           {
             "label": "Arsenal's defence",
-            "detail": "Arsenal concede 27% less than an average side",
+            "detail": "Arsenal concede 25% less than an average side",
             "kind": "defence",
             "team": "Arsenal",
-            "change": 6.9,
+            "change": 6.4,
             "helps": "Arsenal"
           },
           {
             "label": "Leeds' defence",
-            "detail": "Leeds concede 8% more than an average side",
+            "detail": "Leeds concede 7% more than an average side",
             "kind": "defence",
             "team": "Leeds",
-            "change": 2.8,
+            "change": 2.7,
             "helps": "Arsenal"
           },
           {
             "label": "Leeds' attack",
-            "detail": "Leeds create and score 8% more than an average side",
+            "detail": "Leeds create and score 5% more than an average side",
             "kind": "attack",
             "team": "Leeds",
-            "change": -1.6,
+            "change": -1.1,
             "helps": "Leeds"
           }
         ],
-        "total": 59.7
+        "total": 59.5
       },
       "standings": {
         "home": {
@@ -240,20 +240,20 @@
         }
       ],
       "headline": "Arsenal's attack should be too much for Leeds",
-      "change_our_mind": "The biggest single factor is Arsenal's attack. If Arsenal's attack were only average, the home win chance would drop to 47%.",
+      "change_our_mind": "The biggest single factor is Arsenal's attack. If Arsenal's attack were only average, the home win chance would drop to 48%.",
       "kickoff": "2026-10-10T00:00:00",
       "venue": null
     },
     {
       "home_team": "Aston Villa",
       "away_team": "Brentford",
-      "call": "A",
-      "call_name": "away win",
+      "call": "H",
+      "call_name": "home win",
       "confidence": "too close to call",
       "probabilities": {
-        "H": 0.368,
-        "D": 0.254,
-        "A": 0.377
+        "H": 0.376,
+        "D": 0.268,
+        "A": 0.356
       },
       "market": {
         "H": 0.36,
@@ -261,12 +261,12 @@
         "A": 0.371
       },
       "expected_goals": {
-        "home": 1.55,
-        "away": 1.57
+        "home": 1.56,
+        "away": 1.51
       },
       "score": [
-        1,
-        2
+        2,
+        1
       ],
       "top_scores": [
         {
@@ -274,19 +274,19 @@
             1,
             1
           ],
-          "probability": 0.116
-        },
-        {
-          "score": [
-            1,
-            2
-          ],
-          "probability": 0.084
+          "probability": 0.123
         },
         {
           "score": [
             2,
             1
+          ],
+          "probability": 0.085
+        },
+        {
+          "score": [
+            1,
+            2
           ],
           "probability": 0.083
         },
@@ -295,54 +295,54 @@
             2,
             2
           ],
-          "probability": 0.066
+          "probability": 0.064
         },
         {
           "score": [
             0,
-            1
+            0
           ],
           "probability": 0.06
         }
       ],
       "waterfall": {
-        "start": 29.5,
+        "start": 40.0,
         "start_label": "Average home side v average visitor",
         "steps": [
           {
-            "label": "Brentford's attack",
-            "detail": "Brentford create and score 26% more than an average side",
-            "kind": "attack",
+            "label": "Brentford's defence",
+            "detail": "Brentford concede 16% more than an average side",
+            "kind": "defence",
             "team": "Brentford",
-            "change": 7.6,
-            "helps": "Brentford"
+            "change": 5.6,
+            "helps": "Aston Villa"
           },
           {
             "label": "Aston Villa's defence",
-            "detail": "Aston Villa concede 25% more than an average side",
+            "detail": "Aston Villa concede 23% more than an average side",
             "kind": "defence",
             "team": "Aston Villa",
-            "change": 7.4,
+            "change": -5.5,
             "helps": "Brentford"
           },
           {
-            "label": "Brentford's defence",
-            "detail": "Brentford concede 18% more than an average side",
-            "kind": "defence",
+            "label": "Brentford's attack",
+            "detail": "Brentford create and score 23% more than an average side",
+            "kind": "attack",
             "team": "Brentford",
-            "change": -4.2,
-            "helps": "Aston Villa"
+            "change": -5.3,
+            "helps": "Brentford"
           },
           {
             "label": "Aston Villa's attack",
-            "detail": "Aston Villa create and score 10% more than an average side",
+            "detail": "Aston Villa create and score 8% more than an average side",
             "kind": "attack",
             "team": "Aston Villa",
-            "change": -2.6,
+            "change": 2.9,
             "helps": "Aston Villa"
           }
         ],
-        "total": 37.7
+        "total": 37.6
       },
       "standings": {
         "home": {
@@ -485,7 +485,7 @@
         }
       ],
       "headline": "Nothing to split Aston Villa and Brentford",
-      "change_our_mind": "If Brentford's attack were only average, this would swing to a home win (43%).",
+      "change_our_mind": "If Brentford's defence were only average, this would swing to an away win (40%).",
       "kickoff": "2026-10-10T00:00:00",
       "venue": null
     },
@@ -494,11 +494,11 @@
       "away_team": "Bournemouth",
       "call": "H",
       "call_name": "home win",
-      "confidence": "lean",
+      "confidence": "too close to call",
       "probabilities": {
-        "H": 0.417,
-        "D": 0.242,
-        "A": 0.34
+        "H": 0.425,
+        "D": 0.254,
+        "A": 0.321
       },
       "market": {
         "H": 0.568,
@@ -507,7 +507,7 @@
       },
       "expected_goals": {
         "home": 1.78,
-        "away": 1.59
+        "away": 1.53
       },
       "score": [
         2,
@@ -519,75 +519,75 @@
             1,
             1
           ],
-          "probability": 0.105
+          "probability": 0.113
         },
         {
           "score": [
             2,
             1
           ],
-          "probability": 0.086
+          "probability": 0.088
         },
         {
           "score": [
             1,
             2
           ],
-          "probability": 0.078
+          "probability": 0.076
         },
         {
           "score": [
             2,
             2
           ],
-          "probability": 0.069
+          "probability": 0.068
         },
         {
           "score": [
             2,
             0
           ],
-          "probability": 0.054
+          "probability": 0.058
         }
       ],
       "waterfall": {
-        "start": 39.4,
+        "start": 40.0,
         "start_label": "Average home side v average visitor",
         "steps": [
           {
             "label": "Chelsea's attack",
-            "detail": "Chelsea create and score 31% more than an average side",
+            "detail": "Chelsea create and score 27% more than an average side",
             "kind": "attack",
             "team": "Chelsea",
-            "change": 10.0,
+            "change": 9.2,
             "helps": "Chelsea"
           },
           {
             "label": "Chelsea's defence",
-            "detail": "Chelsea concede 32% more than an average side",
+            "detail": "Chelsea concede 30% more than an average side",
             "kind": "defence",
             "team": "Chelsea",
-            "change": -7.5,
-            "helps": "Bournemouth"
-          },
-          {
-            "label": "Bournemouth's attack",
-            "detail": "Bournemouth create and score 21% more than an average side",
-            "kind": "attack",
-            "team": "Bournemouth",
-            "change": -5.0,
+            "change": -6.9,
             "helps": "Bournemouth"
           },
           {
             "label": "Bournemouth's defence",
-            "detail": "Bournemouth concede 14% more than an average side",
+            "detail": "Bournemouth concede 13% more than an average side",
             "kind": "defence",
             "team": "Bournemouth",
-            "change": 4.8,
+            "change": 4.6,
             "helps": "Chelsea"
+          },
+          {
+            "label": "Bournemouth's attack",
+            "detail": "Bournemouth create and score 18% more than an average side",
+            "kind": "attack",
+            "team": "Bournemouth",
+            "change": -4.3,
+            "helps": "Bournemouth"
           }
         ],
-        "total": 41.7
+        "total": 42.5
       },
       "standings": {
         "home": {
@@ -729,8 +729,8 @@
           "text": "All of the last 4 meetings were drawn or won by one goal. Past meetings count for little in the model."
         }
       ],
-      "headline": "Chelsea's attack gives them a slight edge over Bournemouth",
-      "change_our_mind": "If Chelsea's attack were only average, this would swing to an away win (42%).",
+      "headline": "Nothing to split Chelsea and Bournemouth",
+      "change_our_mind": "If Chelsea's attack were only average, this would swing to an away win (39%).",
       "kickoff": "2026-10-10T00:00:00",
       "venue": null
     },
@@ -739,11 +739,11 @@
       "away_team": "Fulham",
       "call": "A",
       "call_name": "away win",
-      "confidence": "lean",
+      "confidence": "too close to call",
       "probabilities": {
-        "H": 0.304,
-        "D": 0.256,
-        "A": 0.44
+        "H": 0.322,
+        "D": 0.275,
+        "A": 0.403
       },
       "market": {
         "H": 0.342,
@@ -751,8 +751,8 @@
         "A": 0.388
       },
       "expected_goals": {
-        "home": 1.36,
-        "away": 1.68
+        "home": 1.37,
+        "away": 1.55
       },
       "score": [
         1,
@@ -764,75 +764,75 @@
             1,
             1
           ],
-          "probability": 0.118
+          "probability": 0.129
         },
         {
           "score": [
             1,
             2
           ],
-          "probability": 0.092
+          "probability": 0.089
         },
         {
           "score": [
             2,
             1
           ],
-          "probability": 0.075
+          "probability": 0.078
+        },
+        {
+          "score": [
+            0,
+            0
+          ],
+          "probability": 0.069
         },
         {
           "score": [
             0,
             1
           ],
-          "probability": 0.072
-        },
-        {
-          "score": [
-            0,
-            2
-          ],
-          "probability": 0.067
+          "probability": 0.069
         }
       ],
       "waterfall": {
-        "start": 29.5,
+        "start": 28.0,
         "start_label": "Average home side v average visitor",
         "steps": [
           {
             "label": "Ipswich's defence",
-            "detail": "Ipswich concede 75% more than an average side",
+            "detail": "Ipswich concede 64% more than an average side",
             "kind": "defence",
             "team": "Ipswich",
-            "change": 19.3,
+            "change": 16.6,
             "helps": "Fulham"
           },
           {
             "label": "Fulham's defence",
-            "detail": "Fulham concede 23% more than an average side",
+            "detail": "Fulham concede 22% more than an average side",
             "kind": "defence",
             "team": "Fulham",
-            "change": -5.3,
+            "change": -5.0,
             "helps": "Ipswich"
           },
           {
             "label": "Ipswich's attack",
-            "detail": "Ipswich create and score 8% less than an average side",
+            "detail": "Ipswich create and score 9% less than an average side",
             "kind": "attack",
             "team": "Ipswich",
-            "change": 2.1,
+            "change": 2.5,
             "helps": "Fulham"
           },
           {
             "label": "Fulham's attack",
-            "detail": "Fulham create and score 4% less than an average side",
+            "detail": "Fulham create and score 5% less than an average side",
             "kind": "attack",
             "team": "Fulham",
-            "change": -1.5,
+            "change": -1.9,
             "helps": "Ipswich"
           }
         ],
-        "total": 44.0
+        "total": 40.3
       },
       "standings": {
         "home": {
@@ -969,7 +969,7 @@
           "text": "All of the last 2 meetings were drawn or won by one goal. Past meetings count for little in the model."
         }
       ],
-      "headline": "Ipswich's leaky defence hands Fulham the edge",
+      "headline": "Nothing to split Ipswich and Fulham",
       "change_our_mind": "If Ipswich's defence were only average, this would swing to a home win (45%).",
       "kickoff": "2026-10-10T00:00:00",
       "venue": null
@@ -981,9 +981,9 @@
       "call_name": "home win",
       "confidence": "strong",
       "probabilities": {
-        "H": 0.613,
-        "D": 0.219,
-        "A": 0.167
+        "H": 0.611,
+        "D": 0.229,
+        "A": 0.16
       },
       "market": {
         "H": 0.558,
@@ -991,12 +991,12 @@
         "A": 0.216
       },
       "expected_goals": {
-        "home": 2.09,
-        "away": 1.01
+        "home": 2.08,
+        "away": 1.0
       },
       "score": [
         2,
-        1
+        0
       ],
       "top_scores": [
         {
@@ -1004,7 +1004,14 @@
             1,
             1
           ],
-          "probability": 0.103
+          "probability": 0.108
+        },
+        {
+          "score": [
+            2,
+            0
+          ],
+          "probability": 0.1
         },
         {
           "score": [
@@ -1015,64 +1022,57 @@
         },
         {
           "score": [
-            2,
-            0
-          ],
-          "probability": 0.098
-        },
-        {
-          "score": [
             1,
             0
           ],
-          "probability": 0.086
+          "probability": 0.084
         },
         {
           "score": [
             3,
-            1
+            0
           ],
           "probability": 0.069
         }
       ],
       "waterfall": {
-        "start": 39.4,
+        "start": 40.0,
         "start_label": "Average home side v average visitor",
         "steps": [
           {
             "label": "Man United's attack",
-            "detail": "Man United create and score 33% more than an average side",
+            "detail": "Man United create and score 30% more than an average side",
             "kind": "attack",
             "team": "Man United",
-            "change": 11.4,
+            "change": 10.6,
             "helps": "Man United"
           },
           {
             "label": "Tottenham's defence",
-            "detail": "Tottenham concede 31% more than an average side",
+            "detail": "Tottenham concede 29% more than an average side",
             "kind": "defence",
             "team": "Tottenham",
-            "change": 10.9,
+            "change": 10.4,
+            "helps": "Man United"
+          },
+          {
+            "label": "Tottenham's attack",
+            "detail": "Tottenham create and score 12% less than an average side",
+            "kind": "attack",
+            "team": "Tottenham",
+            "change": 2.9,
             "helps": "Man United"
           },
           {
             "label": "Man United's defence",
-            "detail": "Man United concede 14% more than an average side",
+            "detail": "Man United concede 13% more than an average side",
             "kind": "defence",
             "team": "Man United",
-            "change": -3.1,
+            "change": -2.8,
             "helps": "Tottenham"
-          },
-          {
-            "label": "Tottenham's attack",
-            "detail": "Tottenham create and score 11% less than an average side",
-            "kind": "attack",
-            "team": "Tottenham",
-            "change": 2.7,
-            "helps": "Man United"
           }
         ],
-        "total": 61.3
+        "total": 61.1
       },
       "standings": {
         "home": {
@@ -1220,7 +1220,7 @@
         }
       ],
       "headline": "Man United's attack should be too much for Tottenham",
-      "change_our_mind": "The biggest single factor is Man United's attack. If Man United's attack were only average, the home win chance would drop to 49%.",
+      "change_our_mind": "The biggest single factor is Man United's attack. If Man United's attack were only average, the home win chance would drop to 50%.",
       "kickoff": "2026-10-10T00:00:00",
       "venue": null
     },
@@ -1229,11 +1229,11 @@
       "away_team": "Brighton",
       "call": "A",
       "call_name": "away win",
-      "confidence": "lean",
+      "confidence": "too close to call",
       "probabilities": {
-        "H": 0.293,
-        "D": 0.257,
-        "A": 0.45
+        "H": 0.301,
+        "D": 0.273,
+        "A": 0.427
       },
       "market": {
         "H": 0.32,
@@ -1241,8 +1241,8 @@
         "A": 0.409
       },
       "expected_goals": {
-        "home": 1.32,
-        "away": 1.68
+        "home": 1.33,
+        "away": 1.61
       },
       "score": [
         1,
@@ -1254,75 +1254,75 @@
             1,
             1
           ],
-          "probability": 0.12
+          "probability": 0.128
         },
         {
           "score": [
             1,
             2
           ],
-          "probability": 0.093
-        },
-        {
-          "score": [
-            0,
-            1
-          ],
-          "probability": 0.075
+          "probability": 0.091
         },
         {
           "score": [
             2,
             1
           ],
-          "probability": 0.073
+          "probability": 0.075
+        },
+        {
+          "score": [
+            0,
+            1
+          ],
+          "probability": 0.071
         },
         {
           "score": [
             0,
             2
           ],
-          "probability": 0.07
+          "probability": 0.069
         }
       ],
       "waterfall": {
-        "start": 29.5,
+        "start": 28.0,
         "start_label": "Average home side v average visitor",
         "steps": [
           {
             "label": "Brighton's attack",
-            "detail": "Brighton create and score 34% more than an average side",
+            "detail": "Brighton create and score 31% more than an average side",
             "kind": "attack",
             "team": "Brighton",
-            "change": 10.2,
+            "change": 9.2,
             "helps": "Brighton"
           },
           {
             "label": "Sunderland's defence",
-            "detail": "Sunderland concede 25% more than an average side",
+            "detail": "Sunderland concede 23% more than an average side",
             "kind": "defence",
             "team": "Sunderland",
-            "change": 7.7,
+            "change": 7.1,
             "helps": "Brighton"
           },
           {
             "label": "Brighton's defence",
-            "detail": "Brighton concede 13% more than an average side",
+            "detail": "Brighton concede 12% more than an average side",
             "kind": "defence",
             "team": "Brighton",
-            "change": -3.1,
+            "change": -2.8,
             "helps": "Sunderland"
           },
           {
             "label": "Sunderland's attack",
-            "detail": "Sunderland create and score 3% less than an average side",
+            "detail": "Sunderland create and score 4% less than an average side",
             "kind": "attack",
             "team": "Sunderland",
-            "change": 0.7,
+            "change": 1.1,
             "helps": "Brighton"
           }
         ],
-        "total": 45.0
+        "total": 42.7
       },
       "standings": {
         "home": {
@@ -1459,7 +1459,7 @@
           "text": "All of the last 2 meetings were drawn or won by one goal. Past meetings count for little in the model."
         }
       ],
-      "headline": "Brighton's attack gives them a slight edge over Sunderland",
+      "headline": "Nothing to split Sunderland and Brighton",
       "change_our_mind": "If Brighton's attack were only average, this would swing to a home win (37%).",
       "kickoff": "2026-10-10T00:00:00",
       "venue": null
@@ -1471,9 +1471,9 @@
       "call_name": "home win",
       "confidence": "too close to call",
       "probabilities": {
-        "H": 0.385,
-        "D": 0.273,
-        "A": 0.342
+        "H": 0.389,
+        "D": 0.286,
+        "A": 0.324
       },
       "market": {
         "H": 0.362,
@@ -1481,8 +1481,8 @@
         "A": 0.356
       },
       "expected_goals": {
-        "home": 1.43,
-        "away": 1.34
+        "home": 1.44,
+        "away": 1.3
       },
       "score": [
         2,
@@ -1494,75 +1494,75 @@
             1,
             1
           ],
-          "probability": 0.129
+          "probability": 0.136
         },
         {
           "score": [
             2,
             1
           ],
-          "probability": 0.086
+          "probability": 0.087
         },
         {
           "score": [
-            1,
-            2
-          ],
-          "probability": 0.08
-        },
-        {
-          "score": [
-            1,
+            0,
             0
           ],
           "probability": 0.08
         },
         {
           "score": [
-            0,
-            1
+            1,
+            2
           ],
-          "probability": 0.074
+          "probability": 0.079
+        },
+        {
+          "score": [
+            1,
+            0
+          ],
+          "probability": 0.077
         }
       ],
       "waterfall": {
-        "start": 39.4,
+        "start": 40.0,
         "start_label": "Average home side v average visitor",
         "steps": [
           {
             "label": "Crystal Palace's defence",
-            "detail": "Crystal Palace concede 34% more than an average side",
+            "detail": "Crystal Palace concede 32% more than an average side",
             "kind": "defence",
             "team": "Crystal Palace",
-            "change": -7.4,
+            "change": -6.9,
             "helps": "Nott'm Forest"
           },
           {
             "label": "Nott'm Forest's defence",
-            "detail": "Nott'm Forest concede 15% more than an average side",
+            "detail": "Nott'm Forest concede 14% more than an average side",
             "kind": "defence",
             "team": "Nott'm Forest",
-            "change": 5.0,
+            "change": 4.7,
             "helps": "Crystal Palace"
           },
           {
             "label": "Crystal Palace's attack",
-            "detail": "Crystal Palace create and score 4% more than an average side",
+            "detail": "Crystal Palace create and score 3% more than an average side",
             "kind": "attack",
             "team": "Crystal Palace",
-            "change": 1.4,
+            "change": 0.9,
             "helps": "Crystal Palace"
           },
           {
             "label": "Nott'm Forest's attack",
-            "detail": "Nott'm Forest create and score 0% more than an average side",
+            "detail": "Nott'm Forest create and score 1% less than an average side",
             "kind": "attack",
             "team": "Nott'm Forest",
-            "change": -0.0,
+            "change": 0.3,
             "helps": "Crystal Palace"
           }
         ],
-        "total": 38.5
+        "total": 38.9
       },
       "standings": {
         "home": {
@@ -1710,7 +1710,7 @@
         }
       ],
       "headline": "Nothing to split Crystal Palace and Nott'm Forest",
-      "change_our_mind": "If Nott'm Forest's defence were only average, this would swing to an away win (38%).",
+      "change_our_mind": "If Nott'm Forest's defence were only average, this would swing to an away win (36%).",
       "kickoff": "2026-10-11T00:00:00",
       "venue": null
     },
@@ -1719,11 +1719,11 @@
       "away_team": "Everton",
       "call": "H",
       "call_name": "home win",
-      "confidence": "lean",
+      "confidence": "too close to call",
       "probabilities": {
-        "H": 0.406,
-        "D": 0.324,
-        "A": 0.269
+        "H": 0.407,
+        "D": 0.334,
+        "A": 0.258
       },
       "market": {
         "H": 0.263,
@@ -1731,7 +1731,7 @@
         "A": 0.461
       },
       "expected_goals": {
-        "home": 1.14,
+        "home": 1.17,
         "away": 0.88
       },
       "score": [
@@ -1744,47 +1744,47 @@
             1,
             1
           ],
-          "probability": 0.144
+          "probability": 0.15
         },
         {
           "score": [
             0,
             0
           ],
-          "probability": 0.143
+          "probability": 0.147
         },
         {
           "score": [
             1,
             0
           ],
-          "probability": 0.141
+          "probability": 0.134
         },
         {
           "score": [
             0,
             1
           ],
-          "probability": 0.106
+          "probability": 0.096
         },
         {
           "score": [
             2,
             0
           ],
-          "probability": 0.086
+          "probability": 0.088
         }
       ],
       "waterfall": {
-        "start": 39.4,
+        "start": 40.0,
         "start_label": "Average home side v average visitor",
         "steps": [
           {
             "label": "Hull's attack",
-            "detail": "Hull create and score 14% less than an average side",
+            "detail": "Hull create and score 15% less than an average side",
             "kind": "attack",
             "team": "Hull",
-            "change": -5.4,
+            "change": -5.7,
             "helps": "Everton"
           },
           {
@@ -1792,27 +1792,27 @@
             "detail": "Everton concede 11% more than an average side",
             "kind": "defence",
             "team": "Everton",
-            "change": 3.7,
+            "change": 3.6,
             "helps": "Hull"
           },
           {
             "label": "Hull's defence",
-            "detail": "Hull concede 7% less than an average side",
+            "detail": "Hull concede 6% less than an average side",
             "kind": "defence",
             "team": "Hull",
-            "change": 1.7,
+            "change": 1.5,
             "helps": "Hull"
           },
           {
             "label": "Everton's attack",
-            "detail": "Everton create and score 5% less than an average side",
+            "detail": "Everton create and score 6% less than an average side",
             "kind": "attack",
             "team": "Everton",
-            "change": 1.2,
+            "change": 1.4,
             "helps": "Hull"
           }
         ],
-        "total": 40.6
+        "total": 40.7
       },
       "standings": {
         "home": {
@@ -1928,7 +1928,7 @@
           "text": "Last five league games: Hull took 8 points, Everton took 9."
         }
       ],
-      "headline": "Everton's leaky defence hands Hull the edge",
+      "headline": "Nothing to split Hull and Everton",
       "change_our_mind": "The biggest single factor is Everton's defence. If Everton's defence were only average, the home win chance would drop to 37%.",
       "kickoff": "2026-10-11T00:00:00",
       "venue": null
@@ -1938,11 +1938,11 @@
       "away_team": "Man City",
       "call": "A",
       "call_name": "away win",
-      "confidence": "lean",
+      "confidence": "too close to call",
       "probabilities": {
-        "H": 0.333,
-        "D": 0.25,
-        "A": 0.416
+        "H": 0.342,
+        "D": 0.263,
+        "A": 0.394
       },
       "market": {
         "H": 0.358,
@@ -1950,8 +1950,8 @@
         "A": 0.384
       },
       "expected_goals": {
-        "home": 1.5,
-        "away": 1.69
+        "home": 1.52,
+        "away": 1.64
       },
       "score": [
         1,
@@ -1963,21 +1963,21 @@
             1,
             1
           ],
-          "probability": 0.113
+          "probability": 0.12
         },
         {
           "score": [
             1,
             2
           ],
-          "probability": 0.088
+          "probability": 0.087
         },
         {
           "score": [
             2,
             1
           ],
-          "probability": 0.078
+          "probability": 0.08
         },
         {
           "score": [
@@ -1989,37 +1989,37 @@
         {
           "score": [
             0,
-            1
+            2
           ],
-          "probability": 0.061
+          "probability": 0.057
         }
       ],
       "waterfall": {
-        "start": 29.5,
+        "start": 28.0,
         "start_label": "Average home side v average visitor",
         "steps": [
           {
             "label": "Man City's attack",
-            "detail": "Man City create and score 54% more than an average side",
+            "detail": "Man City create and score 50% more than an average side",
             "kind": "attack",
             "team": "Man City",
-            "change": 14.7,
+            "change": 13.6,
             "helps": "Man City"
           },
           {
             "label": "Liverpool's attack",
-            "detail": "Liverpool create and score 29% more than an average side",
+            "detail": "Liverpool create and score 26% more than an average side",
             "kind": "attack",
             "team": "Liverpool",
-            "change": -6.7,
+            "change": -6.1,
             "helps": "Liverpool"
           },
           {
             "label": "Liverpool's defence",
-            "detail": "Liverpool concede 10% more than an average side",
+            "detail": "Liverpool concede 9% more than an average side",
             "kind": "defence",
             "team": "Liverpool",
-            "change": 3.3,
+            "change": 3.0,
             "helps": "Man City"
           },
           {
@@ -2027,11 +2027,11 @@
             "detail": "Man City concede 3% less than an average side",
             "kind": "defence",
             "team": "Man City",
-            "change": 0.8,
+            "change": 0.9,
             "helps": "Man City"
           }
         ],
-        "total": 41.6
+        "total": 39.4
       },
       "standings": {
         "home": {
@@ -2173,9 +2173,233 @@
           "text": "1 of the last 4 meetings was drawn or won by one goal. Past meetings count for little in the model."
         }
       ],
-      "headline": "Man City's attack gives them a slight edge over Liverpool",
+      "headline": "Nothing to split Liverpool and Man City",
       "change_our_mind": "If Man City's attack were only average, this would swing to a home win (45%).",
       "kickoff": "2026-10-11T00:00:00",
+      "venue": null
+    },
+    {
+      "home_team": "Coventry",
+      "away_team": "Newcastle",
+      "call": "A",
+      "call_name": "away win",
+      "confidence": "solid",
+      "probabilities": {
+        "H": 0.252,
+        "D": 0.295,
+        "A": 0.453
+      },
+      "market": {
+        "H": 0.288,
+        "D": 0.262,
+        "A": 0.45
+      },
+      "expected_goals": {
+        "home": 1.04,
+        "away": 1.46
+      },
+      "score": [
+        0,
+        1
+      ],
+      "top_scores": [
+        {
+          "score": [
+            1,
+            1
+          ],
+          "probability": 0.141
+        },
+        {
+          "score": [
+            0,
+            1
+          ],
+          "probability": 0.104
+        },
+        {
+          "score": [
+            0,
+            0
+          ],
+          "probability": 0.098
+        },
+        {
+          "score": [
+            1,
+            2
+          ],
+          "probability": 0.091
+        },
+        {
+          "score": [
+            0,
+            2
+          ],
+          "probability": 0.088
+        }
+      ],
+      "waterfall": {
+        "start": 28.0,
+        "start_label": "Average home side v average visitor",
+        "steps": [
+          {
+            "label": "Coventry's attack",
+            "detail": "Coventry create and score 35% less than an average side",
+            "kind": "attack",
+            "team": "Coventry",
+            "change": 10.3,
+            "helps": "Newcastle"
+          },
+          {
+            "label": "Coventry's defence",
+            "detail": "Coventry concede 27% more than an average side",
+            "kind": "defence",
+            "team": "Coventry",
+            "change": 8.1,
+            "helps": "Newcastle"
+          },
+          {
+            "label": "Newcastle's defence",
+            "detail": "Newcastle concede 29% more than an average side",
+            "kind": "defence",
+            "team": "Newcastle",
+            "change": -5.9,
+            "helps": "Coventry"
+          },
+          {
+            "label": "Newcastle's attack",
+            "detail": "Newcastle create and score 15% more than an average side",
+            "kind": "attack",
+            "team": "Newcastle",
+            "change": 4.8,
+            "helps": "Newcastle"
+          }
+        ],
+        "total": 45.3
+      },
+      "standings": {
+        "home": {
+          "position": 18,
+          "points": 3,
+          "played": 5
+        },
+        "away": {
+          "position": 9,
+          "points": 8,
+          "played": 5
+        }
+      },
+      "xg": {
+        "home": {
+          "games": 2,
+          "venue": "home",
+          "xg_for": 1.12,
+          "xg_against": 1.61,
+          "goals_for": 0.0,
+          "goals_against": 3.0
+        },
+        "away": {
+          "games": 5,
+          "venue": "away",
+          "xg_for": 0.91,
+          "xg_against": 1.45,
+          "goals_for": 0.8,
+          "goals_against": 1.6
+        }
+      },
+      "finishing": {
+        "home": {
+          "games": 5,
+          "goals": 1,
+          "xg": 5.0,
+          "difference": -4.0
+        },
+        "away": {
+          "games": 5,
+          "goals": 9,
+          "xg": 5.5,
+          "difference": 3.5
+        }
+      },
+      "form": {
+        "home": [
+          {
+            "result": "L",
+            "line": "Arsenal 3-0 Coventry",
+            "date": "2026-08-21"
+          },
+          {
+            "result": "L",
+            "line": "Coventry 0-1 Hull",
+            "date": "2026-08-29"
+          },
+          {
+            "result": "L",
+            "line": "Man City 1-0 Coventry",
+            "date": "2026-09-05"
+          },
+          {
+            "result": "L",
+            "line": "Coventry 0-5 Brighton",
+            "date": "2026-09-13"
+          },
+          {
+            "result": "W",
+            "line": "Nott'm Forest 0-1 Coventry",
+            "date": "2026-09-19"
+          }
+        ],
+        "away": [
+          {
+            "result": "D",
+            "line": "Newcastle 2-2 Liverpool",
+            "date": "2026-08-23"
+          },
+          {
+            "result": "W",
+            "line": "Tottenham 0-2 Newcastle",
+            "date": "2026-08-29"
+          },
+          {
+            "result": "D",
+            "line": "Newcastle 2-2 Bournemouth",
+            "date": "2026-09-05"
+          },
+          {
+            "result": "L",
+            "line": "Leeds 4-1 Newcastle",
+            "date": "2026-09-14"
+          },
+          {
+            "result": "W",
+            "line": "Newcastle 2-1 Hull",
+            "date": "2026-09-19"
+          }
+        ]
+      },
+      "head_to_head": [],
+      "team_news": [],
+      "reasons": [
+        {
+          "topic": "Chances created and allowed",
+          "title": "Coventry are leaking chances at home",
+          "text": "Expected goals (xG) measures the quality of chances. Over their last 2 home games Coventry created 1.1 and allowed 1.6 a game. Over their last 5 away games Newcastle created 0.9 and allowed 1.4."
+        },
+        {
+          "topic": "Form",
+          "title": "Newcastle arrive in better form",
+          "text": "Last five league games: Coventry took 3 points, Newcastle took 8."
+        },
+        {
+          "topic": "Finishing",
+          "title": "Coventry are scoring below their chances",
+          "text": "Coventry have 1 goals from 5.0 xG this season. Finishing like that tends to pick up, so we lean on the chances, not the goals."
+        }
+      ],
+      "headline": "Newcastle's attack should be too much for Coventry",
+      "change_our_mind": "If Coventry's attack were only average, this would swing to a home win (39%).",
+      "kickoff": "2026-10-12T00:00:00",
       "venue": null
     }
   ]

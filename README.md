@@ -40,14 +40,19 @@ Ratings are fitted to a 50/50 blend of goals and xG, since xG says more about ho
 team is really playing than a few results. The ratings give expected goals for any
 match, which become win/draw/loss chances and a predicted score (Dixon-Coles model).
 
-`python -m plpred.backtest` replays past weeks using only what was known at the time,
-tunes the settings on last season, and checks them on this season. Results are saved
-in `data/backtest/`. As of 18 Oct 2026:
+`python -m plpred.backtest` replays every past gameweek using only what was known before
+the round's first kickoff, tunes the settings on last season, and checks them on this
+season. Ratings for teams with little history (usually promoted sides) are pulled firmly
+towards average, so one big result can't make them look like contenders. Results are
+saved in `data/backtest/`. As of 18 Oct 2026:
 
 | Season | Model accuracy | Bookmakers' favourite | Always home | Exact score |
 |---|---|---|---|---|
-| 2025/26 (tuning) | 49.2% | 49.5% | 42.6% | 9.7% |
-| 2026/27 so far (unseen, 60 games) | 50.0% | 45.0% | 38.3% | 8.3% |
+| 2025/26 (tuning) | 49.7% | 49.5% | 42.6% | 9.7% |
+| 2026/27 so far (unseen, 60 games) | 48.3% | 45.0% | 38.3% | 6.7% |
+
+These samples are small: over 60 games a hit rate can swing about 13 points either way by
+chance, so treat the model as level with the bookmakers until several seasons say otherwise.
 
 ## Reasons
 

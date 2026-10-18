@@ -26,8 +26,8 @@ MAX_GOALS = 10
 class Settings:
     half_life_days: float = 180.0   # a match this old counts half as much as one today
     xg_weight: float = 0.5          # 0 = goals only, 1 = xG only
-    ridge: float = 0.05             # pulls teams with few matches towards average
-    rho: float = -0.08              # Dixon-Coles low-score correction
+    ridge: float = 1.0              # pulls teams with few matches towards average
+    rho: float = -0.13              # Dixon-Coles low-score correction
 
 
 @dataclass

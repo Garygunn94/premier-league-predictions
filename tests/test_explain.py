@@ -70,7 +70,7 @@ def test_confidence_labels():
     assert explain.confidence({"H": 0.40, "D": 0.25, "A": 0.36}) == "too close to call"
     assert explain.confidence({"H": 0.62, "D": 0.2, "A": 0.18}) == "strong"
     assert explain.confidence({"H": 0.5, "D": 0.25, "A": 0.25}) == "solid"
-    assert explain.confidence({"H": 0.42, "D": 0.3, "A": 0.28}) == "lean"
+    assert explain.confidence({"H": 0.42, "D": 0.3, "A": 0.28}) == "too close to call"
 
 
 def test_possessive():

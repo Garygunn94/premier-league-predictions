@@ -221,14 +221,14 @@ def market(odds: tuple | None) -> dict | None:
 
 
 def confidence(probs: dict) -> str:
+    # Back-tests showed favourites under 45% won no more often than near coin-flips,
+    # so both count as too close to call.
     top, second = sorted(probs.values(), reverse=True)[:2]
-    if top - second < 0.05:
+    if top - second < 0.05 or top < 0.45:
         return "too close to call"
     if top >= 0.6:
         return "strong"
-    if top >= 0.45:
-        return "solid"
-    return "lean"
+    return "solid"
 
 
 # ---------------------------------------------------------------- putting it together
@@ -324,8 +324,6 @@ def headline(r: dict) -> str:
         return f"Missing players leave {team} exposed" if team == loser else f"{winner} hit by absences but still favoured"
     team = top["team"]
     if top["kind"] == "attack":
-        if r["confidence"] == "lean":
-            return f"{_pos(winner)} attack gives them a slight edge over {loser}"
         return f"{_pos(winner)} attack should be too much for {loser}"
     if team == loser:
         return f"{_pos(loser)} leaky defence hands {winner} the edge"
