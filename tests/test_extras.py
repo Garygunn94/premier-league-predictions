@@ -93,7 +93,7 @@ def test_build_writes_the_new_pages_and_feeds(tmp_path):
         assert (out / page).exists(), page
     week = (out / "matchweek" / "9" / "index.html").read_text()
     assert 'property="og:image" content="https://' in week and "social/png/round.png" in week
-    assert 'href="../../club/strong/index.html"' in week
+    assert 'href="../../club/strong/"' in week
     assert "goatcounter" not in week and "get the newsletter" not in week
     assert "matchweek/9/strong-v-weak.html" in (out / "sitemap.xml").read_text()
     assert "<entry><title>Matchweek 9" in (out / "feed.xml").read_text()
@@ -120,4 +120,4 @@ def test_extra_captions_fit_x():
     for k in ("projection_x", "fpl_x", "miss_x"):
         assert all(social.x_length(post) <= social.X_LIMIT for post in cap[k])
     assert "B go down in 70%" in cap["projection_x"][0]
-    assert "http" not in cap["projection_x"][0] and cap["projection_x"][1].endswith("table/index.html")
+    assert "http" not in cap["projection_x"][0] and cap["projection_x"][1].endswith("table/")

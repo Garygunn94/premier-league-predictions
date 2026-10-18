@@ -1,13 +1,12 @@
 {% extends "base.html" %}
 {% from "macros.html" import badge, page_head, wordmark with context %}
-{% block title %}The clubs: Inkwell &amp; Algorithm{% endblock %}
 {% block masthead %}{{ page_head("The clubs", root, latest, built) }}{% endblock %}
 {% block content %}
 <section class="sec">
 <h2 class="sec-title disp" style="margin-bottom:20px">Every club's season in numbers</h2>
 <ul class="club-grid">
 {% for c in club_list %}
-<li><a href="{{ root }}/club/{{ c.slug }}/index.html" class="disp">{{ badge(c.team, root) }}{{ c.team }}</a></li>
+<li><a href="{{ root }}/club/{{ c.slug }}/" class="disp">{{ badge(c.team, root) }}{{ c.team }}</a></li>
 {% endfor %}
 </ul>
 </section>

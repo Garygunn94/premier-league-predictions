@@ -13,7 +13,7 @@ Inkwell <span class="amp">&amp;</span> Algorithm
 {%- endmacro %}
 
 {% macro club(team, root) -%}
-{% if team in clubs %}<a href="{{ root }}/club/{{ clubs[team] }}/index.html" style="text-decoration:none">{{ team }}</a>{% else %}{{ team }}{% endif %}
+{% if team in clubs %}<a href="{{ root }}/club/{{ clubs[team] }}/" style="text-decoration:none">{{ team }}</a>{% else %}{{ team }}{% endif %}
 {%- endmacro %}
 
 {% macro page_head(label, root, latest, built, links=[]) -%}
@@ -23,12 +23,12 @@ Inkwell <span class="amp">&amp;</span> Algorithm
 <span>Premier League {{ latest.season }}</span>
 <span class="accent">{{ label }}</span>
 </div>
-<h1 class="masthead disp"><a href="{{ root }}/index.html">{{ wordmark() }}</a></h1>
+<h1 class="masthead disp"><a href="{{ root }}/">{{ wordmark() }}</a></h1>
 <p class="tagline">Data-driven Premier League predictions, with the reasons. New every Thursday.</p>
 <nav class="sections" aria-label="Sections">
 <ul class="lab">
-<li><a href="{{ root }}/about/index.html">About</a></li>
-<li><a href="{{ root }}/index.html" class="accent">This week's calls</a></li>
+<li><a href="{{ root }}/about/">About</a></li>
+<li><a href="{{ root }}/" class="accent">This week's calls</a></li>
 {% for href, text in links %}<li><a href="{{ href }}">{{ text }}</a></li>
 {% endfor %}
 </ul>

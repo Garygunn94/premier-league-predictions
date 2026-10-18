@@ -10,7 +10,8 @@ test), the projected final table in table/ (see plpred.simulate), the FPL corner
 (see plpred.fantasy), a page per club in club/<name>/, us against the pundits in pundits/
 (see plpred.pundits), and the posting kit for social media and the weekly newsletter in
 social/ for the newest week (see plpred.social). It also writes sitemap.xml, an Atom feed
-of the matchweeks (feed.xml) and robots.txt.
+of the matchweeks (feed.xml), robots.txt and a 404 page. Every page has a search title, a
+description, a canonical address and schema.org structured data (see page_meta).
 
 Optional settings, read from the environment (the Publish site workflow passes them from
 the repository's Actions variables):
@@ -424,18 +425,82 @@ def club_view(team: str, w: dict, sim: dict | None, strip: dict | None, matches:
     }
 
 
-def page_meta(path: str, title: str, description: str, image: str | None = None) -> dict:
-    return {"path": path, "title": title, "description": description, "image": image or "social/png/brand.png"}
+BRAND = "Inkwell & Algorithm"
+SAME_AS = ["https://x.com/InkwellAlgo", "https://www.instagram.com/inkwellandalgorithm/"]
+
+
+def clean_path(path: str) -> str:
+    """The address we want search engines to use: matchweek/7/ rather than matchweek/7/index.html."""
+    return path[:-len("index.html")] if path.endswith("index.html") else path
+
+
+def short_description(text: str, limit: int = 160) -> str:
+    """Cut a description at a word so search results show it whole."""
+    if len(text) <= limit:
+        return text
+    return text[:limit - 1].rsplit(" ", 1)[0].rstrip(",;:.") + "…"
+
+
+def page_meta(path: str, title: str, description: str, image: str | None = None, *,
+              search_title: str | None = None, canonical: str | None = None,
+              crumbs: list[tuple[str, str]] | None = None, ld: list[dict] | None = None) -> dict:
+    """A page's share preview and search details.
+
+    title is the share headline; search_title is the <title> (keyword-led, the brand after it);
+    canonical is the path search engines should index this page under (defaults to its own);
+    crumbs are (name, path) pairs after the front page, for breadcrumbs in search results;
+    ld is any extra structured data (schema.org) for the page.
+    """
+    return {"path": path, "url": clean_path(path if canonical is None else canonical),
+            "title": title, "search_title": f"{search_title or title} | {BRAND}",
+            "description": short_description(description), "image": image or "social/png/brand.png",
+            "crumbs": crumbs, "ld": ld or []}
+
+
+def structured_data(meta: dict, site_url: str) -> list[dict]:
+    """schema.org JSON-LD: who we are on the front page, breadcrumbs elsewhere, plus the page's own."""
+    if not site_url:
+        return []
+    out = []
+    if meta["path"] == "":
+        out.append({"@context": "https://schema.org", "@graph": [
+            {"@type": "Organization", "@id": f"{site_url}#org", "name": BRAND, "url": site_url,
+             "logo": f"{site_url}social/png/brand.png", "sameAs": SAME_AS},
+            {"@type": "WebSite", "@id": f"{site_url}#site", "name": BRAND, "url": site_url,
+             "description": "Data-driven Premier League predictions, with the reasons.",
+             "publisher": {"@id": f"{site_url}#org"}, "inLanguage": "en-GB"}]})
+    if meta.get("crumbs"):
+        items = [("Home", "")] + meta["crumbs"]
+        out.append({"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+            {"@type": "ListItem", "position": i, "name": name, "item": site_url + clean_path(path)}
+            for i, (name, path) in enumerate(items, 1)]})
+    return out + [{"@context": "https://schema.org", **d} for d in meta["ld"]]
+
+
+def match_event(v: dict, site_url: str) -> dict:
+    """The match itself, so search engines know which game a breakdown is about."""
+    ko = pd.Timestamp(v["kickoff"])
+    event = {"@type": "SportsEvent", "name": f"{v['home_team']} v {v['away_team']}", "sport": "Association football",
+             "startDate": ko.isoformat() if (ko.hour or ko.minute) else ko.strftime("%Y-%m-%d"),
+             "homeTeam": {"@type": "SportsTeam", "name": v["home_team"]},
+             "awayTeam": {"@type": "SportsTeam", "name": v["away_team"]},
+             "superEvent": {"@type": "SportsEvent", "name": "Premier League"}}
+    if v.get("venue"):
+        event["location"] = {"@type": "Place", "name": v["venue"]}
+    if site_url:
+        event["url"] = site_url + v["path"]
+    return event
 
 
 def write_extras(out: Path, weeks: list[dict], pages: list[str], site_url: str, built: datetime) -> None:
-    """sitemap.xml, feed.xml (one entry per matchweek, newest first) and robots.txt."""
-    urls = "".join(f"<url><loc>{escape(site_url + p)}</loc></url>" for p in pages)
+    """sitemap.xml (pages is the indexable paths), feed.xml (one entry per matchweek, newest first) and robots.txt."""
+    lastmod = built.strftime("%Y-%m-%d")
+    urls = "".join(f"<url><loc>{escape(site_url + p)}</loc><lastmod>{lastmod}</lastmod></url>" for p in pages)
     (out / "sitemap.xml").write_text('<?xml version="1.0" encoding="UTF-8"?>\n'
                                      f'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{urls}</urlset>\n')
     entries = []
     for w in weeks[::-1]:
-        link = f"{site_url}matchweek/{w['matchweek']}/index.html"
+        link = f"{site_url}matchweek/{w['matchweek']}/"
         when = w["as_of"].strftime("%Y-%m-%dT00:00:00Z")
         summary = "; ".join(f"{v['home_team']} v {v['away_team']}: {v['call_long'].lower() if v['call'] != 'D' else 'draw'} "
                             f"{v['score_text']} ({v['our_p']}%)" for v in w["views"])
@@ -504,62 +569,100 @@ def build(data: Path, out: Path) -> Path:
         teams = set(matches.home_team) | {t for w in weeks for v in w["views"] for t in (v["home_team"], v["away_team"])}
         common["badges"] = {t: f"{api_football.badge_name(t)}.png" for t in teams
                             if (badge_dir / f"{api_football.badge_name(t)}.png").exists()}
-    written = []
+    written, indexed = [], []
 
-    def write(path: str, template: str, meta: dict, **ctx) -> None:
+    def write(path: str, template: str, meta: dict, root: str | None = None, **ctx) -> None:
         target = out / path
         target.parent.mkdir(parents=True, exist_ok=True)
-        root = "/".join([".."] * path.count("/")) or "."
+        root = root if root is not None else "/".join([".."] * path.count("/")) or "."
+        meta = {**meta, "jsonld": structured_data(meta, site_url)}
         target.write_text(env.get_template(template).render(**common, **ctx, meta=meta, root=root))
         written.append(path)
+        if not meta.get("noindex") and meta["url"] == clean_path(path) and meta["url"] not in indexed:
+            indexed.append(meta["url"])
 
+    season_label = latest["season"]
     tagline = "Data-driven Premier League predictions, with the reasons. New every Thursday."
-    write("about/index.html", "about.html", page_meta("about/index.html", "About Inkwell & Algorithm", tagline),
+    write("about/index.html", "about.html",
+          page_meta("about/index.html", "About Inkwell & Algorithm", "How we predict every Premier League match: "
+                    "attack and defence ratings from goals and expected goals, the reasons behind each call, "
+                    "and our record against the bookmakers.",
+                    search_title="About: how our Premier League predictions work", crumbs=[("About", "about/")]),
           record=latest["record"], replay=is_replay)
     write("record/index.html", "calibration.html",
           page_meta("record/index.html", "Are our percentages right?",
-                    "Every chance we've given, checked against what happened, and our public test."),
+                    "Every chance we've given, checked against what happened, and our public test.",
+                    search_title="Premier League prediction record: are our percentages right?",
+                    crumbs=[("Our record", "record/")]),
           record=latest["record"], cal=luck.calibration(data, matches), prereg=luck.preregistered(data, matches))
     if sim:
         write("table/index.html", "projection.html",
-              page_meta("table/index.html", f"How the {latest['season']} season ends: {sim['runs']:,} simulations",
-                        "Title, top-four and relegation chances for every Premier League club, updated every week."),
+              page_meta("table/index.html", f"How the {season_label} season ends: {sim['runs']:,} simulations",
+                        f"Our predicted {season_label} Premier League table: title, top-four and relegation chances "
+                        f"for every club from {sim['runs']:,} simulations, updated every week.",
+                        search_title=f"Premier League {season_label} predicted table",
+                        crumbs=[("Season projection", "table/")]),
               sim=sim, moves=latest["sim_moves"])
     write("fpl/index.html", "fpl.html",
           page_meta("fpl/index.html", f"FPL corner, Gameweek {latest['matchweek']}",
-                    "Clean-sheet and scoring chances for every club, and the fixtures ahead."),
+                    f"FPL Gameweek {latest['matchweek']}: clean-sheet and scoring chances for every Premier League "
+                    "club, and how hard the fixtures ahead are.",
+                    search_title=f"FPL Gameweek {latest['matchweek']}: clean sheet and goal chances",
+                    crumbs=[("FPL corner", "fpl/")]),
           fpl=fpl)
     write("pundits/index.html", "pundits.html",
           page_meta("pundits/index.html", "The algorithm v the pundits",
-                    "Well-known pundits' predictions, scored beside ours on the same games."),
+                    "Well-known pundits' Premier League predictions, scored beside ours on the same games.",
+                    search_title="Premier League predictions: the algorithm v the pundits",
+                    crumbs=[("V the pundits", "pundits/")]),
           board=pundits.scoreboard(data, matches, all_preds if not is_replay else []))
     clubs = [club_view(t, latest, sim, fpl["strip"], matches, data, season) for t in sorted(common["clubs"])]
     write("club/index.html", "clubs.html",
-          page_meta("club/index.html", "The clubs", "Every Premier League club's season in numbers."), club_list=clubs)
+          page_meta("club/index.html", "The clubs", "Every Premier League club's season in numbers: projected "
+                    "finish, form, expected goals and fixtures.",
+                    search_title=f"Premier League clubs {season_label}: the season in numbers",
+                    crumbs=[("Clubs", "club/")]), club_list=clubs)
     for c in clubs:
         write(f"club/{c['slug']}/index.html", "club.html",
               page_meta(f"club/{c['slug']}/index.html", f"{c['team']}: the season in numbers",
-                        f"{c['team']}'s chances, form, expected goals and fixtures."), c=c)
+                        f"{c['team']}'s {season_label} Premier League season in numbers: where they're predicted "
+                        "to finish, form, expected goals and the fixtures ahead.",
+                        search_title=f"{c['team']} {season_label}: predicted finish, form and fixtures",
+                        crumbs=[("Clubs", "club/"), (c["team"], f"club/{c['slug']}/")]), c=c)
     for w in weeks:
         ctx = {**w}
         is_latest = w is latest
-        write(f"matchweek/{w['matchweek']}/index.html", "week.html",
-              page_meta(f"matchweek/{w['matchweek']}/index.html", f"Matchweek {w['matchweek']}: {w['lead']['headline']}",
-                        f"Every Premier League match in matchweek {w['matchweek']}, called and explained.",
-                        "social/png/round.png" if is_latest else None), **ctx)
+        week_path = f"matchweek/{w['matchweek']}/index.html"
+        week_title = f"Matchweek {w['matchweek']}: {w['lead']['headline']}"
+        week_search = f"Premier League predictions: Matchweek {w['matchweek']}, {w['season']}"
+        week_desc = (f"Predictions for every Premier League match in Matchweek {w['matchweek']} "
+                     f"({w['season']}, from {w['first_kickoff']}): our call, the likely score and the reasons behind it.")
+        week_crumbs = [(f"Matchweek {w['matchweek']}", f"matchweek/{w['matchweek']}/")]
+        # The newest week is also the front page, so search engines are pointed at the front page
+        # until the next week replaces it.
+        write(week_path, "week.html",
+              page_meta(week_path, week_title, week_desc, "social/png/round.png" if is_latest else None,
+                        search_title=week_search, canonical="" if is_latest else None, crumbs=week_crumbs), **ctx)
         if is_latest:
             # The front page is this week's calls, so a link from a social bio lands on them.
             write("index.html", "week.html",
-                  page_meta("", f"Matchweek {w['matchweek']}: {w['lead']['headline']}", tagline,
-                            "social/png/round.png"), **ctx)
+                  page_meta("", week_title, week_desc, "social/png/round.png", search_title=week_search), **ctx)
         for v in w["views"]:
+            call = "draw" if v["call"] == "D" else f"{v['call_team']} win"
             write(v["path"], "match.html",
                   page_meta(v["path"], f"{v['home_team']} v {v['away_team']}: {v['headline']}",
+                            f"{v['home_team']} v {v['away_team']} prediction, {v['kickoff_long']}. "
                             f"Our call: {v['call_long'] if v['call'] != 'D' else 'draw'} {v['score_text']} ({v['our_p']}%). "
                             + (v["front_reasons"][0]["text"] if v["front_reasons"] else ""),
-                            f"social/png/call-{v['slug']}.png" if is_latest else None), **ctx, g=v)
+                            f"social/png/call-{v['slug']}.png" if is_latest else None,
+                            search_title=f"{v['home_team']} v {v['away_team']} prediction: {call} {v['score_text']}",
+                            crumbs=week_crumbs + [(f"{v['home_team']} v {v['away_team']}", v["path"])],
+                            ld=[match_event(v, site_url)]), **ctx, g=v)
+    # GitHub Pages serves 404.html at whatever address was missing, so its links can't be relative.
+    write("404.html", "missing.html", {**page_meta("404.html", "Page not found", tagline), "noindex": True},
+          root=site_url.rstrip("/"))
     social.build_kit({**latest, **common, "fpl": fpl}, latest["views"], env, out / "social")
-    write_extras(out, weeks, written, site_url, built)
+    write_extras(out, weeks, indexed, site_url, built)
     (out / ".nojekyll").write_text("")
     log.info("Built %d pages for %d matchweeks into %s (%s)", len(written), len(weeks), out,
              "replay" if is_replay else "live")
