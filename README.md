@@ -9,19 +9,26 @@ real numbers.
 
 ## Data
 
+We only collect the current season and the two before it. Recent form matters most,
+so the model weights the current season most heavily. The window is set by
+`SEASONS_KEPT` in `plpred/seasons.py`.
+
 | Source | What we use | Folder |
 |---|---|---|
-| [football-data.co.uk](https://www.football-data.co.uk/englandm.php) | Every result since 1993/94, shots, corners, cards, bookmaker odds | `data/raw/football-data-uk/`, combined in `data/matches.csv` |
-| [Understat](https://understat.com/league/EPL) | Expected goals (xG) per match since 2014/15 | `data/xg/` |
-| [Fantasy Premier League](https://fantasy.premierleague.com/) | Player availability, injury news, chance of playing | `data/upcoming/fpl_players.csv`, `key_absences.csv` |
-| [API-Football](https://www.api-football.com/) | This round's fixtures, injuries and pre-match odds | `data/upcoming/fixtures.csv`, `injuries.csv`, `odds.csv` |
+| [football-data.co.uk](https://www.football-data.co.uk/englandm.php) | Results, shots, corners, cards, bookmaker odds | `data/raw/football-data-uk/`, combined in `data/matches.csv` |
+| [Understat](https://understat.com/league/EPL) | Expected goals (xG) per match | `data/xg/` |
+| [Fantasy Premier League](https://fantasy.premierleague.com/) | Player availability, injuries, suspensions, chance of playing | `data/upcoming/fpl_players.csv`, `key_absences.csv` |
+| [API-Football](https://www.api-football.com/) | This round's fixtures and pre-match odds | `data/upcoming/fixtures.csv`, `odds.csv` |
 
 The **Update data** workflow refreshes everything on Thursday and Saturday mornings
 and commits the results, so every week's inputs stay in the history. It can also be
 run by hand from the Actions tab.
 
-API-Football needs a free key saved as the repository secret `API_FOOTBALL_KEY`
-(Settings > Secrets and variables > Actions). Without it, the other sources still update.
+API-Football needs a key saved as the secret `API_FOOTBALL_KEY` in the `prod`
+environment (Settings > Environments > prod). Only the scheduled data job uses that
+environment, and it makes about 12 calls a week: 2 per run for fixtures, plus odds
+once per match. Pull-request checks never use the key. Without it, the other
+sources still update.
 
 ## Running locally
 
