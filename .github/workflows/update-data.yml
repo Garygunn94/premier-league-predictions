@@ -35,6 +35,8 @@ jobs:
         run: python -m plpred.update ${{ inputs.steps }}
       - name: Predict the coming round
         run: python -m plpred.predict
+      - name: Refresh our record
+        run: python -m plpred.backtest
       - name: Commit changes
         if: always()
         run: |

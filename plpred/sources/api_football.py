@@ -6,6 +6,8 @@ time we see it (so about 12 a week). Injuries come from the free FPL feed instea
 """
 import logging
 import os
+import re
+from pathlib import Path
 
 import pandas as pd
 
@@ -58,7 +60,31 @@ def fixtures_frame(raw: list[dict]) -> pd.DataFrame:
         "away_team": teams.canonical(f["teams"]["away"]["name"]),
         "home_goals": f["goals"]["home"],
         "away_goals": f["goals"]["away"],
+        "home_logo": f["teams"]["home"].get("logo"),
+        "away_logo": f["teams"]["away"].get("logo"),
     } for f in raw])
+
+
+def save_badges(fixtures: pd.DataFrame, folder: Path) -> int:
+    """Download each club's crest once. Images come from API-Football's media server,
+    which does not count towards the daily request limit."""
+    folder.mkdir(parents=True, exist_ok=True)
+    s = session()
+    saved = 0
+    for side in ("home", "away"):
+        for team, url in zip(fixtures[f"{side}_team"], fixtures.get(f"{side}_logo", [])):
+            path = folder / f"{badge_name(team)}.png"
+            if path.exists() or not isinstance(url, str) or not url:
+                continue
+            resp = s.get(url, timeout=30)
+            if resp.ok and resp.headers.get("content-type", "").startswith("image/"):
+                path.write_bytes(resp.content)
+                saved += 1
+    return saved
+
+
+def badge_name(team: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "-", team.lower()).strip("-")
 
 
 def odds_frame(raw: list[dict]) -> pd.DataFrame:

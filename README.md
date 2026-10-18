@@ -69,6 +69,18 @@ top two outcomes are labelled "too close to call".
 `python -m plpred.predict --replay 2026-10-05` re-predicts a past week from
 earlier results only (without team news), which is handy for checking the output.
 
+## The site
+
+`python -m plpred.site` builds The Backpage into `site/` from the newest predictions:
+a front page (match of the week, the rest of the round, charts, our record, last
+week's verdict and the table) and a breakdown page for every match. It follows the
+approved newspaper design, works on phones and has light and dark modes. Club crests
+are saved from API-Football into `data/badges/`.
+
+The **Publish site** workflow builds and deploys it to GitHub Pages after every data
+update and every push to `main`. GitHub Pages must be set to deploy from GitHub
+Actions (Settings > Pages > Source).
+
 ## Running locally
 
 ```sh
@@ -77,6 +89,7 @@ python -m plpred.update            # all sources
 python -m plpred.update history    # or just some: xg, history, fpl, fixtures
 python -m plpred.backtest         # replay past weeks and score the model
 python -m plpred.predict          # predict the coming round, with reasons
+python -m plpred.site             # build the site into site/
 python -m pytest
 ```
 
@@ -84,6 +97,6 @@ python -m pytest
 
 1. Data pipeline
 2. Team-strength model (Dixon-Coles) with a back-test
-3. Ranked reasons for each call (this step)
-4. The backpage site on GitHub Pages
+3. Ranked reasons for each call
+4. The backpage site on GitHub Pages (this step)
 5. Weekly automation and a season scorecard

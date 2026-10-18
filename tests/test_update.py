@@ -22,6 +22,7 @@ def test_odds_fetched_once_per_fixture(tmp_path, monkeypatch):
         return pd.DataFrame({"fixture_id": ids, "odds_home": 2.0, "odds_draw": 3.4, "odds_away": 3.8})
 
     monkeypatch.setattr(api_football, "odds", fake_odds)
+    monkeypatch.setattr(api_football, "save_badges", lambda f, folder: 0)
 
     update.update_fixtures(tmp_path)
     update.update_fixtures(tmp_path)
