@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% from "macros.html" import badge, split, wordmark with context %}
+{% block title %}Inkwell &amp; Algorithm: data-driven Premier League predictions{% endblock %}
+{% block masthead %}
+<header>
+<div class="dateline lab">
+<span>{{ built }}</span>
+<span>Premier League {{ latest.season }}</span>
+<span class="accent">Latest: Matchweek {{ latest.matchweek }}</span>
+</div>
+<h1 class="masthead disp"><a href="{{ root }}/index.html">{{ wordmark() }}</a></h1>
+<p class="tagline">Data-driven Premier League predictions, with the reasons. New every Thursday.</p>
+<nav class="sections" aria-label="Sections">
+<ul class="lab">
+<li><a href="{{ root }}/matchweek/{{ latest.matchweek }}/index.html" class="accent">This week's calls</a></li>
+<li><a href="#how">How it works</a></li>
+<li><a href="#data">The data</a></li>
+{% if record %}<li><a href="#record">Our record</a></li>{% endif %}
+<li><a href="#archive">Every matchweek</a></li>
+</ul>
+</nav>
+{% if replay %}<p class="banner">No fixtures have been fetched yet, so the matchweek below replays a past week to show how the site will look. Live calls start after the next weekly update.</p>{% endif %}
+</header>
+{% endblock %}
+
+{% block method %}<div class="grow"><p class="body" style="font-size:16px;line-height:1.6">Inkwell &amp; Algorithm is an independent project and is not affiliated with the Premier League or any club.</p></div>
+{% endblock %}
+
+{% block content %}
+<section id="about" class="sec row">
+<article class="grow">
+<div class="kicker lab">What this is</div>
+<h2 class="lead-h disp" style="font-style:italic">Every Premier League match, called and explained</h2>
+<p class="standfirst">Inkwell &amp; Algorithm puts the back pages and the spreadsheet side by side. Every week a statistical model calls each Premier League match as a home win, a draw or an away win, gives the most likely score, and sets out the reasons in plain English with the numbers behind them.</p>
+<p class="body" style="font-size:17px;line-height:1.6">We care more about <em>why</em> than about the percentage. Each call is broken down into the handful of things that moved it, such as one side's attack, the other's defence or a missing striker, and those steps always add up to our number. We check every call against the bookmakers and publish our record, good weeks and bad. It is analysis, not betting advice.</p>
+</article>
+<aside class="side">
+{% set g = latest.lead %}
+<div class="homebox">
+<div class="kicker lab">Matchweek {{ latest.matchweek }} · from {{ latest.first_kickoff }}</div>
+<p class="feature-h disp" style="margin-top:10px"><a href="{{ root }}/matchweek/{{ latest.matchweek }}/{{ g.slug }}.html" style="text-decoration:none">{{ g.headline }}</a></p>
+<p class="body" style="font-size:16px;line-height:1.5">Our match of the week: {{ 'a draw' if g.call == 'D' else g.call_long }}, {{ g.score_text }}.</p>
+{{ split(g, thin=true) }}
+<p class="lab" style="font-size:12px;font-weight:600;margin-top:6px;display:flex;justify-content:space-between"><span>{{ g.home_short }} {{ g.h }}%</span><span>Draw {{ g.d }}%</span><span>{{ g.away_short }} {{ g.a }}%</span></p>
+<p style="margin-top:20px"><a class="cta lab" href="{{ root }}/matchweek/{{ latest.matchweek }}/index.html">All {{ latest.views|length }} calls this week</a></p>
+</div>
+</aside>
+</section>
+
+<section id="how" class="sec">
+<h2 class="sec-title disp" style="margin-bottom:24px">How it works</h2>
+<ol class="steps">
+<li><span class="step-n disp">1</span><h3 class="lab small-head">Collect</h3><p class="body">Results, expected goals, bookmakers' odds and team news for this season and the two before it. Nothing older, because squads and managers change too much.</p></li>
+<li><span class="step-n disp">2</span><h3 class="lab small-head">Rate</h3><p class="body">Every team gets an attack and a defence rating. Recent games count most, and the ratings blend real goals with expected goals (xG), which measures the quality of the chances a team makes and gives up.</p></li>
+<li><span class="step-n disp">3</span><h3 class="lab small-head">Call</h3><p class="body">The two teams' ratings give each side's expected goals, which become win, draw and loss chances and the single most likely score. When neither side is a clear favourite we say it is too close to call.</p></li>
+<li><span class="step-n disp">4</span><h3 class="lab small-head">Explain</h3><p class="body">We break each call into the factors that moved it the most, show it next to the bookmakers' view, and say what would change our mind. After the weekend we mark every call right or wrong.</p></li>
+</ol>
+</section>
+
+<section id="data" class="sec">
+<h2 class="sec-title disp" style="margin-bottom:8px">Where the data comes from</h2>
+<p class="body" style="font-size:17px;line-height:1.6;margin-bottom:20px">All free, public sources, refreshed every Thursday and Saturday.</p>
+<div class="scroll">
+<table class="sources">
+<thead><tr><th class="lab">Source</th><th class="lab">What we take from it</th></tr></thead>
+<tbody>
+<tr><td><a href="https://www.football-data.co.uk/englandm.php">football-data.co.uk</a></td><td>Every result, with shots, corners and cards, plus the bookmakers' odds we compare ourselves with, for the last three seasons.</td></tr>
+<tr><td><a href="https://understat.com/league/EPL">Understat</a></td><td>Expected goals (xG) for both sides of every match.</td></tr>
+<tr><td><a href="https://fantasy.premierleague.com/">Fantasy Premier League</a></td><td>Team news: injuries, suspensions and doubts, and which players a side relies on most.</td></tr>
+<tr><td><a href="https://www.api-football.com/">API-Football</a></td><td>The coming fixtures and kick-off times, pre-match odds and the club crests.</td></tr>
+</tbody>
+</table>
+</div>
+<p class="muted" style="font-size:14px;margin-top:12px">Club crests belong to their clubs. The code behind the site is <a href="https://github.com/Garygunn94/premier-league-predictions">open on GitHub</a>.</p>
+</section>
+
+{% if record %}
+<section id="record" class="sec row">
+<div class="grow">
+<h2 class="sec-title disp" style="margin-bottom:12px">Our record this season</h2>
+<p class="body" style="font-size:17px;line-height:1.6">{{ record.right }} of {{ record.n }} results right{% if record.fav_rate is not none %}, against {{ record.fav_rate }}% for simply backing the bookmakers' favourite{% endif %}.{% if record.disagree.n %} When we disagreed with the bookmakers ({{ record.disagree.n }} {{ 'game' if record.disagree.n == 1 else 'games' }}), we were right {{ record.disagree.us }} {{ 'time' if record.disagree.us == 1 else 'times' }} and they were right {{ record.disagree.fav }}.{% endif %}</p>
+<p class="muted" style="font-size:14px;margin-top:8px">The record replays the model week by week using only results known before each game, without team news.</p>
+</div>
+<div class="side" style="display:flex;gap:32px">
+<div><div class="big-num disp">{{ record.rate }}%</div><div class="muted" style="font-size:15px;margin-top:4px">results right</div></div>
+{% if record.fav_rate is not none %}<div><div class="big-num disp muted">{{ record.fav_rate }}%</div><div class="muted" style="font-size:15px;margin-top:4px">bookmakers'<br>favourite</div></div>{% endif %}
+</div>
+</section>
+{% endif %}
+
+<section id="archive" class="sec">
+<h2 class="sec-title disp" style="margin-bottom:16px">Every matchweek</h2>
+<ul class="archive">
+{% for w in weeks %}
+<li><a href="{{ root }}/matchweek/{{ w.matchweek }}/index.html"><span class="lab aw-num">Matchweek {{ w.matchweek }}</span><span class="aw-head disp">{{ w.lead.headline }}</span><span class="lab muted aw-date">{{ w.season }} · from {{ w.first_kickoff }}{% if w.replay %} · replay{% endif %}</span></a></li>
+{% endfor %}
+</ul>
+</section>
+{% endblock %}

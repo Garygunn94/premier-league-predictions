@@ -54,7 +54,7 @@ def fit_x(text: str, link: str = "") -> str:
 
 
 def match_url(v: dict) -> str:
-    return f"{SITE_URL}match/{v['slug']}.html"
+    return f"{SITE_URL}{v['path']}"
 
 
 def match_post(v: dict) -> str:
