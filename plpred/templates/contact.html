@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% from "macros.html" import page_head with context %}
+{% block masthead %}{{ page_head("Contact", root, latest, built) }}{% endblock %}
+{% block content %}
+<section class="sec">
+<div class="kicker lab">Get in touch</div>
+<h2 class="lead-h disp" style="font-style:italic">Contact us</h2>
+<p class="standfirst">Inkwell &amp; Algorithm is an independent, one-person project run by Gary, a football fan who likes data. It isn't a company and isn't affiliated with the Premier League, any club or any bookmaker.</p>
+{% if contact_email %}<p class="body" style="font-size:17px;line-height:1.6">The best way to reach us is by email: <a href="mailto:{{ contact_email }}">{{ contact_email }}</a>. You can also send a message on <a href="https://x.com/InkwellAlgo">X @InkwellAlgo</a> or <a href="https://www.instagram.com/inkwellandalgorithm/">Instagram @inkwellandalgorithm</a>.</p>
+{% else %}<p class="body" style="font-size:17px;line-height:1.6">The best way to reach us is a direct message on <a href="https://x.com/InkwellAlgo">X @InkwellAlgo</a> or <a href="https://www.instagram.com/inkwellandalgorithm/">Instagram @inkwellandalgorithm</a>.</p>
+{% endif %}
+<h3 class="lab small-head" style="margin-top:28px">Spotted a mistake?</h3>
+<p class="body" style="font-size:17px;line-height:1.6">Tell us. A wrong result or a misspelt name gets fixed and noted. A call itself is never changed after it's published: that's the point of our <a href="{{ root }}/record/#proof">record</a>.</p>
+<h3 class="lab small-head" style="margin-top:28px">Rights holders</h3>
+<p class="body" style="font-size:17px;line-height:1.6">Club crests and names belong to their clubs, and data belongs to the sources we credit. If you own something on this site and want it changed or taken down, get in touch and we'll act on it promptly.</p>
+<p class="body" style="font-size:17px;line-height:1.6;margin-top:20px">See also our <a href="{{ root }}/privacy/">privacy notice</a> and <a href="{{ root }}/terms/">terms of use</a>.</p>
+</section>
+{% endblock %}

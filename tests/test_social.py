@@ -73,8 +73,10 @@ def test_kit_emails_carry_captions_and_images(tmp_path, monkeypatch):
     fake_render(kit)
     folders = social.ready_to_post(kit)
     msgs = social.kit_emails(kit, "me@example.com", "me@example.com")
-    assert len(msgs) == len(folders)
-    first = msgs[0]
+    assert len(msgs) == len(folders) + 1
+    picks = msgs[0].get_content()
+    assert msgs[0]["Subject"].endswith("Superbru picks") and "Strong " in picks and " Weak" in picks
+    first = msgs[1]
     assert first["Subject"].startswith("Matchweek ") and f"1 of {len(folders)} · Thursday" in first["Subject"]
     body = first.get_body(("plain",)).get_content()
     assert "INSTAGRAM" in body and "---- X ----" in body

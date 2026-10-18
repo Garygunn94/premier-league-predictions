@@ -10,7 +10,7 @@ test), the projected final table in table/ (see plpred.simulate), the FPL corner
 (see plpred.fantasy), a page per club in club/<name>/, us against the pundits in pundits/
 (see plpred.pundits), and the posting kit for social media and the weekly newsletter in
 social/ for the newest week (see plpred.social). It also writes sitemap.xml, an Atom feed
-of the matchweeks (feed.xml), robots.txt and a 404 page. Every page has a search title, a
+of the matchweeks (feed.xml), robots.txt, a 404 page, and contact/, privacy/ and terms/. Every page has a search title, a
 description, a canonical address and schema.org structured data (see page_meta).
 
 Optional settings, read from the environment (the Publish site workflow passes them from
@@ -18,6 +18,7 @@ the repository's Actions variables):
     SITE_URL        the site's public address, for share previews, the sitemap and the feed
     GOATCOUNTER     a GoatCounter site code, to count visits (no cookies, no banner)
     NEWSLETTER_URL  the newsletter's sign-up page, for the sign-up link in every footer
+    CONTACT_EMAIL   the address on the contact page (without it, the page points to X and Instagram)
 """
 import argparse
 import json
@@ -33,7 +34,7 @@ import numpy as np
 import pandas as pd
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from plpred import explain, fantasy, luck, model, pundits, seasons, simulate, social
+from plpred import explain, fantasy, luck, model, proof, pundits, seasons, simulate, social
 from plpred.predict import load_settings
 from plpred.sources import api_football
 
@@ -41,6 +42,8 @@ log = logging.getLogger("plpred.site")
 ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "data"
 TEMPLATES = Path(__file__).resolve().parent / "templates"
+# Change this when the wording of the privacy notice or terms changes.
+POLICY_DATE = "18 October 2026"
 CALL_NAMES = {"H": "Home win", "D": "Draw", "A": "Away win"}
 SHORT = {"Man United": "Man Utd", "Nott'm Forest": "Forest", "Crystal Palace": "Palace",
          "Bournemouth": "B'mouth", "Aston Villa": "Villa", "Tottenham": "Spurs", "Brighton": "Brighton"}
@@ -639,6 +642,8 @@ def build(data: Path, out: Path) -> Path:
         "site_url": site_url,
         "goatcounter": os.environ.get("GOATCOUNTER", "").strip(),
         "newsletter_url": os.environ.get("NEWSLETTER_URL", "").strip(),
+        "contact_email": os.environ.get("CONTACT_EMAIL", "").strip(),
+        "policy_date": POLICY_DATE,
         "clubs": {t["team"]: club_slug(t["team"]) for t in latest["table"]},
     }
     env = Environment(loader=FileSystemLoader(TEMPLATES), autoescape=select_autoescape(["html"]),
@@ -655,6 +660,7 @@ def build(data: Path, out: Path) -> Path:
         common["badges"] = {t: f"{api_football.badge_name(t)}.png" for t in teams
                             if (badge_dir / f"{api_football.badge_name(t)}.png").exists()}
     written, indexed = [], []
+    proofs = proof.proofs(data)
 
     def write(path: str, template: str, meta: dict, root: str | None = None, **ctx) -> None:
         target = out / path
@@ -679,7 +685,8 @@ def build(data: Path, out: Path) -> Path:
                     "Every chance we've given, checked against what happened, and our public test.",
                     search_title="Premier League prediction record: are our percentages right?",
                     crumbs=[("Our record", "record/")]),
-          record=latest["record"], cal=luck.calibration(data, matches), prereg=luck.preregistered(data, matches))
+          record=latest["record"], cal=luck.calibration(data, matches), prereg=luck.preregistered(data, matches),
+          proofs=proofs)
     if sim:
         write("table/index.html", "projection.html",
               page_meta("table/index.html", f"How the {season_label} season ends: {sim['runs']:,} simulations",
@@ -743,11 +750,21 @@ def build(data: Path, out: Path) -> Path:
                             search_title=f"{v['home_team']} v {v['away_team']} prediction: {call} {v['score_text']}",
                             crumbs=week_crumbs + [(f"{v['home_team']} v {v['away_team']}", v["path"])],
                             ld=[match_event(v, site_url)]), **ctx, g=v)
+    for path, template, title, desc in [
+            ("contact", "contact.html", "Contact us", "How to reach Inkwell & Algorithm, report a mistake or "
+             "ask for something to be changed."),
+            ("privacy", "privacy.html", "Privacy notice", "What Inkwell & Algorithm knows about its readers: "
+             "no accounts, no ads, no tracking cookies."),
+            ("terms", "terms.html", "Terms of use", "Inkwell & Algorithm's terms of use: analysis, not "
+             "betting advice, and how to share our work.")]:
+        write(f"{path}/index.html", template,
+              page_meta(f"{path}/index.html", title, desc, search_title=title,
+                        crumbs=[(title, f"{path}/")]))
     # GitHub Pages serves 404.html at whatever address was missing, so its links can't be relative.
     write("404.html", "missing.html", {**page_meta("404.html", "Page not found", tagline), "noindex": True},
           root=site_url.rstrip("/"))
     write_old_addresses(out, weeks, site_url)
-    social.build_kit({**latest, **common, "fpl": fpl}, latest["views"], env, out / "social")
+    social.build_kit({**latest, **common, "fpl": fpl, "proof": next((p for p in proofs if not p["after_kickoff"]), None)}, latest["views"], env, out / "social")
     write_extras(out, weeks, indexed, site_url, built)
     (out / ".nojekyll").write_text("")
     log.info("Built %d pages for %d matchweeks into %s (%s)", len(written), len(weeks), out,

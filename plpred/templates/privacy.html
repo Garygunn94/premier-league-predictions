@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% from "macros.html" import page_head with context %}
+{% block masthead %}{{ page_head("Privacy", root, latest, built) }}{% endblock %}
+{% block content %}
+<section class="sec">
+<div class="kicker lab">Privacy notice · updated {{ policy_date }}</div>
+<h2 class="lead-h disp" style="font-style:italic">What we know about you: almost nothing</h2>
+<p class="standfirst">This site has no accounts, no ads, no tracking cookies and no comments. We don't collect your name or email address unless you choose to send them to us, and we never sell or share anything.</p>
+<h3 class="lab small-head" style="margin-top:28px">Visit counting</h3>
+{% if goatcounter %}<p class="body" style="font-size:17px;line-height:1.6">We count visits with <a href="https://www.goatcounter.com/help/privacy">GoatCounter</a>, so we know which pages people read. It sets no cookies and doesn't store your IP address or anything else that identifies you; it keeps the page, where you came from, and your browser, screen size and country.</p>
+{% else %}<p class="body" style="font-size:17px;line-height:1.6">We don't count visits at the moment.</p>
+{% endif %}
+<h3 class="lab small-head" style="margin-top:28px">The companies that serve the site</h3>
+<p class="body" style="font-size:17px;line-height:1.6">The site is hosted by <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement">GitHub Pages</a>, which logs visitors' IP addresses to keep the service running and secure. The fonts come from <a href="https://policies.google.com/privacy">Google Fonts</a>, so your browser sends your IP address to Google when it loads them. Their own privacy statements apply.</p>
+<h3 class="lab small-head" style="margin-top:28px">Stored in your browser</h3>
+<p class="body" style="font-size:17px;line-height:1.6">If you press the light/dark button, your browser remembers your choice. It stays on your device and we never see it.</p>
+{% if newsletter_url %}<h3 class="lab small-head" style="margin-top:28px">The newsletter</h3>
+<p class="body" style="font-size:17px;line-height:1.6">If you sign up, the newsletter service holds your email address under its own privacy policy, and we use it only to send the newsletter. Every email has an unsubscribe link.</p>
+{% endif %}
+<h3 class="lab small-head" style="margin-top:28px">If you contact us</h3>
+<p class="body" style="font-size:17px;line-height:1.6">We use what you send only to reply, and delete it when it's no longer needed. Under UK and EU data protection law you can ask to see, correct or delete anything we hold about you. <a href="{{ root }}/contact/">Contact us</a> to do that, and you can complain to the <a href="https://ico.org.uk/make-a-complaint/">Information Commissioner's Office</a> or your local regulator.</p>
+</section>
+{% endblock %}
