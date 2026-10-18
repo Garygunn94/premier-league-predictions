@@ -328,22 +328,77 @@ def biggest_miss(rec: dict | None, matches: pd.DataFrame) -> dict | None:
     called = {"H": f"{r['home_team']} to win", "A": f"{r['away_team']} to win", "D": "a draw"}[r["call_code"]]
     out = {**r, "called": called}
     hx, ax = (m.iloc[0].home_xg, m.iloc[0].away_xg) if len(m) else (np.nan, np.nan)
-    if np.isnan(hx) or np.isnan(ax):
-        out.update(kind="No xG yet", text="We don't have the expected goals for this one yet, so the jury is out.")
-        return out
+    out.update(xg_story(r["home_team"], r["away_team"], r["call_code"], r["result_code"], hx, ax))
+    return out
+
+
+def xg_story(home: str, away: str, call: str, result: str, hx: float, ax: float) -> dict:
+    """Whether the chances (xG) backed our call, the result, both or neither."""
+    if pd.isna(hx) or pd.isna(ax):
+        return {"kind": "No xG yet", "text": "We don't have the expected goals for this one yet, so the jury is out."}
     margin = hx - ax
     xg_side = "H" if margin > 0.35 else "A" if margin < -0.35 else "D"
-    xg = f"{r['home_team']} {hx:.1f}, {r['away_team']} {ax:.1f}"
-    if xg_side == r["call_code"]:
-        out.update(kind="Unlucky", text=f"The chances backed our call (xG: {xg}). On another day this lands, "
-                                        "so it doesn't change how we rate either side much.")
-    elif xg_side == r["result_code"]:
-        out.update(kind="Our mistake", text=f"The chances went the way of the result too (xG: {xg}). "
-                                            "We misread this one, and the ratings will move to reflect it.")
-    else:
-        out.update(kind="Somewhere in between", text=f"The chances pointed to neither our call nor the result "
-                                                     f"(xG: {xg}). A closer game than either the score or we suggested.")
-    return out
+    xg = f"{home} {hx:.1f}, {away} {ax:.1f}"
+    if call == result:
+        if xg_side == call:
+            return {"kind": "Deserved", "text": f"The chances backed it too (xG: {xg}), so this one wasn't luck."}
+        return {"kind": "A bit lucky", "text": f"The result went our way, but the chances were closer than that "
+                                               f"(xG: {xg}). We'll take it, but it doesn't prove much."}
+    if xg_side == call:
+        return {"kind": "Unlucky", "text": f"The chances backed our call (xG: {xg}). On another day this lands, "
+                                           "so it doesn't change how we rate either side much."}
+    if xg_side == result:
+        return {"kind": "Our mistake", "text": f"The chances went the way of the result too (xG: {xg}). "
+                                               "We misread this one, and the ratings will move to reflect it."}
+    return {"kind": "Somewhere in between", "text": f"The chances pointed to neither our call nor the result "
+                                                    f"(xG: {xg}). A closer game than either the score or we suggested."}
+
+
+def outcome(home_goals: int, away_goals: int) -> str:
+    return "H" if home_goals > away_goals else "A" if home_goals < away_goals else "D"
+
+
+def round_results(weeks: list[dict], matches: pd.DataFrame, data: Path) -> dict | None:
+    """How the calls we published did, for the newest matchweek with any results. Results come from
+    football-data.co.uk, or from this round's FPL scores until football-data catches up (no xG then)."""
+    fixtures_path = data / "upcoming" / "fixtures.csv"
+    fpl = pd.read_csv(fixtures_path) if fixtures_path.exists() else pd.DataFrame()
+    if len(fpl):
+        fpl = fpl[fpl.status.isin(["FT", "AET", "PEN"])]
+    for w in reversed(weeks):
+        season = int(w["season"][:4])
+        rows = []
+        for v in w["views"]:
+            ko = pd.Timestamp(v["kickoff"])
+            day = (ko.tz_convert("Europe/London").tz_localize(None) if ko.tzinfo else ko).normalize()
+            m = matches[(matches.season == season) & (matches.home_team == v["home_team"])
+                        & (matches.away_team == v["away_team"]) & ((matches.date - day).abs() <= pd.Timedelta(days=2))]
+            if len(m):
+                hg, ag, hx, ax = int(m.iloc[0].home_goals), int(m.iloc[0].away_goals), m.iloc[0].home_xg, m.iloc[0].away_xg
+            else:
+                f = fpl[(fpl.home_team == v["home_team"]) & (fpl.away_team == v["away_team"])] if len(fpl) else fpl
+                if not len(f):
+                    continue
+                hg, ag, hx, ax = int(f.iloc[0].home_goals), int(f.iloc[0].away_goals), np.nan, np.nan
+            result = outcome(hg, ag)
+            exact = [hg, ag] == list(v["score"])
+            fav = max(v["mkt"], key=v["mkt"].get) if v["mkt"] else None
+            rows.append({"g": v, "result_code": result, "result_text": f"{hg}–{ag}", "right": result == v["call"],
+                         "exact": exact, "fav_right": None if fav is None else fav == result,
+                         "verdict": "Exact score" if exact else "Right result" if result == v["call"] else "Wrong",
+                         "xg": None if pd.isna(hx) or pd.isna(ax) else f"{hx:.1f}–{ax:.1f}",
+                         **xg_story(v["home_team"], v["away_team"], v["call"], result, hx, ax)})
+        if not rows:
+            continue
+        live = [r for r in rows if not r["g"].get("after_kickoff")]
+        late = [r for r in rows if r["g"].get("after_kickoff")]
+        priced = [r for r in rows if r["fav_right"] is not None]
+        return {"matchweek": w["matchweek"], "season": w["season"], "rows": rows, "n": len(rows),
+                "of": len(w["views"]), "right": sum(r["right"] for r in rows), "exact": sum(r["exact"] for r in rows),
+                "fav_n": len(priced), "fav_right": sum(r["fav_right"] for r in priced),
+                "live_n": len(live), "live_right": sum(r["right"] for r in live),
+                "late_n": len(late), "late_right": sum(r["right"] for r in late)}
+    return None
 
 
 def league_table(matches: pd.DataFrame, season: int) -> list[dict]:
@@ -567,6 +622,7 @@ def build(data: Path, out: Path) -> Path:
     latest["deserved"] = luck.deserved_table(matches, season)
     latest["table_date"] = matches.date.max().strftime("%d %B")
     latest["sim_moves"] = simulate.headline_moves(sim) if sim else []
+    latest["results"] = round_results(weeks, matches, data)
     known = matches[matches.date < latest["as_of"]]
     ratings = model.fit(known, as_of=latest["as_of"], settings=settings)
     fpl = {"this_week": fantasy.this_week(latest["views"], settings.rho),

@@ -181,6 +181,33 @@ def captions(ctx: dict, views: list[dict]) -> dict:
     return out
 
 
+def results_captions(res: dict) -> dict:
+    """The round's results post and one verdict post per game, scored on the calls we published."""
+    mw = res["matchweek"]
+    fav = f" The bookies' favourite got {res['fav_right']} of {res['fav_n']}." if res["fav_n"] else ""
+    exact = f", {res['exact']} exact {'score' if res['exact'] == 1 else 'scores'}" if res["exact"] else ""
+    late = (f"\n{res['late_n']} were called after kick-off from pre-round data ({res['late_right']} right), so they "
+            f"aren't in our record." if res["late_n"] else "")
+    body = f"Matchweek {mw}: {res['right']} of {res['n']} results right{exact}.{fav}{late}"
+    lines = "\n".join(f"{r['g']['home_team']} {r['result_text']} {r['g']['away_team']}: we said "
+                      f"{call_phrase(r['g']).removeprefix('a ')} ({r['g']['our_p']}%), "
+                      f"{'right' if r['right'] else 'wrong'}" for r in res["rows"])
+    out = {"results_x": with_link(fit_x(body, X_TAG), SITE_URL, "Every call, right or wrong:"),
+           "results_instagram": f"{body}\n\n{lines}\n\nWe publish every call, right or wrong. Swipe for each game.\n\n"
+                                f"{HASHTAGS} #DataViz", "verdicts": {}}
+    for r in res["rows"]:
+        v = r["g"]
+        said = (f"Before the round, the model would have said {call_phrase(v).removeprefix('a ')} ({v['our_p']}%)"
+                if v.get("after_kickoff") else f"We said {call_phrase(v).removeprefix('a ')} ({v['our_p']}%)")
+        post = f"{v['home_team']} {r['result_text']} {v['away_team']}\n{said}. {r['verdict']}."
+        if r["xg"]:
+            post += f"\n{r['kind']}: {r['text']}"
+        out["verdicts"][v["slug"]] = {
+            "x": [fit_x(post, match_tag(v)), f"The full breakdown: {match_url(v)}"],
+            "instagram": f"{post}\n\n#PremierLeague {club_tag(v['home_team'])} {club_tag(v['away_team'])} #xG"}
+    return out
+
+
 def extra_captions(ctx: dict) -> dict:
     """Captions for the projection, the FPL corner and the biggest miss, when the site has them."""
     out = {}
@@ -274,6 +301,9 @@ def build_kit(ctx: dict, views: list[dict], env: Environment, out: Path) -> Path
     card = env.get_template("social_card.html")
     base = {**ctx, "brand": BRAND, "handle": HANDLE, "ig_handle": IG_HANDLE, "size": SIZE, "root": "../.."}
     cap = {**captions(ctx, views), **extra_captions(ctx)}
+    res = ctx.get("results")
+    if res:
+        cap.update(results_captions(res))
     feature = next(v for v in views if v["slug"] == cap["friday_slug"])
     cards = [{"name": "round", "kind": "round", "title": f"Matchweek {ctx['matchweek']}: all the calls", "day": "Thursday"}]
     carousels = {v["slug"]: carousel(v) for v in views}
@@ -281,6 +311,11 @@ def build_kit(ctx: dict, views: list[dict], env: Environment, out: Path) -> Path
         cards += carousels[v["slug"]]
     if ctx["record"]:
         cards.append({"name": "scorecard", "kind": "scorecard", "day": "Monday", "title": "Last week's scorecard"})
+    if res:
+        cards += [{"name": "results", "kind": "results", "day": "Monday", "title": f"Matchweek {res['matchweek']}: the results"},
+                  {"name": "results-list", "kind": "results-list", "day": "Monday", "title": "Every call against the result"}]
+        cards += [{"name": f"verdict-{r['g']['slug']}", "kind": "verdict", "g": r["g"], "r": r, "day": "Monday",
+                   "title": f"The verdict: {r['g']['home_team']} v {r['g']['away_team']}"} for r in res["rows"]]
     if "miss_x" in cap:
         cards.append({"name": "miss", "kind": "miss", "day": "Monday", "title": "What we got wrong"})
     if "projection_x" in cap:
@@ -315,7 +350,18 @@ def build_kit(ctx: dict, views: list[dict], env: Environment, out: Path) -> Path
         days.insert(1, {"day": "Thursday, later", "when": "Before the FPL deadline", "x": cap["fpl_x"],
                         "instagram": cap["fpl_instagram"], "cards": [c for c in cards if c["kind"] == "fpl"],
                         "how": "For Fantasy Premier League players. Post it a few hours after the main thread."})
-    if "monday_x" in cap:
+    if res:
+        days.append({"day": "Monday", "when": f"Matchweek {res['matchweek']}: the results", "x": cap["results_x"],
+                     "instagram": cap["results_instagram"],
+                     "cards": [c for c in cards if c["kind"] in ("results", "results-list", "scorecard")],
+                     "how": "Post all three slides as one Instagram carousel. On X, attach the first two and put "
+                            "the link in the first reply. The game-by-game verdicts follow below."})
+        days += [{"day": f"Result: {r['g']['home_team']} v {r['g']['away_team']}", "when": "Monday, after the results",
+                  "x": cap["verdicts"][r["g"]["slug"]]["x"], "instagram": cap["verdicts"][r["g"]["slug"]]["instagram"],
+                  "cards": [c for c in cards if c["name"] == f"verdict-{r['g']['slug']}"],
+                  "how": "One game's verdict. Space these out through Monday and Tuesday rather than posting "
+                         "them all at once."} for r in res["rows"]]
+    elif "monday_x" in cap:
         days.append({"day": "Monday", "when": "The scorecard", "x": cap["monday_x"],
                      "instagram": cap["monday_instagram"], "cards": [c for c in cards if c["kind"] == "scorecard"],
                      "how": "The site picks up results every morning, so use the kit from Monday's "

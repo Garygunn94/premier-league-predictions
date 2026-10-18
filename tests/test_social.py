@@ -82,3 +82,18 @@ def test_kit_emails_carry_captions_and_images(tmp_path, monkeypatch):
     assert names[0] == "01-round.png" and all(n.endswith(".png") for n in names)
     monkeypatch.delenv("KIT_EMAIL", raising=False)
     assert social.email_kit(kit) == 0
+
+
+def test_results_posts_score_the_published_calls(tmp_path):
+    import pandas as pd
+    data = make_data(tmp_path)
+    (data / "upcoming").mkdir()
+    pd.DataFrame({"fixture_id": [1], "status": ["FT"], "home_team": ["Strong"], "away_team": ["Weak"],
+                  "home_goals": [2], "away_goals": [0]}).to_csv(data / "upcoming" / "fixtures.csv", index=False)
+    kit = site.build(data, tmp_path / "site") / "social"
+    names = [c["name"] for c in json.loads((kit / "cards.json").read_text())]
+    assert {"results", "results-list", "verdict-strong-v-weak"} <= set(names)
+    assert "verdict-average-v-good" not in names  # not played yet
+    posts = {p["day"]: p for p in json.loads((kit / "posts.json").read_text())["posts"]}
+    assert "1 of 1 results right" in posts["Monday"]["instagram"]
+    assert posts["Result: Strong v Weak"]["x"][0].startswith("Strong 2–0 Weak\nWe said Strong win")
