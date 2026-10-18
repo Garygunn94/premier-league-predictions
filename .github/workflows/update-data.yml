@@ -33,6 +33,8 @@ jobs:
         env:
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
         run: python -m plpred.update ${{ inputs.steps }}
+      - name: Predict the coming round
+        run: python -m plpred.predict
       - name: Commit changes
         if: always()
         run: |

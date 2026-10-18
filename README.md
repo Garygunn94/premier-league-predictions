@@ -47,6 +47,28 @@ in `data/backtest/`. As of 18 Oct 2026:
 | 2025/26 (tuning) | 49.2% | 49.5% | 42.6% | 9.7% |
 | 2026/27 so far (unseen, 60 games) | 50.0% | 45.0% | 38.3% | 8.3% |
 
+## Reasons
+
+`python -m plpred.predict` turns this round's fixtures into
+`data/predictions/<date>.json`: for every match, the call, its chances against the
+bookmakers', likely scores, and why. The "why" has two parts:
+
+- **How we got there.** Each match is split into factors: each side's attack and
+  defence, and each side's team news. Starting from an average home side against an
+  average visitor, every factor's exact share of the final percentage is worked out
+  (Shapley values), so the steps always add up to our number.
+- **Reasons a reader can check:** recent xG home and away, form, finishing against
+  xG, key absences and head to head, plus a headline and what would change our mind.
+
+Team news comes from the FPL feed. A missing regular reduces his team's attack by
+half his share of its goal involvements, and a missing defender or keeper raises
+goals conceded a little. These weights are judgement calls, not fitted, because we
+have no history of who was missing when. Calls with less than 5 points between the
+top two outcomes are labelled "too close to call".
+
+`python -m plpred.predict --replay 2026-10-05` re-predicts a past week from
+earlier results only (without team news), which is handy for checking the output.
+
 ## Running locally
 
 ```sh
@@ -54,6 +76,7 @@ pip install -r requirements.txt
 python -m plpred.update            # all sources
 python -m plpred.update history    # or just some: xg, history, fpl, fixtures
 python -m plpred.backtest         # replay past weeks and score the model
+python -m plpred.predict          # predict the coming round, with reasons
 python -m pytest
 ```
 
@@ -61,6 +84,6 @@ python -m pytest
 
 1. Data pipeline
 2. Team-strength model (Dixon-Coles) with a back-test
-3. Ranked reasons for each call
+3. Ranked reasons for each call (this step)
 4. The backpage site on GitHub Pages
 5. Weekly automation and a season scorecard
