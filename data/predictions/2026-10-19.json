@@ -1,0 +1,301 @@
+{
+  "as_of": "2026-10-19",
+  "season": "2026/27",
+  "round": "Regular Season - 7",
+  "settings": {
+    "half_life_days": 180.0,
+    "xg_weight": 0.5,
+    "ridge": 1.0,
+    "rho": -0.13
+  },
+  "games": [
+    {
+      "home_team": "Tottenham",
+      "away_team": "Coventry",
+      "call": "H",
+      "call_name": "home win",
+      "confidence": "too close to call",
+      "probabilities": {
+        "H": 0.42,
+        "D": 0.309,
+        "A": 0.271
+      },
+      "market": {
+        "H": 0.643,
+        "D": 0.206,
+        "A": 0.151
+      },
+      "expected_goals": {
+        "home": 1.33,
+        "away": 1.02
+      },
+      "score": [
+        1,
+        0
+      ],
+      "top_scores": [
+        {
+          "score": [
+            1,
+            1
+          ],
+          "probability": 0.146
+        },
+        {
+          "score": [
+            0,
+            0
+          ],
+          "probability": 0.112
+        },
+        {
+          "score": [
+            1,
+            0
+          ],
+          "probability": 0.11
+        },
+        {
+          "score": [
+            2,
+            1
+          ],
+          "probability": 0.086
+        },
+        {
+          "score": [
+            2,
+            0
+          ],
+          "probability": 0.084
+        }
+      ],
+      "waterfall": {
+        "start": 39.9,
+        "start_label": "Average home side v average visitor",
+        "steps": [
+          {
+            "label": "Coventry's defence",
+            "detail": "Coventry concede 29% more than an average side",
+            "kind": "defence",
+            "team": "Coventry",
+            "change": 9.1,
+            "helps": "Tottenham"
+          },
+          {
+            "label": "Tottenham's defence",
+            "detail": "Tottenham concede 27% more than an average side",
+            "kind": "defence",
+            "team": "Tottenham",
+            "change": -5.6,
+            "helps": "Coventry"
+          },
+          {
+            "label": "Tottenham's attack",
+            "detail": "Tottenham create and score 12% less than an average side",
+            "kind": "attack",
+            "team": "Tottenham",
+            "change": -4.6,
+            "helps": "Coventry"
+          },
+          {
+            "label": "Coventry's attack",
+            "detail": "Coventry create and score 18% less than an average side",
+            "kind": "attack",
+            "team": "Coventry",
+            "change": 4.6,
+            "helps": "Tottenham"
+          },
+          {
+            "label": "Tottenham team news",
+            "detail": "Missing or doubtful: S\u00e1vio, Bentancur",
+            "kind": "news",
+            "team": "Tottenham",
+            "change": -2.6,
+            "helps": "Coventry"
+          },
+          {
+            "label": "Coventry team news",
+            "detail": "Missing or doubtful: Amenda",
+            "kind": "news",
+            "team": "Coventry",
+            "change": 1.2,
+            "helps": "Tottenham"
+          }
+        ],
+        "total": 42.0
+      },
+      "standings": {
+        "home": {
+          "position": 19,
+          "points": 3,
+          "played": 6
+        },
+        "away": {
+          "position": 14,
+          "points": 6,
+          "played": 6
+        }
+      },
+      "xg": {
+        "home": {
+          "games": 5,
+          "venue": "home",
+          "xg_for": 1.3,
+          "xg_against": 1.29,
+          "goals_for": 0.8,
+          "goals_against": 1.2
+        },
+        "away": {
+          "games": 3,
+          "venue": "away",
+          "xg_for": 0.92,
+          "xg_against": 1.79,
+          "goals_for": 0.33,
+          "goals_against": 1.33
+        }
+      },
+      "finishing": {
+        "home": {
+          "games": 6,
+          "goals": 3,
+          "xg": 7.9,
+          "difference": -4.9
+        },
+        "away": {
+          "games": 6,
+          "goals": 5,
+          "xg": 6.6,
+          "difference": -1.6
+        }
+      },
+      "form": {
+        "home": [
+          {
+            "result": "L",
+            "line": "Tottenham 0-2 Newcastle",
+            "date": "2026-08-29"
+          },
+          {
+            "result": "D",
+            "line": "Nott'm Forest 0-0 Tottenham",
+            "date": "2026-09-05"
+          },
+          {
+            "result": "D",
+            "line": "Tottenham 0-0 Everton",
+            "date": "2026-09-12"
+          },
+          {
+            "result": "L",
+            "line": "Tottenham 2-3 Aston Villa",
+            "date": "2026-09-19"
+          },
+          {
+            "result": "D",
+            "line": "Man United 1-1 Tottenham",
+            "date": "2026-10-10"
+          }
+        ],
+        "away": [
+          {
+            "result": "L",
+            "line": "Coventry 0-1 Hull",
+            "date": "2026-08-29"
+          },
+          {
+            "result": "L",
+            "line": "Man City 1-0 Coventry",
+            "date": "2026-09-05"
+          },
+          {
+            "result": "L",
+            "line": "Coventry 0-5 Brighton",
+            "date": "2026-09-13"
+          },
+          {
+            "result": "W",
+            "line": "Nott'm Forest 0-1 Coventry",
+            "date": "2026-09-19"
+          },
+          {
+            "result": "W",
+            "line": "Coventry 4-1 Newcastle",
+            "date": "2026-10-12"
+          }
+        ]
+      },
+      "head_to_head": [],
+      "team_news": [
+        {
+          "team": "Tottenham",
+          "player": "S\u00e1vio",
+          "position": "MID",
+          "status": "Injured",
+          "news": "Muscular injury - Expected back 7 Nov",
+          "impact": "Medium",
+          "share": 0.126
+        },
+        {
+          "team": "Tottenham",
+          "player": "Bentancur",
+          "position": "MID",
+          "status": "Suspended",
+          "news": "Suspended until 7 Nov",
+          "impact": "Small",
+          "share": 0.012
+        },
+        {
+          "team": "Coventry",
+          "player": "Amenda",
+          "position": "DEF",
+          "status": "Injured",
+          "news": "Calf injury - Unknown return date",
+          "impact": "Medium",
+          "share": 0.125
+        }
+      ],
+      "luck": {
+        "home": {
+          "games": 10,
+          "points": 10,
+          "xpts": 14.9,
+          "difference": -4.9
+        },
+        "away": {
+          "games": 6,
+          "points": 6,
+          "xpts": 5.9,
+          "difference": 0.1
+        }
+      },
+      "luck_gap": null,
+      "reasons": [
+        {
+          "topic": "Chances created and allowed",
+          "title": "Coventry are leaking chances away from home",
+          "text": "Expected goals (xG) measures the quality of chances. Over their last 5 home games Tottenham created 1.3 and allowed 1.3 a game. Over their last 3 away games Coventry created 0.9 and allowed 1.8."
+        },
+        {
+          "topic": "Team news",
+          "title": "Tottenham without S\u00e1vio",
+          "text": "Tottenham: S\u00e1vio (injured), Bentancur (suspended). Coventry: Amenda (injured)."
+        },
+        {
+          "topic": "Form",
+          "title": "Coventry arrive in better form",
+          "text": "Last five league games: Tottenham took 3 points, Coventry took 6."
+        },
+        {
+          "topic": "Results vs performance",
+          "title": "Tottenham's results undersell them by 5 points",
+          "text": "Tottenham have 10 points from their last 10 league games, but their chances were worth 15. We rate teams on their chances, so Tottenham get more credit than their results."
+        }
+      ],
+      "headline": "Nothing to split Tottenham and Coventry",
+      "change_our_mind": "If Coventry's defence were only average, this would swing to a draw (34%).",
+      "kickoff": "2026-10-19T19:00:00+00:00",
+      "venue": null
+    }
+  ]
+}

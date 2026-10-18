@@ -1,0 +1,2372 @@
+{
+  "as_of": "2026-10-17",
+  "season": "2026/27",
+  "round": "Regular Season - 7",
+  "settings": {
+    "half_life_days": 180.0,
+    "xg_weight": 0.5,
+    "ridge": 1.0,
+    "rho": -0.13
+  },
+  "games": [
+    {
+      "home_team": "Everton",
+      "away_team": "Chelsea",
+      "call": "H",
+      "call_name": "home win",
+      "confidence": "too close to call",
+      "probabilities": {
+        "H": 0.386,
+        "D": 0.27,
+        "A": 0.344
+      },
+      "market": {
+        "H": 0.299,
+        "D": 0.259,
+        "A": 0.442
+      },
+      "expected_goals": {
+        "home": 1.56,
+        "away": 1.47
+      },
+      "score": [
+        2,
+        1
+      ],
+      "top_scores": [
+        {
+          "score": [
+            1,
+            1
+          ],
+          "probability": 0.125
+        },
+        {
+          "score": [
+            2,
+            1
+          ],
+          "probability": 0.087
+        },
+        {
+          "score": [
+            1,
+            2
+          ],
+          "probability": 0.081
+        },
+        {
+          "score": [
+            2,
+            2
+          ],
+          "probability": 0.063
+        },
+        {
+          "score": [
+            0,
+            0
+          ],
+          "probability": 0.063
+        }
+      ],
+      "waterfall": {
+        "start": 39.9,
+        "start_label": "Average home side v average visitor",
+        "steps": [
+          {
+            "label": "Chelsea's defence",
+            "detail": "Chelsea concede 31% more than an average side",
+            "kind": "defence",
+            "team": "Chelsea",
+            "change": 9.9,
+            "helps": "Everton"
+          },
+          {
+            "label": "Chelsea's attack",
+            "detail": "Chelsea create and score 29% more than an average side",
+            "kind": "attack",
+            "team": "Chelsea",
+            "change": -6.5,
+            "helps": "Chelsea"
+          },
+          {
+            "label": "Everton's defence",
+            "detail": "Everton concede 14% more than an average side",
+            "kind": "defence",
+            "team": "Everton",
+            "change": -3.4,
+            "helps": "Chelsea"
+          },
+          {
+            "label": "Everton's attack",
+            "detail": "Everton create and score 3% less than an average side",
+            "kind": "attack",
+            "team": "Everton",
+            "change": -1.3,
+            "helps": "Chelsea"
+          }
+        ],
+        "total": 38.6
+      },
+      "standings": {
+        "home": {
+          "position": 5,
+          "points": 10,
+          "played": 6
+        },
+        "away": {
+          "position": 6,
+          "points": 10,
+          "played": 6
+        }
+      },
+      "xg": {
+        "home": {
+          "games": 5,
+          "venue": "home",
+          "xg_for": 1.62,
+          "xg_against": 1.38,
+          "goals_for": 1.8,
+          "goals_against": 1.6
+        },
+        "away": {
+          "games": 5,
+          "venue": "away",
+          "xg_for": 1.08,
+          "xg_against": 1.93,
+          "goals_for": 1.2,
+          "goals_against": 2.0
+        }
+      },
+      "finishing": {
+        "home": {
+          "games": 6,
+          "goals": 8,
+          "xg": 11.1,
+          "difference": -3.1
+        },
+        "away": {
+          "games": 6,
+          "goals": 15,
+          "xg": 10.3,
+          "difference": 4.7
+        }
+      },
+      "form": {
+        "home": [
+          {
+            "result": "D",
+            "line": "Bournemouth 1-1 Everton",
+            "date": "2026-08-29"
+          },
+          {
+            "result": "D",
+            "line": "Everton 2-2 Man United",
+            "date": "2026-09-06"
+          },
+          {
+            "result": "D",
+            "line": "Tottenham 0-0 Everton",
+            "date": "2026-09-12"
+          },
+          {
+            "result": "W",
+            "line": "Everton 1-0 Ipswich",
+            "date": "2026-09-19"
+          },
+          {
+            "result": "D",
+            "line": "Hull 2-2 Everton",
+            "date": "2026-10-11"
+          }
+        ],
+        "away": [
+          {
+            "result": "W",
+            "line": "Chelsea 4-3 Brighton",
+            "date": "2026-08-30"
+          },
+          {
+            "result": "L",
+            "line": "Arsenal 2-1 Chelsea",
+            "date": "2026-09-06"
+          },
+          {
+            "result": "D",
+            "line": "Chelsea 2-2 Hull",
+            "date": "2026-09-12"
+          },
+          {
+            "result": "L",
+            "line": "Brentford 3-0 Chelsea",
+            "date": "2026-09-18"
+          },
+          {
+            "result": "W",
+            "line": "Chelsea 5-1 Bournemouth",
+            "date": "2026-10-10"
+          }
+        ]
+      },
+      "head_to_head": [
+        {
+          "date": "2026-03-21",
+          "line": "Everton 3-0 Chelsea",
+          "margin": 3
+        },
+        {
+          "date": "2025-12-13",
+          "line": "Chelsea 2-0 Everton",
+          "margin": 2
+        },
+        {
+          "date": "2025-04-26",
+          "line": "Chelsea 1-0 Everton",
+          "margin": 1
+        },
+        {
+          "date": "2024-12-22",
+          "line": "Everton 0-0 Chelsea",
+          "margin": 0
+        }
+      ],
+      "team_news": [],
+      "luck": {
+        "home": {
+          "games": 10,
+          "points": 12,
+          "xpts": 14.1,
+          "difference": -2.1
+        },
+        "away": {
+          "games": 10,
+          "points": 14,
+          "xpts": 11.2,
+          "difference": 2.8
+        }
+      },
+      "luck_gap": 0.497,
+      "reasons": [
+        {
+          "topic": "Chances created and allowed",
+          "title": "Chelsea are leaking chances away from home",
+          "text": "Expected goals (xG) measures the quality of chances. Over their last 5 home games Everton created 1.6 and allowed 1.4 a game. Over their last 5 away games Chelsea created 1.1 and allowed 1.9."
+        },
+        {
+          "topic": "Form",
+          "title": "Similar recent form",
+          "text": "Last five league games: Everton took 7 points, Chelsea took 7."
+        },
+        {
+          "topic": "Finishing",
+          "title": "Chelsea are scoring above their chances",
+          "text": "Chelsea have 15 goals from 10.3 xG this season. Finishing like that tends to cool off, so we lean on the chances, not the goals."
+        },
+        {
+          "topic": "Head to head",
+          "title": "Tight when they meet",
+          "text": "2 of the last 4 meetings were drawn or won by one goal. Past meetings count for little in the model."
+        }
+      ],
+      "headline": "Nothing to split Everton and Chelsea",
+      "change_our_mind": "If Chelsea's defence were only average, this would swing to an away win (42%).",
+      "kickoff": "2026-10-17T11:30:00+00:00",
+      "venue": null,
+      "after_kickoff": true,
+      "result": [
+        0,
+        2
+      ]
+    },
+    {
+      "home_team": "Brentford",
+      "away_team": "Liverpool",
+      "call": "H",
+      "call_name": "home win",
+      "confidence": "too close to call",
+      "probabilities": {
+        "H": 0.421,
+        "D": 0.263,
+        "A": 0.315
+      },
+      "market": {
+        "H": 0.401,
+        "D": 0.259,
+        "A": 0.34
+      },
+      "expected_goals": {
+        "home": 1.69,
+        "away": 1.44
+      },
+      "score": [
+        2,
+        1
+      ],
+      "top_scores": [
+        {
+          "score": [
+            1,
+            1
+          ],
+          "probability": 0.12
+        },
+        {
+          "score": [
+            2,
+            1
+          ],
+          "probability": 0.09
+        },
+        {
+          "score": [
+            1,
+            2
+          ],
+          "probability": 0.077
+        },
+        {
+          "score": [
+            2,
+            2
+          ],
+          "probability": 0.065
+        },
+        {
+          "score": [
+            2,
+            0
+          ],
+          "probability": 0.062
+        }
+      ],
+      "waterfall": {
+        "start": 39.9,
+        "start_label": "Average home side v average visitor",
+        "steps": [
+          {
+            "label": "Brentford's attack",
+            "detail": "Brentford create and score 21% more than an average side",
+            "kind": "attack",
+            "team": "Brentford",
+            "change": 7.3,
+            "helps": "Brentford"
+          },
+          {
+            "label": "Liverpool's attack",
+            "detail": "Liverpool create and score 21% more than an average side",
+            "kind": "attack",
+            "team": "Liverpool",
+            "change": -4.9,
+            "helps": "Liverpool"
+          },
+          {
+            "label": "Brentford's defence",
+            "detail": "Brentford concede 19% more than an average side",
+            "kind": "defence",
+            "team": "Brentford",
+            "change": -4.6,
+            "helps": "Liverpool"
+          },
+          {
+            "label": "Liverpool's defence",
+            "detail": "Liverpool concede 13% more than an average side",
+            "kind": "defence",
+            "team": "Liverpool",
+            "change": 4.5,
+            "helps": "Brentford"
+          }
+        ],
+        "total": 42.1
+      },
+      "standings": {
+        "home": {
+          "position": 4,
+          "points": 10,
+          "played": 6
+        },
+        "away": {
+          "position": 9,
+          "points": 9,
+          "played": 6
+        }
+      },
+      "xg": {
+        "home": {
+          "games": 5,
+          "venue": "home",
+          "xg_for": 2.39,
+          "xg_against": 1.27,
+          "goals_for": 2.4,
+          "goals_against": 0.6
+        },
+        "away": {
+          "games": 5,
+          "venue": "away",
+          "xg_for": 1.55,
+          "xg_against": 1.64,
+          "goals_for": 1.8,
+          "goals_against": 1.8
+        }
+      },
+      "finishing": {
+        "home": {
+          "games": 6,
+          "goals": 12,
+          "xg": 11.8,
+          "difference": 0.2
+        },
+        "away": {
+          "games": 6,
+          "goals": 7,
+          "xg": 9.0,
+          "difference": -2.0
+        }
+      },
+      "form": {
+        "home": [
+          {
+            "result": "D",
+            "line": "Leeds 1-1 Brentford",
+            "date": "2026-08-30"
+          },
+          {
+            "result": "D",
+            "line": "Brentford 1-1 Sunderland",
+            "date": "2026-09-05"
+          },
+          {
+            "result": "D",
+            "line": "Bournemouth 2-2 Brentford",
+            "date": "2026-09-12"
+          },
+          {
+            "result": "W",
+            "line": "Brentford 3-0 Chelsea",
+            "date": "2026-09-18"
+          },
+          {
+            "result": "D",
+            "line": "Aston Villa 2-2 Brentford",
+            "date": "2026-10-10"
+          }
+        ],
+        "away": [
+          {
+            "result": "D",
+            "line": "Liverpool 2-2 Nott'm Forest",
+            "date": "2026-08-29"
+          },
+          {
+            "result": "W",
+            "line": "Ipswich 0-2 Liverpool",
+            "date": "2026-09-04"
+          },
+          {
+            "result": "D",
+            "line": "Liverpool 0-0 Fulham",
+            "date": "2026-09-12"
+          },
+          {
+            "result": "W",
+            "line": "Bournemouth 0-1 Liverpool",
+            "date": "2026-09-20"
+          },
+          {
+            "result": "L",
+            "line": "Liverpool 0-3 Man City",
+            "date": "2026-10-11"
+          }
+        ]
+      },
+      "head_to_head": [
+        {
+          "date": "2026-05-24",
+          "line": "Liverpool 1-1 Brentford",
+          "margin": 0
+        },
+        {
+          "date": "2025-10-25",
+          "line": "Brentford 3-2 Liverpool",
+          "margin": 1
+        },
+        {
+          "date": "2025-01-18",
+          "line": "Brentford 0-2 Liverpool",
+          "margin": 2
+        },
+        {
+          "date": "2024-08-25",
+          "line": "Liverpool 2-0 Brentford",
+          "margin": 2
+        }
+      ],
+      "team_news": [],
+      "luck": {
+        "home": {
+          "games": 10,
+          "points": 15,
+          "xpts": 13.6,
+          "difference": 1.4
+        },
+        "away": {
+          "games": 10,
+          "points": 11,
+          "xpts": 13.5,
+          "difference": -2.5
+        }
+      },
+      "luck_gap": 0.112,
+      "reasons": [
+        {
+          "topic": "Chances created and allowed",
+          "title": "Liverpool are leaking chances away from home",
+          "text": "Expected goals (xG) measures the quality of chances. Over their last 5 home games Brentford created 2.4 and allowed 1.3 a game. Over their last 5 away games Liverpool created 1.6 and allowed 1.6."
+        },
+        {
+          "topic": "Form",
+          "title": "Liverpool arrive in better form",
+          "text": "Last five league games: Brentford took 7 points, Liverpool took 8."
+        },
+        {
+          "topic": "Head to head",
+          "title": "Tight when they meet",
+          "text": "2 of the last 4 meetings were drawn or won by one goal. Past meetings count for little in the model."
+        }
+      ],
+      "headline": "Nothing to split Brentford and Liverpool",
+      "change_our_mind": "If Brentford's attack were only average, this would swing to an away win (37%).",
+      "kickoff": "2026-10-17T14:00:00+00:00",
+      "venue": null,
+      "after_kickoff": true,
+      "result": [
+        1,
+        2
+      ]
+    },
+    {
+      "home_team": "Fulham",
+      "away_team": "Hull",
+      "call": "H",
+      "call_name": "home win",
+      "confidence": "too close to call",
+      "probabilities": {
+        "H": 0.379,
+        "D": 0.312,
+        "A": 0.31
+      },
+      "market": {
+        "H": 0.551,
+        "D": 0.241,
+        "A": 0.208
+      },
+      "expected_goals": {
+        "home": 1.26,
+        "away": 1.11
+      },
+      "score": [
+        1,
+        0
+      ],
+      "top_scores": [
+        {
+          "score": [
+            1,
+            1
+          ],
+          "probability": 0.148
+        },
+        {
+          "score": [
+            0,
+            0
+          ],
+          "probability": 0.11
+        },
+        {
+          "score": [
+            1,
+            0
+          ],
+          "probability": 0.1
+        },
+        {
+          "score": [
+            0,
+            1
+          ],
+          "probability": 0.087
+        },
+        {
+          "score": [
+            2,
+            1
+          ],
+          "probability": 0.082
+        }
+      ],
+      "waterfall": {
+        "start": 39.9,
+        "start_label": "Average home side v average visitor",
+        "steps": [
+          {
+            "label": "Fulham's defence",
+            "detail": "Fulham concede 25% more than an average side",
+            "kind": "defence",
+            "team": "Fulham",
+            "change": -5.2,
+            "helps": "Hull"
+          },
+          {
+            "label": "Hull's defence",
+            "detail": "Hull concede 10% more than an average side",
+            "kind": "defence",
+            "team": "Hull",
+            "change": 3.4,
+            "helps": "Fulham"
+          },
+          {
+            "label": "Fulham's attack",
+            "detail": "Fulham create and score 8% less than an average side",
+            "kind": "attack",
+            "team": "Fulham",
+            "change": -2.8,
+            "helps": "Hull"
+          },
+          {
+            "label": "Hull's attack",
+            "detail": "Hull create and score 11% less than an average side",
+            "kind": "attack",
+            "team": "Hull",
+            "change": 2.6,
+            "helps": "Fulham"
+          }
+        ],
+        "total": 37.9
+      },
+      "standings": {
+        "home": {
+          "position": 20,
+          "points": 2,
+          "played": 6
+        },
+        "away": {
+          "position": 8,
+          "points": 9,
+          "played": 6
+        }
+      },
+      "xg": {
+        "home": {
+          "games": 5,
+          "venue": "home",
+          "xg_for": 1.8,
+          "xg_against": 1.66,
+          "goals_for": 1.4,
+          "goals_against": 1.6
+        },
+        "away": {
+          "games": 3,
+          "venue": "away",
+          "xg_for": 1.14,
+          "xg_against": 1.26,
+          "goals_for": 1.33,
+          "goals_against": 1.33
+        }
+      },
+      "finishing": {
+        "home": {
+          "games": 6,
+          "goals": 6,
+          "xg": 9.7,
+          "difference": -3.7
+        },
+        "away": {
+          "games": 6,
+          "goals": 8,
+          "xg": 7.3,
+          "difference": 0.7
+        }
+      },
+      "form": {
+        "home": [
+          {
+            "result": "L",
+            "line": "Sunderland 1-0 Fulham",
+            "date": "2026-08-30"
+          },
+          {
+            "result": "L",
+            "line": "Fulham 2-3 Crystal Palace",
+            "date": "2026-09-05"
+          },
+          {
+            "result": "D",
+            "line": "Liverpool 0-0 Fulham",
+            "date": "2026-09-12"
+          },
+          {
+            "result": "D",
+            "line": "Fulham 1-1 Man United",
+            "date": "2026-09-20"
+          },
+          {
+            "result": "L",
+            "line": "Ipswich 2-1 Fulham",
+            "date": "2026-10-10"
+          }
+        ],
+        "away": [
+          {
+            "result": "W",
+            "line": "Coventry 0-1 Hull",
+            "date": "2026-08-29"
+          },
+          {
+            "result": "D",
+            "line": "Hull 0-0 Aston Villa",
+            "date": "2026-09-05"
+          },
+          {
+            "result": "D",
+            "line": "Chelsea 2-2 Hull",
+            "date": "2026-09-12"
+          },
+          {
+            "result": "L",
+            "line": "Newcastle 2-1 Hull",
+            "date": "2026-09-19"
+          },
+          {
+            "result": "D",
+            "line": "Hull 2-2 Everton",
+            "date": "2026-10-11"
+          }
+        ]
+      },
+      "head_to_head": [],
+      "team_news": [],
+      "luck": {
+        "home": {
+          "games": 10,
+          "points": 6,
+          "xpts": 12.6,
+          "difference": -6.6
+        },
+        "away": {
+          "games": 6,
+          "points": 9,
+          "xpts": 6.5,
+          "difference": 2.5
+        }
+      },
+      "luck_gap": null,
+      "reasons": [
+        {
+          "topic": "Chances created and allowed",
+          "title": "Fulham are leaking chances at home",
+          "text": "Expected goals (xG) measures the quality of chances. Over their last 5 home games Fulham created 1.8 and allowed 1.7 a game. Over their last 3 away games Hull created 1.1 and allowed 1.3."
+        },
+        {
+          "topic": "Form",
+          "title": "Hull arrive in better form",
+          "text": "Last five league games: Fulham took 2 points, Hull took 6."
+        },
+        {
+          "topic": "Results vs performance",
+          "title": "Fulham's results undersell them by 7 points",
+          "text": "Fulham have 6 points from their last 10 league games, but their chances were worth 13. We rate teams on their chances, so Fulham get more credit than their results."
+        }
+      ],
+      "headline": "Nothing to split Fulham and Hull",
+      "change_our_mind": "The biggest single factor is Hull's defence. If Hull's defence were only average, the home win chance would drop to 35%.",
+      "kickoff": "2026-10-17T14:00:00+00:00",
+      "venue": null,
+      "after_kickoff": true,
+      "result": [
+        1,
+        0
+      ]
+    },
+    {
+      "home_team": "Man City",
+      "away_team": "Ipswich",
+      "call": "H",
+      "call_name": "home win",
+      "confidence": "strong",
+      "probabilities": {
+        "H": 0.8,
+        "D": 0.134,
+        "A": 0.066
+      },
+      "market": {
+        "H": 0.761,
+        "D": 0.146,
+        "A": 0.094
+      },
+      "expected_goals": {
+        "home": 3.03,
+        "away": 0.85
+      },
+      "score": [
+        3,
+        0
+      ],
+      "top_scores": [
+        {
+          "score": [
+            3,
+            0
+          ],
+          "probability": 0.096
+        },
+        {
+          "score": [
+            2,
+            0
+          ],
+          "probability": 0.095
+        },
+        {
+          "score": [
+            3,
+            1
+          ],
+          "probability": 0.081
+        },
+        {
+          "score": [
+            2,
+            1
+          ],
+          "probability": 0.081
+        },
+        {
+          "score": [
+            4,
+            0
+          ],
+          "probability": 0.073
+        }
+      ],
+      "waterfall": {
+        "start": 39.9,
+        "start_label": "Average home side v average visitor",
+        "steps": [
+          {
+            "label": "Ipswich's defence",
+            "detail": "Ipswich concede 65% more than an average side",
+            "kind": "defence",
+            "team": "Ipswich",
+            "change": 20.6,
+            "helps": "Man City"
+          },
+          {
+            "label": "Man City's attack",
+            "detail": "Man City create and score 49% more than an average side",
+            "kind": "attack",
+            "team": "Man City",
+            "change": 16.1,
+            "helps": "Man City"
+          },
+          {
+            "label": "Ipswich's attack",
+            "detail": "Ipswich create and score 10% less than an average side",
+            "kind": "attack",
+            "team": "Ipswich",
+            "change": 2.1,
+            "helps": "Man City"
+          },
+          {
+            "label": "Man City's defence",
+            "detail": "Man City concede 6% less than an average side",
+            "kind": "defence",
+            "team": "Man City",
+            "change": 1.3,
+            "helps": "Man City"
+          }
+        ],
+        "total": 80.0
+      },
+      "standings": {
+        "home": {
+          "position": 1,
+          "points": 18,
+          "played": 6
+        },
+        "away": {
+          "position": 10,
+          "points": 9,
+          "played": 6
+        }
+      },
+      "xg": {
+        "home": {
+          "games": 5,
+          "venue": "home",
+          "xg_for": 2.13,
+          "xg_against": 1.64,
+          "goals_for": 2.4,
+          "goals_against": 1.2
+        },
+        "away": {
+          "games": 5,
+          "venue": "away",
+          "xg_for": 1.49,
+          "xg_against": 2.0,
+          "goals_for": 1.4,
+          "goals_against": 2.4
+        }
+      },
+      "finishing": {
+        "home": {
+          "games": 6,
+          "goals": 16,
+          "xg": 12.6,
+          "difference": 3.4
+        },
+        "away": {
+          "games": 6,
+          "goals": 9,
+          "xg": 8.4,
+          "difference": 0.6
+        }
+      },
+      "form": {
+        "home": [
+          {
+            "result": "W",
+            "line": "Crystal Palace 1-4 Man City",
+            "date": "2026-08-28"
+          },
+          {
+            "result": "W",
+            "line": "Man City 1-0 Coventry",
+            "date": "2026-09-05"
+          },
+          {
+            "result": "W",
+            "line": "Man United 0-1 Man City",
+            "date": "2026-09-13"
+          },
+          {
+            "result": "W",
+            "line": "Man City 5-3 Sunderland",
+            "date": "2026-09-20"
+          },
+          {
+            "result": "W",
+            "line": "Liverpool 0-3 Man City",
+            "date": "2026-10-11"
+          }
+        ],
+        "away": [
+          {
+            "result": "L",
+            "line": "Man United 5-2 Ipswich",
+            "date": "2026-08-30"
+          },
+          {
+            "result": "L",
+            "line": "Ipswich 0-2 Liverpool",
+            "date": "2026-09-04"
+          },
+          {
+            "result": "W",
+            "line": "Crystal Palace 2-3 Ipswich",
+            "date": "2026-09-12"
+          },
+          {
+            "result": "L",
+            "line": "Everton 1-0 Ipswich",
+            "date": "2026-09-19"
+          },
+          {
+            "result": "W",
+            "line": "Ipswich 2-1 Fulham",
+            "date": "2026-10-10"
+          }
+        ]
+      },
+      "head_to_head": [
+        {
+          "date": "2025-01-19",
+          "line": "Ipswich 0-6 Man City",
+          "margin": 6
+        },
+        {
+          "date": "2024-08-24",
+          "line": "Man City 4-1 Ipswich",
+          "margin": 3
+        }
+      ],
+      "team_news": [],
+      "luck": {
+        "home": {
+          "games": 10,
+          "points": 25,
+          "xpts": 18.4,
+          "difference": 6.6
+        },
+        "away": {
+          "games": 10,
+          "points": 10,
+          "xpts": 12.4,
+          "difference": -2.4
+        }
+      },
+      "luck_gap": 0.491,
+      "reasons": [
+        {
+          "topic": "Chances created and allowed",
+          "title": "Ipswich are leaking chances away from home",
+          "text": "Expected goals (xG) measures the quality of chances. Over their last 5 home games Man City created 2.1 and allowed 1.6 a game. Over their last 5 away games Ipswich created 1.5 and allowed 2.0."
+        },
+        {
+          "topic": "Form",
+          "title": "Man City arrive in better form",
+          "text": "Last five league games: Man City took 15 points, Ipswich took 6."
+        },
+        {
+          "topic": "Results vs performance",
+          "title": "Man City's results flatter them by 7 points",
+          "text": "Man City have 25 points from their last 10 league games, but their chances were worth 18. We rate teams on their chances, so Man City get less credit than their results."
+        },
+        {
+          "topic": "Head to head",
+          "title": "Not much history to go on",
+          "text": "None of the last 2 meetings were drawn or won by one goal. Past meetings count for little in the model."
+        }
+      ],
+      "headline": "Ipswich's leaky defence hands Man City the edge",
+      "change_our_mind": "The biggest single factor is Ipswich's defence. If Ipswich's defence were only average, the home win chance would drop to 59%.",
+      "kickoff": "2026-10-17T14:00:00+00:00",
+      "venue": null,
+      "after_kickoff": true,
+      "result": [
+        3,
+        2
+      ]
+    },
+    {
+      "home_team": "Newcastle",
+      "away_team": "Aston Villa",
+      "call": "H",
+      "call_name": "home win",
+      "confidence": "too close to call",
+      "probabilities": {
+        "H": 0.434,
+        "D": 0.259,
+        "A": 0.307
+      },
+      "market": {
+        "H": 0.422,
+        "D": 0.258,
+        "A": 0.32
+      },
+      "expected_goals": {
+        "home": 1.75,
+        "away": 1.45
+      },
+      "score": [
+        2,
+        1
+      ],
+      "top_scores": [
+        {
+          "score": [
+            1,
+            1
+          ],
+          "probability": 0.117
+        },
+        {
+          "score": [
+            2,
+            1
+          ],
+          "probability": 0.09
+        },
+        {
+          "score": [
+            1,
+            2
+          ],
+          "probability": 0.075
+        },
+        {
+          "score": [
+            2,
+            2
+          ],
+          "probability": 0.066
+        },
+        {
+          "score": [
+            2,
+            0
+          ],
+          "probability": 0.062
+        }
+      ],
+      "waterfall": {
+        "start": 39.9,
+        "start_label": "Average home side v average visitor",
+        "steps": [
+          {
+            "label": "Aston Villa's defence",
+            "detail": "Aston Villa concede 25% more than an average side",
+            "kind": "defence",
+            "team": "Aston Villa",
+            "change": 8.5,
+            "helps": "Newcastle"
+          },
+          {
+            "label": "Newcastle's defence",
+            "detail": "Newcastle concede 35% more than an average side",
+            "kind": "defence",
+            "team": "Newcastle",
+            "change": -7.9,
+            "helps": "Aston Villa"
+          },
+          {
+            "label": "Newcastle's attack",
+            "detail": "Newcastle create and score 13% more than an average side",
+            "kind": "attack",
+            "team": "Newcastle",
+            "change": 4.7,
+            "helps": "Newcastle"
+          },
+          {
+            "label": "Aston Villa's attack",
+            "detail": "Aston Villa create and score 7% more than an average side",
+            "kind": "attack",
+            "team": "Aston Villa",
+            "change": -1.8,
+            "helps": "Aston Villa"
+          }
+        ],
+        "total": 43.4
+      },
+      "standings": {
+        "home": {
+          "position": 11,
+          "points": 8,
+          "played": 6
+        },
+        "away": {
+          "position": 16,
+          "points": 5,
+          "played": 6
+        }
+      },
+      "xg": {
+        "home": {
+          "games": 5,
+          "venue": "home",
+          "xg_for": 1.8,
+          "xg_against": 1.75,
+          "goals_for": 2.4,
+          "goals_against": 1.4
+        },
+        "away": {
+          "games": 5,
+          "venue": "away",
+          "xg_for": 1.56,
+          "xg_against": 1.93,
+          "goals_for": 1.4,
+          "goals_against": 1.8
+        }
+      },
+      "finishing": {
+        "home": {
+          "games": 6,
+          "goals": 10,
+          "xg": 7.8,
+          "difference": 2.2
+        },
+        "away": {
+          "games": 6,
+          "goals": 6,
+          "xg": 6.8,
+          "difference": -0.8
+        }
+      },
+      "form": {
+        "home": [
+          {
+            "result": "W",
+            "line": "Tottenham 0-2 Newcastle",
+            "date": "2026-08-29"
+          },
+          {
+            "result": "D",
+            "line": "Newcastle 2-2 Bournemouth",
+            "date": "2026-09-05"
+          },
+          {
+            "result": "L",
+            "line": "Leeds 4-1 Newcastle",
+            "date": "2026-09-14"
+          },
+          {
+            "result": "W",
+            "line": "Newcastle 2-1 Hull",
+            "date": "2026-09-19"
+          },
+          {
+            "result": "L",
+            "line": "Coventry 4-1 Newcastle",
+            "date": "2026-10-12"
+          }
+        ],
+        "away": [
+          {
+            "result": "L",
+            "line": "Aston Villa 0-1 Arsenal",
+            "date": "2026-08-31"
+          },
+          {
+            "result": "D",
+            "line": "Hull 0-0 Aston Villa",
+            "date": "2026-09-05"
+          },
+          {
+            "result": "L",
+            "line": "Aston Villa 1-2 Nott'm Forest",
+            "date": "2026-09-12"
+          },
+          {
+            "result": "W",
+            "line": "Tottenham 2-3 Aston Villa",
+            "date": "2026-09-19"
+          },
+          {
+            "result": "D",
+            "line": "Aston Villa 2-2 Brentford",
+            "date": "2026-10-10"
+          }
+        ]
+      },
+      "head_to_head": [
+        {
+          "date": "2026-01-25",
+          "line": "Newcastle 0-2 Aston Villa",
+          "margin": 2
+        },
+        {
+          "date": "2025-08-16",
+          "line": "Aston Villa 0-0 Newcastle",
+          "margin": 0
+        },
+        {
+          "date": "2025-04-19",
+          "line": "Aston Villa 4-1 Newcastle",
+          "margin": 3
+        },
+        {
+          "date": "2024-12-26",
+          "line": "Newcastle 3-0 Aston Villa",
+          "margin": 3
+        }
+      ],
+      "team_news": [],
+      "luck": {
+        "home": {
+          "games": 10,
+          "points": 15,
+          "xpts": 12.5,
+          "difference": 2.5
+        },
+        "away": {
+          "games": 10,
+          "points": 12,
+          "xpts": 12.4,
+          "difference": -0.4
+        }
+      },
+      "luck_gap": 0.32,
+      "reasons": [
+        {
+          "topic": "Chances created and allowed",
+          "title": "Aston Villa are leaking chances away from home",
+          "text": "Expected goals (xG) measures the quality of chances. Over their last 5 home games Newcastle created 1.8 and allowed 1.8 a game. Over their last 5 away games Aston Villa created 1.6 and allowed 1.9."
+        },
+        {
+          "topic": "Form",
+          "title": "Newcastle arrive in better form",
+          "text": "Last five league games: Newcastle took 7 points, Aston Villa took 5."
+        },
+        {
+          "topic": "Head to head",
+          "title": "Usually one-sided when they meet",
+          "text": "1 of the last 4 meetings was drawn or won by one goal. Past meetings count for little in the model."
+        }
+      ],
+      "headline": "Nothing to split Newcastle and Aston Villa",
+      "change_our_mind": "If Aston Villa's defence were only average, this would swing to an away win (37%).",
+      "kickoff": "2026-10-17T16:30:00+00:00",
+      "venue": null,
+      "after_kickoff": true,
+      "result": [
+        0,
+        1
+      ]
+    },
+    {
+      "home_team": "Bournemouth",
+      "away_team": "Sunderland",
+      "call": "H",
+      "call_name": "home win",
+      "confidence": "solid",
+      "probabilities": {
+        "H": 0.523,
+        "D": 0.261,
+        "A": 0.215
+      },
+      "market": {
+        "H": 0.46,
+        "D": 0.267,
+        "A": 0.273
+      },
+      "expected_goals": {
+        "home": 1.78,
+        "away": 1.08
+      },
+      "score": [
+        2,
+        1
+      ],
+      "top_scores": [
+        {
+          "score": [
+            1,
+            1
+          ],
+          "probability": 0.124
+        },
+        {
+          "score": [
+            2,
+            1
+          ],
+          "probability": 0.098
+        },
+        {
+          "score": [
+            2,
+            0
+          ],
+          "probability": 0.09
+        },
+        {
+          "score": [
+            1,
+            0
+          ],
+          "probability": 0.087
+        },
+        {
+          "score": [
+            0,
+            0
+          ],
+          "probability": 0.071
+        }
+      ],
+      "waterfall": {
+        "start": 39.9,
+        "start_label": "Average home side v average visitor",
+        "steps": [
+          {
+            "label": "Sunderland's defence",
+            "detail": "Sunderland concede 25% more than an average side",
+            "kind": "defence",
+            "team": "Sunderland",
+            "change": 8.9,
+            "helps": "Bournemouth"
+          },
+          {
+            "label": "Bournemouth's attack",
+            "detail": "Bournemouth create and score 15% more than an average side",
+            "kind": "attack",
+            "team": "Bournemouth",
+            "change": 5.5,
+            "helps": "Bournemouth"
+          },
+          {
+            "label": "Bournemouth's defence",
+            "detail": "Bournemouth concede 19% more than an average side",
+            "kind": "defence",
+            "team": "Bournemouth",
+            "change": -4.2,
+            "helps": "Sunderland"
+          },
+          {
+            "label": "Sunderland's attack",
+            "detail": "Sunderland create and score 9% less than an average side",
+            "kind": "attack",
+            "team": "Sunderland",
+            "change": 2.3,
+            "helps": "Bournemouth"
+          }
+        ],
+        "total": 52.3
+      },
+      "standings": {
+        "home": {
+          "position": 18,
+          "points": 3,
+          "played": 6
+        },
+        "away": {
+          "position": 17,
+          "points": 4,
+          "played": 6
+        }
+      },
+      "xg": {
+        "home": {
+          "games": 5,
+          "venue": "home",
+          "xg_for": 1.95,
+          "xg_against": 1.14,
+          "goals_for": 1.4,
+          "goals_against": 1.0
+        },
+        "away": {
+          "games": 5,
+          "venue": "away",
+          "xg_for": 1.73,
+          "xg_against": 1.82,
+          "goals_for": 1.8,
+          "goals_against": 2.0
+        }
+      },
+      "finishing": {
+        "home": {
+          "games": 6,
+          "goals": 7,
+          "xg": 9.8,
+          "difference": -2.8
+        },
+        "away": {
+          "games": 6,
+          "goals": 6,
+          "xg": 10.9,
+          "difference": -4.9
+        }
+      },
+      "form": {
+        "home": [
+          {
+            "result": "D",
+            "line": "Bournemouth 1-1 Everton",
+            "date": "2026-08-29"
+          },
+          {
+            "result": "D",
+            "line": "Newcastle 2-2 Bournemouth",
+            "date": "2026-09-05"
+          },
+          {
+            "result": "D",
+            "line": "Bournemouth 2-2 Brentford",
+            "date": "2026-09-12"
+          },
+          {
+            "result": "L",
+            "line": "Bournemouth 0-1 Liverpool",
+            "date": "2026-09-20"
+          },
+          {
+            "result": "L",
+            "line": "Chelsea 5-1 Bournemouth",
+            "date": "2026-10-10"
+          }
+        ],
+        "away": [
+          {
+            "result": "W",
+            "line": "Sunderland 1-0 Fulham",
+            "date": "2026-08-30"
+          },
+          {
+            "result": "D",
+            "line": "Brentford 1-1 Sunderland",
+            "date": "2026-09-05"
+          },
+          {
+            "result": "L",
+            "line": "Sunderland 0-2 Arsenal",
+            "date": "2026-09-12"
+          },
+          {
+            "result": "L",
+            "line": "Man City 5-3 Sunderland",
+            "date": "2026-09-20"
+          },
+          {
+            "result": "L",
+            "line": "Sunderland 0-2 Brighton",
+            "date": "2026-10-10"
+          }
+        ]
+      },
+      "head_to_head": [
+        {
+          "date": "2026-02-28",
+          "line": "Bournemouth 1-1 Sunderland",
+          "margin": 0
+        },
+        {
+          "date": "2025-11-29",
+          "line": "Sunderland 3-2 Bournemouth",
+          "margin": 1
+        }
+      ],
+      "team_news": [],
+      "luck": {
+        "home": {
+          "games": 10,
+          "points": 11,
+          "xpts": 15.4,
+          "difference": -4.4
+        },
+        "away": {
+          "games": 10,
+          "points": 12,
+          "xpts": 14.7,
+          "difference": -2.7
+        }
+      },
+      "luck_gap": 0.241,
+      "reasons": [
+        {
+          "topic": "Chances created and allowed",
+          "title": "Sunderland are leaking chances away from home",
+          "text": "Expected goals (xG) measures the quality of chances. Over their last 5 home games Bournemouth created 1.9 and allowed 1.1 a game. Over their last 5 away games Sunderland created 1.7 and allowed 1.8."
+        },
+        {
+          "topic": "Form",
+          "title": "Sunderland arrive in better form",
+          "text": "Last five league games: Bournemouth took 3 points, Sunderland took 4."
+        },
+        {
+          "topic": "Results vs performance",
+          "title": "Bournemouth's results undersell them by 4 points",
+          "text": "Bournemouth have 11 points from their last 10 league games, but their chances were worth 15. We rate teams on their chances, so Bournemouth get more credit than their results."
+        },
+        {
+          "topic": "Head to head",
+          "title": "Not much history to go on",
+          "text": "All of the last 2 meetings were drawn or won by one goal. Past meetings count for little in the model."
+        }
+      ],
+      "headline": "Sunderland's leaky defence hands Bournemouth the edge",
+      "change_our_mind": "The biggest single factor is Sunderland's defence. If Sunderland's defence were only average, the home win chance would drop to 43%.",
+      "kickoff": "2026-10-18T13:00:00+00:00",
+      "venue": null,
+      "after_kickoff": true,
+      "result": [
+        2,
+        0
+      ]
+    },
+    {
+      "home_team": "Brighton",
+      "away_team": "Crystal Palace",
+      "call": "H",
+      "call_name": "home win",
+      "confidence": "strong",
+      "probabilities": {
+        "H": 0.6,
+        "D": 0.222,
+        "A": 0.178
+      },
+      "market": {
+        "H": 0.613,
+        "D": 0.212,
+        "A": 0.175
+      },
+      "expected_goals": {
+        "home": 2.19,
+        "away": 1.14
+      },
+      "score": [
+        2,
+        1
+      ],
+      "top_scores": [
+        {
+          "score": [
+            1,
+            1
+          ],
+          "probability": 0.101
+        },
+        {
+          "score": [
+            2,
+            1
+          ],
+          "probability": 0.098
+        },
+        {
+          "score": [
+            2,
+            0
+          ],
+          "probability": 0.086
+        },
+        {
+          "score": [
+            3,
+            1
+          ],
+          "probability": 0.071
+        },
+        {
+          "score": [
+            1,
+            0
+          ],
+          "probability": 0.067
+        }
+      ],
+      "waterfall": {
+        "start": 39.9,
+        "start_label": "Average home side v average visitor",
+        "steps": [
+          {
+            "label": "Crystal Palace's defence",
+            "detail": "Crystal Palace concede 37% more than an average side",
+            "kind": "defence",
+            "team": "Crystal Palace",
+            "change": 12.9,
+            "helps": "Brighton"
+          },
+          {
+            "label": "Brighton's attack",
+            "detail": "Brighton create and score 29% more than an average side",
+            "kind": "attack",
+            "team": "Brighton",
+            "change": 10.4,
+            "helps": "Brighton"
+          },
+          {
+            "label": "Brighton's defence",
+            "detail": "Brighton concede 9% more than an average side",
+            "kind": "defence",
+            "team": "Brighton",
+            "change": -2.2,
+            "helps": "Crystal Palace"
+          },
+          {
+            "label": "Crystal Palace's attack",
+            "detail": "Crystal Palace create and score 5% more than an average side",
+            "kind": "attack",
+            "team": "Crystal Palace",
+            "change": -1.1,
+            "helps": "Crystal Palace"
+          }
+        ],
+        "total": 60.0
+      },
+      "standings": {
+        "home": {
+          "position": 3,
+          "points": 13,
+          "played": 6
+        },
+        "away": {
+          "position": 12,
+          "points": 7,
+          "played": 6
+        }
+      },
+      "xg": {
+        "home": {
+          "games": 5,
+          "venue": "home",
+          "xg_for": 2.25,
+          "xg_against": 1.32,
+          "goals_for": 2.2,
+          "goals_against": 0.8
+        },
+        "away": {
+          "games": 5,
+          "venue": "away",
+          "xg_for": 1.59,
+          "xg_against": 1.78,
+          "goals_for": 1.0,
+          "goals_against": 1.8
+        }
+      },
+      "finishing": {
+        "home": {
+          "games": 6,
+          "goals": 18,
+          "xg": 14.5,
+          "difference": 3.5
+        },
+        "away": {
+          "games": 6,
+          "goals": 9,
+          "xg": 9.8,
+          "difference": -0.8
+        }
+      },
+      "form": {
+        "home": [
+          {
+            "result": "L",
+            "line": "Chelsea 4-3 Brighton",
+            "date": "2026-08-30"
+          },
+          {
+            "result": "D",
+            "line": "Brighton 1-1 Leeds",
+            "date": "2026-09-05"
+          },
+          {
+            "result": "W",
+            "line": "Coventry 0-5 Brighton",
+            "date": "2026-09-13"
+          },
+          {
+            "result": "W",
+            "line": "Brighton 3-0 Arsenal",
+            "date": "2026-09-19"
+          },
+          {
+            "result": "W",
+            "line": "Sunderland 0-2 Brighton",
+            "date": "2026-10-10"
+          }
+        ],
+        "away": [
+          {
+            "result": "L",
+            "line": "Crystal Palace 1-4 Man City",
+            "date": "2026-08-28"
+          },
+          {
+            "result": "W",
+            "line": "Fulham 2-3 Crystal Palace",
+            "date": "2026-09-05"
+          },
+          {
+            "result": "L",
+            "line": "Crystal Palace 2-3 Ipswich",
+            "date": "2026-09-12"
+          },
+          {
+            "result": "D",
+            "line": "Leeds 0-0 Crystal Palace",
+            "date": "2026-09-20"
+          },
+          {
+            "result": "W",
+            "line": "Crystal Palace 3-1 Nott'm Forest",
+            "date": "2026-10-11"
+          }
+        ]
+      },
+      "head_to_head": [
+        {
+          "date": "2026-02-08",
+          "line": "Brighton 0-1 Crystal Palace",
+          "margin": 1
+        },
+        {
+          "date": "2025-11-09",
+          "line": "Crystal Palace 0-0 Brighton",
+          "margin": 0
+        },
+        {
+          "date": "2025-04-05",
+          "line": "Crystal Palace 2-1 Brighton",
+          "margin": 1
+        },
+        {
+          "date": "2024-12-15",
+          "line": "Brighton 1-3 Crystal Palace",
+          "margin": 2
+        }
+      ],
+      "team_news": [],
+      "luck": {
+        "home": {
+          "games": 10,
+          "points": 16,
+          "xpts": 17.0,
+          "difference": -1.0
+        },
+        "away": {
+          "games": 10,
+          "points": 9,
+          "xpts": 10.5,
+          "difference": -1.5
+        }
+      },
+      "luck_gap": 0.485,
+      "reasons": [
+        {
+          "topic": "Chances created and allowed",
+          "title": "Crystal Palace are leaking chances away from home",
+          "text": "Expected goals (xG) measures the quality of chances. Over their last 5 home games Brighton created 2.2 and allowed 1.3 a game. Over their last 5 away games Crystal Palace created 1.6 and allowed 1.8."
+        },
+        {
+          "topic": "Form",
+          "title": "Brighton arrive in better form",
+          "text": "Last five league games: Brighton took 10 points, Crystal Palace took 7."
+        },
+        {
+          "topic": "Finishing",
+          "title": "Brighton are scoring above their chances",
+          "text": "Brighton have 18 goals from 14.5 xG this season. Finishing like that tends to cool off, so we lean on the chances, not the goals."
+        },
+        {
+          "topic": "Head to head",
+          "title": "Tight when they meet",
+          "text": "3 of the last 4 meetings were drawn or won by one goal. Past meetings count for little in the model."
+        }
+      ],
+      "headline": "Crystal Palace's leaky defence hands Brighton the edge",
+      "change_our_mind": "The biggest single factor is Crystal Palace's defence. If Crystal Palace's defence were only average, the home win chance would drop to 46%.",
+      "kickoff": "2026-10-18T13:00:00+00:00",
+      "venue": null,
+      "after_kickoff": true,
+      "result": [
+        5,
+        0
+      ]
+    },
+    {
+      "home_team": "Leeds",
+      "away_team": "Man United",
+      "call": "H",
+      "call_name": "home win",
+      "confidence": "too close to call",
+      "probabilities": {
+        "H": 0.388,
+        "D": 0.281,
+        "A": 0.332
+      },
+      "market": {
+        "H": 0.404,
+        "D": 0.264,
+        "A": 0.332
+      },
+      "expected_goals": {
+        "home": 1.48,
+        "away": 1.36
+      },
+      "score": [
+        2,
+        1
+      ],
+      "top_scores": [
+        {
+          "score": [
+            1,
+            1
+          ],
+          "probability": 0.133
+        },
+        {
+          "score": [
+            2,
+            1
+          ],
+          "probability": 0.087
+        },
+        {
+          "score": [
+            1,
+            2
+          ],
+          "probability": 0.08
+        },
+        {
+          "score": [
+            0,
+            0
+          ],
+          "probability": 0.073
+        },
+        {
+          "score": [
+            1,
+            0
+          ],
+          "probability": 0.071
+        }
+      ],
+      "waterfall": {
+        "start": 39.9,
+        "start_label": "Average home side v average visitor",
+        "steps": [
+          {
+            "label": "Man United's attack",
+            "detail": "Man United create and score 24% more than an average side",
+            "kind": "attack",
+            "team": "Man United",
+            "change": -5.5,
+            "helps": "Man United"
+          },
+          {
+            "label": "Man United's defence",
+            "detail": "Man United concede 15% more than an average side",
+            "kind": "defence",
+            "team": "Man United",
+            "change": 5.2,
+            "helps": "Leeds"
+          },
+          {
+            "label": "Leeds' defence",
+            "detail": "Leeds concede 10% more than an average side",
+            "kind": "defence",
+            "team": "Leeds",
+            "change": -2.4,
+            "helps": "Man United"
+          },
+          {
+            "label": "Leeds' attack",
+            "detail": "Leeds create and score 4% more than an average side",
+            "kind": "attack",
+            "team": "Leeds",
+            "change": 1.5,
+            "helps": "Leeds"
+          }
+        ],
+        "total": 38.8
+      },
+      "standings": {
+        "home": {
+          "position": 7,
+          "points": 9,
+          "played": 6
+        },
+        "away": {
+          "position": 13,
+          "points": 6,
+          "played": 6
+        }
+      },
+      "xg": {
+        "home": {
+          "games": 5,
+          "venue": "home",
+          "xg_for": 1.47,
+          "xg_against": 1.24,
+          "goals_for": 1.8,
+          "goals_against": 0.6
+        },
+        "away": {
+          "games": 5,
+          "venue": "away",
+          "xg_for": 1.53,
+          "xg_against": 1.24,
+          "goals_for": 1.2,
+          "goals_against": 1.0
+        }
+      },
+      "finishing": {
+        "home": {
+          "games": 6,
+          "goals": 8,
+          "xg": 8.4,
+          "difference": -0.4
+        },
+        "away": {
+          "games": 6,
+          "goals": 9,
+          "xg": 11.5,
+          "difference": -2.5
+        }
+      },
+      "form": {
+        "home": [
+          {
+            "result": "D",
+            "line": "Leeds 1-1 Brentford",
+            "date": "2026-08-30"
+          },
+          {
+            "result": "D",
+            "line": "Brighton 1-1 Leeds",
+            "date": "2026-09-05"
+          },
+          {
+            "result": "W",
+            "line": "Leeds 4-1 Newcastle",
+            "date": "2026-09-14"
+          },
+          {
+            "result": "D",
+            "line": "Leeds 0-0 Crystal Palace",
+            "date": "2026-09-20"
+          },
+          {
+            "result": "L",
+            "line": "Arsenal 2-1 Leeds",
+            "date": "2026-10-10"
+          }
+        ],
+        "away": [
+          {
+            "result": "W",
+            "line": "Man United 5-2 Ipswich",
+            "date": "2026-08-30"
+          },
+          {
+            "result": "D",
+            "line": "Everton 2-2 Man United",
+            "date": "2026-09-06"
+          },
+          {
+            "result": "L",
+            "line": "Man United 0-1 Man City",
+            "date": "2026-09-13"
+          },
+          {
+            "result": "D",
+            "line": "Fulham 1-1 Man United",
+            "date": "2026-09-20"
+          },
+          {
+            "result": "D",
+            "line": "Man United 1-1 Tottenham",
+            "date": "2026-10-10"
+          }
+        ]
+      },
+      "head_to_head": [
+        {
+          "date": "2026-04-13",
+          "line": "Man United 1-2 Leeds",
+          "margin": 1
+        },
+        {
+          "date": "2026-01-04",
+          "line": "Leeds 1-1 Man United",
+          "margin": 0
+        }
+      ],
+      "team_news": [],
+      "luck": {
+        "home": {
+          "games": 10,
+          "points": 16,
+          "xpts": 13.5,
+          "difference": 2.5
+        },
+        "away": {
+          "games": 10,
+          "points": 16,
+          "xpts": 16.8,
+          "difference": -0.8
+        }
+      },
+      "luck_gap": 0.125,
+      "reasons": [
+        {
+          "topic": "Chances created and allowed",
+          "title": "Little between them on chances",
+          "text": "Expected goals (xG) measures the quality of chances. Over their last 5 home games Leeds created 1.5 and allowed 1.2 a game. Over their last 5 away games Man United created 1.5 and allowed 1.2."
+        },
+        {
+          "topic": "Form",
+          "title": "Similar recent form",
+          "text": "Last five league games: Leeds took 6 points, Man United took 6."
+        },
+        {
+          "topic": "Head to head",
+          "title": "Not much history to go on",
+          "text": "All of the last 2 meetings were drawn or won by one goal. Past meetings count for little in the model."
+        }
+      ],
+      "headline": "Nothing to split Leeds and Man United",
+      "change_our_mind": "If Man United's defence were only average, this would swing to an away win (37%).",
+      "kickoff": "2026-10-18T13:00:00+00:00",
+      "venue": null,
+      "after_kickoff": true,
+      "result": [
+        1,
+        1
+      ]
+    },
+    {
+      "home_team": "Nott'm Forest",
+      "away_team": "Arsenal",
+      "call": "A",
+      "call_name": "away win",
+      "confidence": "solid",
+      "probabilities": {
+        "H": 0.212,
+        "D": 0.283,
+        "A": 0.504
+      },
+      "market": {
+        "H": 0.168,
+        "D": 0.246,
+        "A": 0.586
+      },
+      "expected_goals": {
+        "home": 0.95,
+        "away": 1.58
+      },
+      "score": [
+        0,
+        1
+      ],
+      "top_scores": [
+        {
+          "score": [
+            1,
+            1
+          ],
+          "probability": 0.135
+        },
+        {
+          "score": [
+            0,
+            1
+          ],
+          "probability": 0.11
+        },
+        {
+          "score": [
+            0,
+            2
+          ],
+          "probability": 0.099
+        },
+        {
+          "score": [
+            0,
+            0
+          ],
+          "probability": 0.095
+        },
+        {
+          "score": [
+            1,
+            2
+          ],
+          "probability": 0.094
+        }
+      ],
+      "waterfall": {
+        "start": 28.1,
+        "start_label": "Average home side v average visitor",
+        "steps": [
+          {
+            "label": "Arsenal's attack",
+            "detail": "Arsenal create and score 33% more than an average side",
+            "kind": "attack",
+            "team": "Arsenal",
+            "change": 10.1,
+            "helps": "Arsenal"
+          },
+          {
+            "label": "Arsenal's defence",
+            "detail": "Arsenal concede 23% less than an average side",
+            "kind": "defence",
+            "team": "Arsenal",
+            "change": 6.3,
+            "helps": "Arsenal"
+          },
+          {
+            "label": "Nott'm Forest's defence",
+            "detail": "Nott'm Forest concede 19% more than an average side",
+            "kind": "defence",
+            "team": "Nott'm Forest",
+            "change": 6.0,
+            "helps": "Arsenal"
+          },
+          {
+            "label": "Nott'm Forest's attack",
+            "detail": "Nott'm Forest create and score 0% more than an average side",
+            "kind": "attack",
+            "team": "Nott'm Forest",
+            "change": -0.1,
+            "helps": "Nott'm Forest"
+          }
+        ],
+        "total": 50.4
+      },
+      "standings": {
+        "home": {
+          "position": 15,
+          "points": 5,
+          "played": 6
+        },
+        "away": {
+          "position": 2,
+          "points": 15,
+          "played": 6
+        }
+      },
+      "xg": {
+        "home": {
+          "games": 5,
+          "venue": "home",
+          "xg_for": 1.27,
+          "xg_against": 1.13,
+          "goals_for": 0.4,
+          "goals_against": 0.8
+        },
+        "away": {
+          "games": 5,
+          "venue": "away",
+          "xg_for": 2.02,
+          "xg_against": 1.36,
+          "goals_for": 1.2,
+          "goals_against": 0.8
+        }
+      },
+      "finishing": {
+        "home": {
+          "games": 6,
+          "goals": 5,
+          "xg": 12.2,
+          "difference": -7.2
+        },
+        "away": {
+          "games": 6,
+          "goals": 10,
+          "xg": 11.7,
+          "difference": -1.7
+        }
+      },
+      "form": {
+        "home": [
+          {
+            "result": "D",
+            "line": "Liverpool 2-2 Nott'm Forest",
+            "date": "2026-08-29"
+          },
+          {
+            "result": "D",
+            "line": "Nott'm Forest 0-0 Tottenham",
+            "date": "2026-09-05"
+          },
+          {
+            "result": "W",
+            "line": "Aston Villa 1-2 Nott'm Forest",
+            "date": "2026-09-12"
+          },
+          {
+            "result": "L",
+            "line": "Nott'm Forest 0-1 Coventry",
+            "date": "2026-09-19"
+          },
+          {
+            "result": "L",
+            "line": "Crystal Palace 3-1 Nott'm Forest",
+            "date": "2026-10-11"
+          }
+        ],
+        "away": [
+          {
+            "result": "W",
+            "line": "Aston Villa 0-1 Arsenal",
+            "date": "2026-08-31"
+          },
+          {
+            "result": "W",
+            "line": "Arsenal 2-1 Chelsea",
+            "date": "2026-09-06"
+          },
+          {
+            "result": "W",
+            "line": "Sunderland 0-2 Arsenal",
+            "date": "2026-09-12"
+          },
+          {
+            "result": "L",
+            "line": "Brighton 3-0 Arsenal",
+            "date": "2026-09-19"
+          },
+          {
+            "result": "W",
+            "line": "Arsenal 2-1 Leeds",
+            "date": "2026-10-10"
+          }
+        ]
+      },
+      "head_to_head": [
+        {
+          "date": "2026-01-17",
+          "line": "Nott'm Forest 0-0 Arsenal",
+          "margin": 0
+        },
+        {
+          "date": "2025-09-13",
+          "line": "Arsenal 3-0 Nott'm Forest",
+          "margin": 3
+        },
+        {
+          "date": "2025-02-26",
+          "line": "Nott'm Forest 0-0 Arsenal",
+          "margin": 0
+        },
+        {
+          "date": "2024-11-23",
+          "line": "Arsenal 3-0 Nott'm Forest",
+          "margin": 3
+        }
+      ],
+      "team_news": [],
+      "luck": {
+        "home": {
+          "games": 10,
+          "points": 10,
+          "xpts": 15.9,
+          "difference": -5.9
+        },
+        "away": {
+          "games": 10,
+          "points": 27,
+          "xpts": 20.7,
+          "difference": 6.3
+        }
+      },
+      "luck_gap": 0.07,
+      "reasons": [
+        {
+          "topic": "Chances created and allowed",
+          "title": "Arsenal are creating far more on the road",
+          "text": "Expected goals (xG) measures the quality of chances. Over their last 5 home games Nott'm Forest created 1.3 and allowed 1.1 a game. Over their last 5 away games Arsenal created 2.0 and allowed 1.4."
+        },
+        {
+          "topic": "Form",
+          "title": "Arsenal arrive in better form",
+          "text": "Last five league games: Nott'm Forest took 5 points, Arsenal took 12."
+        },
+        {
+          "topic": "Results vs performance",
+          "title": "Arsenal's results flatter them by 6 points",
+          "text": "Arsenal have 27 points from their last 10 league games, but their chances were worth 21. Nott'm Forest have 10, from chances worth 16. We rate teams on their chances, so Arsenal get less credit than their results."
+        },
+        {
+          "topic": "Head to head",
+          "title": "Tight when they meet",
+          "text": "2 of the last 4 meetings were drawn or won by one goal. Past meetings count for little in the model."
+        }
+      ],
+      "headline": "Arsenal's attack should be too much for Nott'm Forest",
+      "change_our_mind": "The biggest single factor is Arsenal's attack. If Arsenal's attack were only average, the away win chance would drop to 40%.",
+      "kickoff": "2026-10-18T15:30:00+00:00",
+      "venue": null,
+      "after_kickoff": true,
+      "result": [
+        0,
+        1
+      ]
+    }
+  ]
+}
