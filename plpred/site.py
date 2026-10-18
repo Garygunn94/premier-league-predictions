@@ -10,7 +10,8 @@ test), the projected final table in table/ (see plpred.simulate), the FPL corner
 (see plpred.fantasy), a page per club in club/<name>/, us against the pundits in pundits/
 (see plpred.pundits), and the posting kit for social media and the weekly newsletter in
 social/ for the newest week (see plpred.social). It also writes sitemap.xml, an Atom feed
-of the matchweeks (feed.xml), robots.txt, a 404 page, and contact/, privacy/ and terms/. Every page has a search title, a
+of the matchweeks (feed.xml), robots.txt, a 404 page, contact/, privacy/ and terms/, and in embed/ a card per club for fan sites to
+put on their own pages. Every page has a search title, a
 description, a canonical address and schema.org structured data (see page_meta).
 
 Optional settings, read from the environment (the Publish site workflow passes them from
@@ -760,6 +761,21 @@ def build(data: Path, out: Path) -> Path:
         write(f"{path}/index.html", template,
               page_meta(f"{path}/index.html", title, desc, search_title=title,
                         crumbs=[(title, f"{path}/")]))
+    # A card per club with its call this matchweek, for fan sites to embed (see embed/), and the
+    # page that gives them the code. The cards aren't for search engines; the match pages are.
+    for team, club_path in common["clubs"].items():
+        g = next((v for v in latest["views"] if team in (v["home_team"], v["away_team"])), None)
+        path = f"embed/{club_path}/index.html"
+        target = out / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(env.get_template("embed.html").render(**common, team=team, g=g, root="../.."))
+        written.append(path)
+    write("embed/index.html", "embed_help.html",
+          page_meta("embed/index.html", "Put your club's next call on your site",
+                    "A free card for fan sites and blogs: our call on your club's next Premier League game, "
+                    "updated every Thursday.", search_title="Free Premier League prediction widget for fan sites",
+                    crumbs=[("For fan sites", "embed/")]),
+          first=latest["lead"]["home_team"] if latest["lead"]["home_team"] in common["clubs"] else min(common["clubs"]))
     # GitHub Pages serves 404.html at whatever address was missing, so its links can't be relative.
     write("404.html", "missing.html", {**page_meta("404.html", "Page not found", tagline), "noindex": True},
           root=site_url.rstrip("/"))

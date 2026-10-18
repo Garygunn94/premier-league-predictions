@@ -50,3 +50,15 @@ def test_health_flags_stuck_sources_and_missing_calls(tmp_path):
     assert len(found) == 3
     assert "FPL" in found[0] and "football-data" in found[1] and "1 of the 2 games" in found[2]
     assert len(health.problems(data, now)) == 2
+
+
+def test_embed_cards_per_club_with_code_page(tmp_path):
+    out = site.build(make_data(tmp_path), tmp_path / "site")
+    card = (out / "embed" / "strong" / "index.html").read_text()
+    assert "Our call:" in card and 'name="robots" content="noindex"' in card
+    assert 'href="https://inkwellandalgorithm.com/2026-27/matchweek/9/strong-v-weak.html" target="_blank"' in card
+    assert 'src="../../badges/strong.png"' in card
+    help_page = (out / "embed" / "index.html").read_text()
+    assert "<iframe" in help_page and 'value="strong"' in help_page
+    sitemap = (out / "sitemap.xml").read_text()
+    assert "embed/</loc>" in sitemap and "embed/strong" not in sitemap

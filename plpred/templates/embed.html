@@ -1,0 +1,59 @@
+{% from "macros.html" import badge, split with context %}
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ team }}: our next call | Inkwell &amp; Algorithm</title>
+<meta name="robots" content="noindex">
+<link rel="canonical" href="{{ site_url }}{% if g %}{{ g.path|replace('index.html', '') }}{% else %}club/{{ clubs[team] }}/{% endif %}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,800&family=Source+Serif+4:opsz,wght@8..60,400&family=IBM+Plex+Sans+Condensed:wght@600;700&display=swap">
+<link rel="stylesheet" href="{{ root }}/style.css">
+<script>
+// ?theme=dark or ?theme=light fixes the look to suit the host page; otherwise it follows the reader's setting.
+try { var t = new URLSearchParams(location.search).get('theme'); if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t; } catch (e) {}
+</script>
+<style>
+body{margin:0}
+.ec{box-sizing:border-box;max-width:520px;height:100vh;overflow:hidden;padding:14px 16px;border:1px solid var(--rule);display:flex;flex-direction:column;gap:9px;background:var(--paper)}
+.ec a{color:inherit}
+.ec .top{display:flex;justify-content:space-between;gap:8px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.ec .top .brand{color:var(--ink);text-decoration:none}
+.ec .teams{display:flex;align-items:center;gap:8px;font-family:'Playfair Display',Georgia,serif;font-style:italic;font-weight:800;font-size:21px;line-height:1.15;color:var(--ink)}
+.ec .teams .badge{width:28px;height:28px}
+.ec .teams .v{font-size:15px;color:var(--muted)}
+.ec .call{font-size:15px;font-weight:700}
+.ec .call .accent{color:var(--accent)}
+.ec .key{display:flex;justify-content:space-between;font-size:12px;font-weight:600;color:var(--muted)}
+.ec .why{margin:0;font-size:14px;line-height:1.4;color:var(--body);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ec .more{margin-top:auto;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.ec .more a{color:var(--accent);text-decoration:none}
+/* In a narrow sidebar, drop the reason so the call, chances and link always fit. */
+@media (max-width:380px){.ec{padding:12px;gap:7px}.ec .why{display:none}.ec .teams{font-size:18px}.ec .call{font-size:13px}.ec .top .when{display:none}}
+</style>
+</head>
+<body>
+<div class="ec">
+<div class="top lab"><a class="brand" href="{{ site_url }}" target="_blank" rel="noopener">Inkwell <span class="accent">&amp;</span> Algorithm</a><span class="when">{% if g %}Matchweek {{ latest.matchweek }} · {{ g.kickoff_text }}{% else %}Matchweek {{ latest.matchweek }}{% endif %}</span></div>
+{% if g %}
+<div class="teams">{{ badge(g.home_team, root) }}<span>{{ g.home_short }}</span><span class="v">v</span><span>{{ g.away_short }}</span>{{ badge(g.away_team, root) }}</div>
+{% if g.result_text %}
+<div class="call lab">Final {{ g.result_text }} · we called {{ 'a draw' if g.call == 'D' else g.call_long }} {{ g.score_text }}: <span class="accent">{{ 'right' if g.result_call == g.call else 'wrong' }}</span></div>
+{% else %}
+<div class="call lab">Our call: {{ 'a draw' if g.call == 'D' else g.call_long }} {{ g.score_text }} <span class="accent">({{ g.our_p }}%{% if g.confidence == 'too close to call' %}, too close to call{% endif %})</span></div>
+{% endif %}
+{{ split(g) }}
+<div class="key lab"><span>{{ g.home_short }} {{ g.h }}%</span><span>Draw {{ g.d }}%</span><span>{{ g.away_short }} {{ g.a }}%</span></div>
+{% if g.front_reasons %}<p class="why">{{ g.front_reasons[0].text }}</p>{% endif %}
+<div class="more lab"><a href="{{ site_url }}{{ g.path }}" target="_blank" rel="noopener">Why we think so: the full breakdown</a></div>
+{% else %}
+<div class="teams"><span>{{ team }}</span></div>
+<p class="why">No {{ team }} game in this matchweek. New calls every Thursday.</p>
+<div class="more lab"><a href="{{ site_url }}club/{{ clubs[team] }}/" target="_blank" rel="noopener">{{ team }}'s season in numbers</a></div>
+{% endif %}
+</div>
+{% if goatcounter %}<script data-goatcounter="https://{{ goatcounter }}.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>{% endif %}
+</body>
+</html>
