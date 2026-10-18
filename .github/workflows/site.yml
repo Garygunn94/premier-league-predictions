@@ -32,7 +32,7 @@ jobs:
       - run: python -m plpred.site
         env:
           # Optional repository variables (Settings > Secrets and variables > Actions > Variables).
-          GOATCOUNTER: ${{ vars.GOATCOUNTER }}
+          GOATCOUNTER: ${{ vars.GOATCOUNTER || 'garygunn94' }}
           NEWSLETTER_URL: ${{ vars.NEWSLETTER_URL }}
       - name: Render the social media cards
         run: |
