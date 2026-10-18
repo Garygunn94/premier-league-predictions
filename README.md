@@ -1,7 +1,9 @@
-# Premier League Predictions
+# Inkwell & Algorithm
 
-Weekly Premier League predictions with the reasons behind each call, published as a
-newspaper-style "backpage" on GitHub Pages.
+Data-driven Premier League predictions, with the reasons behind each call, published as
+a newspaper-style site on GitHub Pages: https://garygunn94.github.io/premier-league-predictions/
+
+Follow @InkwellAlgo on X and Instagram.
 
 For every match the site gives a call (home win, draw or away win), how confident we
 are, a predicted score, and the three biggest reasons for the call, each backed by
@@ -71,7 +73,7 @@ earlier results only (without team news), which is handy for checking the output
 
 ## The site
 
-`python -m plpred.site` builds The Backpage into `site/` from the newest predictions:
+`python -m plpred.site` builds the site into `site/` from the newest predictions:
 a front page (match of the week, the rest of the round, charts, our record, last
 week's verdict and the table) and a breakdown page for every match. It follows the
 approved newspaper design, works on phones and has light and dark modes. Club crests
@@ -98,5 +100,5 @@ python -m pytest
 1. Data pipeline
 2. Team-strength model (Dixon-Coles) with a back-test
 3. Ranked reasons for each call
-4. The backpage site on GitHub Pages (this step)
+4. The site on GitHub Pages
 5. Weekly automation and a season scorecard

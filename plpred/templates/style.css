@@ -1,4 +1,4 @@
-/* The Backpage: newspaper style, light and dark. Tokens from the approved design. */
+/* Inkwell & Algorithm: newspaper style, light and dark. Tokens from the approved design. */
 :root{--paper:#f5f2ea;--ink:#131313;--body:#2a2723;--muted:#4a463f;--rule:#c9c3b6;--chip:#e2ddd2;--draw:#a39e93;--accent:#B3122B;--accent-deep:#7e2433;--on-accent:#ffffff;color-scheme:light}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#000000;--ink:#ddd8cc;--body:#c4beb2;--muted:#9c968b;--rule:#34312c;--chip:#24221e;--draw:#5c5850;--accent:#FF5C6C;--accent-deep:#c2475a;--on-accent:#000000;color-scheme:dark}}
 :root[data-theme="dark"]{--paper:#000000;--ink:#ddd8cc;--body:#c4beb2;--muted:#9c968b;--rule:#34312c;--chip:#24221e;--draw:#5c5850;--accent:#FF5C6C;--accent-deep:#c2475a;--on-accent:#000000;color-scheme:dark}
@@ -22,7 +22,9 @@ h1,h2,h3,p{margin:0}
 
 /* masthead */
 .dateline{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;font-size:13px;font-weight:600;padding:20px 0 10px;border-bottom:1px solid var(--ink)}
-.masthead{padding:18px 0 8px;font-size:clamp(56px,10vw,128px);font-weight:900;line-height:.9;letter-spacing:-.02em;text-align:center}
+.masthead{padding:18px 0 8px;font-size:clamp(40px,8.4vw,108px);font-weight:900;line-height:.95;letter-spacing:-.02em;text-align:center}
+.amp{font-style:italic;font-weight:700;color:var(--accent)}
+.wordmark-sm{font-size:clamp(22px,4vw,32px);font-weight:900;text-decoration:none;text-transform:none;letter-spacing:-.01em}
 .masthead a{text-decoration:none}
 .tagline{margin:0 0 14px;text-align:center;font-style:italic;font-size:18px;color:var(--muted)}
 nav.sections{border-top:3px solid var(--ink);border-bottom:1px solid var(--ink)}

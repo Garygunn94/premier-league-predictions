@@ -1,4 +1,4 @@
-"""Build The Backpage: a static site from this week's predictions and our record.
+"""Build the Inkwell & Algorithm site: a static site from this week's predictions and our record.
 
     python -m plpred.site            # writes site/
 
@@ -278,7 +278,8 @@ def build(data: Path, out: Path) -> Path:
     if out.exists():
         shutil.rmtree(out)
     (out / "match").mkdir(parents=True)
-    shutil.copy(TEMPLATES / "style.css", out / "style.css")
+    for asset in ("style.css", "favicon.svg"):
+        shutil.copy(TEMPLATES / asset, out / asset)
     badge_dir = data / "badges"
     if badge_dir.exists():
         shutil.copytree(badge_dir, out / "badges")

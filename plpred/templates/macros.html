@@ -1,3 +1,7 @@
+{% macro wordmark() -%}
+Inkwell <span class="amp">&amp;</span> Algorithm
+{%- endmacro %}
+
 {% macro badge(team, root) -%}
 {% if team in badges %}<img class="badge" src="{{ root }}/badges/{{ badges[team] }}" alt="" width="40" height="40">{% else %}<span class="mono lab" aria-hidden="true">{{ team[:3] }}</span>{% endif %}
 {%- endmacro %}
