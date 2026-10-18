@@ -391,7 +391,8 @@ def week_context(preds: dict, is_replay: bool, data: Path, matches: pd.DataFrame
 def club_view(team: str, w: dict, sim: dict | None, strip: dict | None, matches: pd.DataFrame,
               data: Path, season: int) -> dict:
     """Everything a club's page needs, as of the newest matchweek."""
-    before = matches[(matches.date < w["as_of"]) & (matches.season == season)
+    # Every result we have, so the page keeps up with the daily data refresh.
+    before = matches[(matches.season == season)
                      & ((matches.home_team == team) | (matches.away_team == team))].sort_values("date")
     games = []
     for g in before.itertuples():
@@ -561,6 +562,10 @@ def build(data: Path, out: Path) -> Path:
     sim = simulate.run(matches, season, sim_as_of, settings)
     sim = simulate.with_changes(sim, simulate.run(matches, season, sim_as_of - pd.Timedelta(days=7), settings))
     latest["sim"] = sim
+    # The newest week's tables follow the daily results; older weeks keep the table they went into.
+    latest["table"] = league_table(matches, season)
+    latest["deserved"] = luck.deserved_table(matches, season)
+    latest["table_date"] = matches.date.max().strftime("%d %B")
     latest["sim_moves"] = simulate.headline_moves(sim) if sim else []
     known = matches[matches.date < latest["as_of"]]
     ratings = model.fit(known, as_of=latest["as_of"], settings=settings)
