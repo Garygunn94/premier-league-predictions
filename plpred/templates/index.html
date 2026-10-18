@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+{% from "macros.html" import badge, split with context %}
+{% block title %}The Backpage, Matchweek {{ matchweek }}{% endblock %}
+{% block masthead %}
+<header>
+<div class="dateline lab">
+<span>{{ date_text }}</span>
+<span>Premier League {{ season }} · Matchweek {{ matchweek }}</span>
+<span class="accent">{% if replay %}Replay of a past week{% else %}This week's calls{% endif %}</span>
+</div>
+<h1 class="masthead disp"><a href="{{ root }}/index.html">The Backpage</a></h1>
+<p class="tagline">Every Premier League match called, and the reasons why</p>
+<nav class="sections" aria-label="Sections">
+<ul class="lab">
+<li><a href="#this-week" class="accent">This week</a></li>
+{% if record %}<li><a href="#verdict">Last week's verdict</a></li>
+<li><a href="#record">Our record</a></li>{% endif %}
+<li><a href="#table">Table</a></li>
+<li><a href="#method">How we call it</a></li>
+</ul>
+</nav>
+{% if replay %}<p class="banner">No fixtures have been fetched yet, so this page replays a past week to show how it will look. Live calls start after the next weekly update.</p>{% endif %}
+</header>
+{% endblock %}
+
+{% block content %}
+{% set g = lead %}
+<section id="this-week" class="sec row">
+<article class="grow">
+<div class="kicker lab">Match of the week · {{ g.kickoff_text }}</div>
+<h2 class="lead-h disp">{{ g.headline }}</h2>
+<p class="standfirst">We call {{ 'a draw' if g.call == 'D' else g.call_long }}, {{ g.score_text }}. {{ g.change_our_mind }}</p>
+<div class="callbox">
+<div class="teams">
+<span class="team disp">{{ badge(g.home_team, root) }}{{ g.home_team }}</span>
+<span class="score disp">{{ g.score_text }}</span>
+<span class="team disp muted">{{ g.away_team }}{{ badge(g.away_team, root) }}</span>
+</div>
+<div class="verdict">
+<span class="lab" style="font-size:12px;font-weight:600;opacity:.85">Our call</span>
+<span class="lab" style="font-size:28px;font-weight:700;letter-spacing:.04em">{{ g.call_label }}</span>
+<span class="lab" style="font-size:12px;font-weight:600;opacity:.85">Confidence: {{ g.confidence }}</span>
+</div>
+</div>
+<div style="margin-top:18px">
+{{ split(g) }}
+<div class="split-key lab"><span>{{ g.home_short }} {{ g.h }}%</span><span class="muted">Draw {{ g.d }}%</span><span class="accent">{{ g.away_short }} {{ g.a }}%</span></div>
+</div>
+<h3 class="lab small-head rule-top" style="margin-top:32px">Why we're calling it</h3>
+<ol class="reasons-3">
+{% for r in g.front_reasons %}
+<li><span class="num disp">{{ loop.index }}</span><strong class="disp">{{ r.title }}</strong><span class="t">{{ r.text }}</span></li>
+{% endfor %}
+</ol>
+<p style="margin-top:24px;font-size:17px"><a href="{{ root }}/match/{{ g.slug }}.html">Read the full breakdown: form, xG, team news and head to head</a></p>
+</article>
+
+<aside class="side stack" id="record">
+{% if record %}
+<div class="rule-top">
+<h3 class="lab small-head">Our record this season</h3>
+<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px">
+<div><div class="big-num disp">{{ record.rate }}%</div><div class="muted" style="font-size:15px;margin-top:4px">results right<br>{{ record.right }} of {{ record.n }}</div></div>
+<div><div class="big-num disp">{{ record.exact }}</div><div class="muted" style="font-size:15px;margin-top:4px">exact scores<br>of {{ record.n }}</div></div>
+</div>
+{% if record.fav_rate is not none %}<p class="body" style="margin-top:16px;font-size:15px;line-height:1.5">The bookmakers' favourite won {{ record.fav_rate }}% of these games, so we're {% if record.rate > record.fav_rate %}{{ record.rate - record.fav_rate }} points ahead of{% elif record.rate < record.fav_rate %}{{ record.fav_rate - record.rate }} points behind{% else %}level with{% endif %} the market.</p>{% endif %}
+</div>
+{% endif %}
+{% if features.upset %}{% set u = features.upset %}
+<div class="rule-top">
+<h3 class="lab small-head accent">Upset watch</h3>
+<p class="feature-h disp"><a href="{{ root }}/match/{{ u.slug }}.html" style="text-decoration:none">{% if u.call == 'D' %}{{ u.home_team }} and {{ u.away_team }} to draw{% elif u.call == 'A' %}{{ u.away_team }} to win at {{ u.home_team }}{% else %}{{ u.home_team }} to beat {{ u.away_team }}{% endif %}</a></p>
+<p class="body" style="font-size:16px;line-height:1.5">The bookmakers lean the other way, but we make it {{ u.our_p }}% to their {{ u.mkt_p }}%. {{ u.headline }}.</p>
+</div>
+{% endif %}
+{% if features.banker %}{% set b = features.banker %}
+<div class="rule-top">
+<h3 class="lab small-head">Banker</h3>
+<p class="feature-h disp"><a href="{{ root }}/match/{{ b.slug }}.html" style="text-decoration:none">{% if b.call == 'D' %}{{ b.home_team }} and {{ b.away_team }} to draw{% else %}{{ b.call_team }} to beat {{ b.away_team if b.call == 'H' else b.home_team }}{% endif %}</a></p>
+<p class="body" style="font-size:16px;line-height:1.5">Our strongest call this week, at {{ b.our_p }}%.</p>
+</div>
+{% endif %}
+</aside>
+</section>
+
+<section class="sec">
+<div class="sec-head rule-top">
+<h2 class="sec-title disp">The rest of the round</h2>
+<span class="lab muted" style="font-size:13px;font-weight:600">{{ rest|length }} more matches · kick-off times UK</span>
+</div>
+<div class="cards">
+{% for f in rest %}
+<article class="card">
+<div class="meta lab"><span>{{ f.kickoff_text }}</span><span>Confidence: {{ f.confidence }}</span></div>
+<div class="line">
+<span class="fx disp"><a href="{{ root }}/match/{{ f.slug }}.html">{{ f.home_team }} <span class="v">v</span> {{ f.away_team }}</a></span>
+<span class="sc disp">{{ f.score_text }}</span>
+</div>
+<div style="display:flex;align-items:center;gap:10px">
+<span class="pill lab {{ f.call }}">{{ f.call_label }}</span>
+{{ split(f, true) }}
+</div>
+<div class="lab muted" style="font-size:12px;font-weight:600">Home {{ f.h }}% · Draw {{ f.d }}% · Away {{ f.a }}%</div>
+<p class="body" style="font-size:16px;line-height:1.5">{{ f.headline }}.</p>
+</article>
+{% endfor %}
+</div>
+</section>
+
+<section class="sec" id="charts">
+<div class="sec-head rule-top">
+<h2 class="sec-title disp">The round in charts</h2>
+<span class="lab muted" style="font-size:13px;font-weight:600">Hover a mark for the numbers</span>
+</div>
+<div class="charts">
+{% if gaps.rows %}
+<figure>
+<figcaption><div class="fig-title disp">Where we disagree with the bookies</div>
+<div class="fig-sub">Our chance for each call against the market's. The bigger the gap, the more our reasons are doing the work.</div></figcaption>
+<div class="key lab"><span><i class="dot" style="background:var(--accent)"></i>Us</span><span><i class="dot" style="border:2px solid var(--ink)"></i>Bookmakers</span></div>
+<div>
+{% for r in gaps.rows %}
+<div class="gap-row" title="{{ r.tip }}">
+<span class="lbl">{{ r.label }}</span>
+<div class="track"><div class="base"></div><div class="seg" style="left:{{ r.line_left }}%;width:{{ r.line_w }}%"></div><div class="mk" style="left:{{ r.mkt }}%"></div><div class="us" style="left:{{ r.us }}%"></div></div>
+<span class="n lab">{{ r.gap }}</span>
+</div>
+{% endfor %}
+</div>
+<div class="axis lab" style="margin-left:130px;margin-right:40px"><span>{{ gaps.lo }}%</span><span>{{ gaps.mid }}%</span><span>{{ gaps.hi }}%</span></div>
+</figure>
+{% endif %}
+{% if scatter.teams %}
+<figure>
+<figcaption><div class="fig-title disp">Attack against defence</div>
+<div class="fig-sub">Expected goals created and allowed per game this season. Top right is where you want to be.</div></figcaption>
+<div style="display:flex;gap:8px">
+<div class="lab muted" style="writing-mode:vertical-rl;transform:rotate(180deg);text-align:center;font-size:11px;font-weight:600">Better defence (xG allowed)</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:6px">
+<div class="scatter" role="img" aria-label="Scatter of xG created against xG allowed for each club">
+<div style="position:absolute;left:{{ scatter.xmid }}%;top:0;bottom:0;width:1px;background:var(--rule)"></div>
+<div style="position:absolute;top:{{ scatter.ymid }}%;left:0;right:0;height:1px;background:var(--rule)"></div>
+<span class="lab muted" style="position:absolute;right:6px;top:6px;font-size:11px;font-weight:700">Good at both</span>
+<span class="lab muted" style="position:absolute;left:8px;bottom:6px;font-size:11px;font-weight:700">Struggling</span>
+{% for t in scatter.teams %}
+<div class="pt{% if t.on %} on{% endif %}" title="{{ t.tip }}" style="left:{{ t.left }}%;top:{{ t.top }}%"><i></i>{% if t.on %}<b{% if t.label_left %} class="l"{% endif %}>{{ t.name }}</b>{% endif %}</div>
+{% endfor %}
+</div>
+<div class="axis lab"><span>{{ scatter.x0 }}</span><span>Better attack (xG created)</span><span>{{ scatter.x1 }}</span></div>
+</div>
+</div>
+</figure>
+{% endif %}
+{% if record and record.weeks %}
+<figure>
+<figcaption><div class="fig-title disp">Our record, week by week</div>
+<div class="fig-sub">Correct results each week this season, against simply backing the bookmakers' favourite.</div></figcaption>
+<div class="key lab"><span><i class="sw" style="background:var(--ink)"></i>Us</span><span><i class="sw" style="height:3px;width:14px;background:var(--accent)"></i>Bookies' favourite</span></div>
+<div class="bars">
+{% for w in record.weeks %}
+<div class="b" title="{{ w.tip }}"><div class="us" style="height:{{ w.us_h }}%"></div><span class="val lab" style="bottom:{{ w.us_h }}%">{{ w.us }}</span><div class="fav" style="bottom:{{ w.fav_h }}%"></div></div>
+{% endfor %}
+</div>
+<div style="display:flex;gap:10px">{% for w in record.weeks %}<span class="lab muted" style="flex:1;text-align:center;font-size:11px;font-weight:600">{{ w.label }}</span>{% endfor %}</div>
+<p class="body" style="font-size:15px;line-height:1.5">We've beaten the favourite in {{ record.better }} {{ 'week' if record.better == 1 else 'weeks' }} out of {{ record.weeks|length }}, and fallen short in {{ record.worse }}.</p>
+</figure>
+{% endif %}
+</div>
+</section>
+
+{% if record %}
+<section id="verdict" class="sec row">
+<div class="side rule-top">
+<h2 class="sec-title disp" style="margin-bottom:12px">Last week's verdict</h2>
+<p class="disp" style="font-size:64px;font-weight:900;line-height:1;margin-bottom:12px">{{ record.last.right }} <span style="font-size:28px;font-weight:700">of {{ record.last.n }}</span></p>
+<p class="body" style="font-size:17px;line-height:1.5">Games from {{ record.last.label }}, with {{ record.last.exact }} exact {{ 'score' if record.last.exact == 1 else 'scores' }}.</p>
+</div>
+<div class="grow scroll">
+<table>
+<thead><tr class="lab"><th scope="col">Match</th><th scope="col">Our call</th><th scope="col">Result</th><th scope="col" class="num">Verdict</th></tr></thead>
+<tbody>
+{% for r in record.last.rows %}
+<tr><td style="font-weight:600">{{ r.match }}</td><td>{{ r.call }}</td><td>{{ r.result }}</td><td class="lab num{% if r.wrong %} wrong{% endif %}" style="font-size:13px;font-weight:700">{{ r.verdict }}</td></tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+</section>
+{% endif %}
+
+<section id="table" class="sec">
+<div class="sec-head rule-top"><h2 class="sec-title disp">The table</h2></div>
+<div class="scroll">
+<table>
+<thead><tr class="lab"><th scope="col">#</th><th scope="col">Club</th><th scope="col" class="num">P</th><th scope="col" class="num">GD</th><th scope="col" class="num">Pts</th></tr></thead>
+<tbody>
+{% for t in table %}
+<tr><td>{{ t.position }}</td><td style="font-weight:600"><span style="display:inline-flex;align-items:center;gap:8px">{{ badge(t.team, root) }}{{ t.team }}</span></td><td class="num">{{ t.played }}</td><td class="num">{{ '%+d'|format(t.gd) }}</td><td class="num" style="font-weight:700">{{ t.points }}</td></tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+</section>
+{% endblock %}

@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% from "macros.html" import badge with context %}
+{% block title %}{{ g.home_team }} v {{ g.away_team }}, the breakdown · The Backpage{% endblock %}
+{% block masthead %}
+<header class="dateline" style="padding:16px 0 12px;border-bottom:3px solid var(--ink);align-items:baseline">
+<a href="{{ root }}/index.html" class="disp" style="font-size:32px;font-weight:900;text-decoration:none;text-transform:none;letter-spacing:0">The Backpage</a>
+<span class="lab" style="font-size:13px;font-weight:600"><a href="{{ root }}/index.html">Back to Matchweek {{ matchweek }}</a>{% if replay %} · <span class="accent">Replay</span>{% endif %}</span>
+</header>
+{% endblock %}
+
+{% block content %}
+{% set hs = g.standings.home %}{% set as_ = g.standings.away %}
+<section class="mhead">
+<div class="kicker lab">The breakdown · {{ g.kickoff_long }}{% if g.venue %} · {{ g.venue }}{% endif %}</div>
+<h1 class="disp">{{ g.headline }}</h1>
+<p class="standfirst" style="max-width:820px;margin:0">We call {{ 'a draw' if g.call == 'D' else g.call_long }}, {{ g.score_text }}, with a {{ g.our_p }}% chance{% if g.mkt_p is not none %} (bookmakers {{ g.mkt_p }}%){% endif %}. Here is everything that went into it.</p>
+<div class="trio">
+<div>
+<div class="lab muted" style="font-size:12px;font-weight:600">Home</div>
+<div class="tname disp">{{ badge(g.home_team, root) }}{{ g.home_team }}</div>
+{% if hs %}<div class="lab muted" style="font-size:13px;font-weight:600;margin-top:4px">{{ hs.position }}{{ 'st' if hs.position in [1,21] else 'nd' if hs.position in [2,22] else 'rd' if hs.position in [3,23] else 'th' }} · {{ hs.points }} pts</div>{% endif %}
+</div>
+<div class="mid">
+<div class="lab" style="font-size:12px;font-weight:600;opacity:.85">Our call · confidence: {{ g.confidence }}</div>
+<div class="bigscore disp">{{ g.score_text }}</div>
+<div class="lab" style="font-size:20px;font-weight:700;margin-top:6px">{{ g.call_label }}</div>
+</div>
+<div>
+<div class="lab muted" style="font-size:12px;font-weight:600">Away</div>
+<div class="tname disp">{{ badge(g.away_team, root) }}{{ g.away_team }}</div>
+{% if as_ %}<div class="lab muted" style="font-size:13px;font-weight:600;margin-top:4px">{{ as_.position }}{{ 'st' if as_.position in [1,21] else 'nd' if as_.position in [2,22] else 'rd' if as_.position in [3,23] else 'th' }} · {{ as_.points }} pts</div>{% endif %}
+</div>
+</div>
+</section>
+
+<section class="sec row">
+<div style="flex:1 1 480px;min-width:0">
+<h2 class="lab small-head rule-top" style="margin-bottom:16px">Us against the market</h2>
+<div style="display:flex;flex-direction:column;gap:18px">
+<div>
+<div class="lab" style="font-size:12px;font-weight:600;margin-bottom:6px">Our model</div>
+<div class="stacked lab"><div class="h" style="width:{{ g.h }}%">{{ g.h }}%</div><div class="d" style="width:{{ g.d }}%">{{ g.d }}%</div><div class="a" style="width:{{ g.a }}%">{{ g.a }}%</div></div>
+</div>
+{% if g.mkt %}
+<div>
+<div class="lab" style="font-size:12px;font-weight:600;margin-bottom:6px">Bookmakers (average, margin removed)</div>
+<div class="stacked lab"><div class="h" style="width:{{ g.mkt.H }}%">{{ g.mkt.H }}%</div><div class="d" style="width:{{ g.mkt.D }}%">{{ g.mkt.D }}%</div><div class="a" style="width:{{ g.mkt.A }}%">{{ g.mkt.A }}%</div></div>
+</div>
+{% else %}
+<p class="muted" style="font-size:15px">No bookmaker odds for this game yet.</p>
+{% endif %}
+<div class="key lab"><span>{{ g.home_team }} win</span><span>Draw</span><span class="accent">{{ g.away_team }} win</span></div>
+</div>
+</div>
+<div style="flex:1 1 360px;min-width:0">
+<h2 class="lab small-head rule-top" style="margin-bottom:16px">Most likely scores</h2>
+<div style="display:flex;flex-direction:column;gap:10px">
+{% set top = g.top_scores[0].p if g.top_scores else 1 %}
+{% for s in g.top_scores %}
+<div class="hbar"><span class="disp" style="width:52px;font-size:22px;font-weight:800">{{ s.score }}</span><div class="t"><div class="fill-{{ s.side }}" style="width:{{ (s.p / top * 90)|round(0) }}%"></div></div><span class="lab" style="width:40px;text-align:right;font-size:13px;font-weight:600">{{ s.p }}%</span></div>
+{% endfor %}
+</div>
+</div>
+</section>
+
+<section class="sec">
+<figure>
+<figcaption class="rule-top">
+<div class="disp" style="font-size:clamp(32px,4vw,44px);font-weight:800;font-style:italic;line-height:1.1">How we got to {{ g.our_p }}%</div>
+<div class="fig-sub" style="font-size:17px;max-width:760px">We start from an average home side against an average visitor, then add or take away for each factor. Hover a bar for the detail.</div>
+</figcaption>
+<div class="key lab">
+<span><i class="sw" style="background:var(--ink)"></i>Pushes towards our call</span>
+<span><i class="sw" style="background:var(--accent)"></i>Pushes against it</span>
+<span><i class="sw" style="background:var(--draw)"></i>Starting point</span>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px">
+{% for s in g.waterfall_rows.rows %}
+<div class="wf-row" title="{{ s.tip }}">
+<span class="lbl" style="font-weight:{{ 700 if s.bold else 400 }}">{{ s.label }}</span>
+<div class="t"><div class="ref" style="left:{{ g.waterfall_rows.start_line }}%"></div><div class="bar {{ s.fill }}" style="left:{{ s.left }}%;width:{{ s.width }}%"></div></div>
+<span class="val lab">{{ s.val }}</span>
+</div>
+{% endfor %}
+</div>
+<div class="axis lab" style="margin-left:calc(min(260px,40%) + 14px);margin-right:62px"><span>0%</span><span>{{ (g.waterfall_rows.scale / 2)|int }}%</span><span>{{ g.waterfall_rows.scale }}%</span></div>
+</figure>
+</section>
+
+<section class="sec">
+<h2 class="sec-title disp rule-top" style="margin-bottom:24px">The reasons</h2>
+<div class="reason-grid">
+{% for r in g.reasons %}
+<article>
+<div class="kicker lab">{{ loop.index }} · {{ r.topic }}</div>
+<h3 class="disp">{{ r.title }}</h3>
+<p>{{ r.text }}</p>
+{% if r.topic == 'Chances created and allowed' and g.xg_rows %}
+<div style="display:flex;flex-direction:column;gap:8px;margin-top:4px">
+<div class="lab muted" style="font-size:12px;font-weight:600">xG per game, last 5 at this venue</div>
+{% for x in g.xg_rows %}
+<div class="hbar"><span class="lab" style="width:170px;font-size:12px;font-weight:600">{{ x.label }}</span><div class="t" style="height:12px"><div style="width:{{ x.w }}%;background:{{ 'var(--ink)' if x.side == 'home' and x.kind == 'for' else 'var(--draw)' if x.side == 'home' else 'var(--accent)' if x.kind == 'for' else 'var(--accent-deep)' }}"></div></div><span class="lab" style="width:32px;text-align:right;font-size:13px;font-weight:700">{{ '%.1f'|format(x.v) }}</span></div>
+{% endfor %}
+</div>
+{% elif r.topic == 'Team news' and g.team_news %}
+<table style="font-size:15px">
+<thead><tr class="lab"><th scope="col">Player</th><th scope="col">Status</th><th scope="col" class="num">Impact</th></tr></thead>
+<tbody>
+{% for n in g.team_news[:6] %}
+<tr><td><strong>{{ n.team }}</strong> {{ n.player }}</td><td>{{ n.status }}</td><td class="lab num{% if n.impact == 'Big' %} wrong{% endif %}" style="font-size:12px;font-weight:700">{{ n.impact }}</td></tr>
+{% endfor %}
+</tbody>
+</table>
+{% elif r.topic == 'Form' %}
+<div style="display:flex;flex-direction:column;gap:10px;margin-top:4px">
+{% for t in g.form_rows %}
+<div class="form-row"><span class="lab who">{{ t.team }}</span><div style="display:flex;gap:6px">{% for x in t.games %}<span class="chip lab {{ x.result }}" title="{{ x.line }}" aria-label="{{ {'W':'Win','D':'Draw','L':'Loss'}[x.result] }}: {{ x.line }}">{{ x.result }}</span>{% endfor %}</div></div>
+{% endfor %}
+<div class="lab muted" style="font-size:12px;font-weight:600">Last 5 league games, most recent on the right</div>
+</div>
+{% elif r.topic == 'Head to head' %}
+<ul class="plain">
+{% for m in g.head_to_head %}<li><span class="lab muted" style="font-size:12px;font-weight:600">{{ m.date_text }}</span><span>{{ m.line }}</span></li>{% endfor %}
+</ul>
+{% endif %}
+</article>
+{% endfor %}
+</div>
+</section>
+
+<section class="row" style="padding:32px 0">
+<div class="grow rule-top">
+<h2 class="lab small-head">What would change our mind</h2>
+<p class="body" style="font-size:18px;line-height:1.55">{{ g.change_our_mind }}</p>
+</div>
+<div class="side rule-top">
+<h2 class="lab small-head">Verdict</h2>
+<p class="disp" style="font-size:32px;font-weight:800;font-style:italic;line-height:1.15">{{ g.home_team }} {{ g.score_text }} {{ g.away_team }}, {{ g.call_label|lower }}, {{ g.confidence }}</p>
+</div>
+</section>
+{% endblock %}

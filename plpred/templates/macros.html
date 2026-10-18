@@ -1,0 +1,9 @@
+{% macro badge(team, root) -%}
+{% if team in badges %}<img class="badge" src="{{ root }}/badges/{{ badges[team] }}" alt="" width="40" height="40">{% else %}<span class="mono lab" aria-hidden="true">{{ team[:3] }}</span>{% endif %}
+{%- endmacro %}
+
+{% macro split(g, thin=false) -%}
+<div class="split{% if thin %} thin{% endif %}" role="img" aria-label="Home {{ g.h }}%, draw {{ g.d }}%, away {{ g.a }}%">
+<div class="h" style="width:{{ g.h }}%"></div><div class="d" style="width:{{ g.d }}%"></div><div class="a" style="width:{{ g.a }}%"></div>
+</div>
+{%- endmacro %}
