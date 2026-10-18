@@ -1,4 +1,4 @@
-{% from "macros.html" import badge, split with context %}
+{% from "macros.html" import badge, split, wordmark with context %}
 <!doctype html>
 <html lang="en" data-theme="dark">
 <head>
@@ -12,7 +12,7 @@
 html,body{margin:0;width:{{ size }}px;height:{{ size }}px;overflow:hidden}
 .post{width:{{ size }}px;height:{{ size }}px;padding:64px 72px 56px;display:flex;flex-direction:column;background:var(--paper)}
 .post .top{display:flex;justify-content:space-between;align-items:baseline;border-bottom:3px solid var(--ink);padding-bottom:14px}
-.post .brand{font-size:44px;font-weight:900;font-style:italic;letter-spacing:-.01em}
+.post .brand{font-size:44px;font-weight:900;letter-spacing:-.01em}
 .post .tag{font-size:20px;font-weight:700}
 .post .main{flex:1;display:flex;flex-direction:column;justify-content:center;gap:28px;min-height:0}
 .post .foot{display:flex;justify-content:space-between;border-top:1px solid var(--ink);padding-top:14px;font-size:18px;font-weight:600}
@@ -45,7 +45,7 @@ html,body{margin:0;width:{{ size }}px;height:{{ size }}px;overflow:hidden}
 </head>
 <body>
 <div class="post">
-<div class="top"><span class="brand disp">{{ brand }}</span><span class="tag lab muted">Premier League · Matchweek {{ matchweek }}</span></div>
+<div class="top"><span class="brand disp">{{ wordmark() }}</span><span class="tag lab muted">Premier League · Matchweek {{ matchweek }}</span></div>
 <div class="main">
 {% if card.kind == "round" %}
 <div class="kicker lab accent">Every game called</div>

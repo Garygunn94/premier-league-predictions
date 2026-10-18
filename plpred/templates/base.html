@@ -4,7 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{% block title %}Inkwell &amp; Algorithm{% endblock %}</title>
-<meta name="description" content="Every Premier League match called, and the reasons why.">
+<meta name="description" content="Data-driven Premier League predictions, with the reasons. New every Thursday.">
+<meta property="og:site_name" content="Inkwell &amp; Algorithm">
+<meta name="twitter:site" content="@InkwellAlgo">
+<link rel="icon" href="{{ root }}/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700;1,800;1,900&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&display=swap">
@@ -25,6 +28,7 @@ try { var t = localStorage.getItem('theme'); if (t) document.documentElement.dat
 </div>
 <div class="side">
 <p class="lab muted" style="font-size:12px;font-weight:600;line-height:1.7">Data: football-data.co.uk, API-Football, Understat, FPL.<br>Odds are a benchmark, not betting advice.<br>Club crests belong to their clubs.<br>Updated Thursdays and Saturdays. Built {{ built }}.</p>
+<p class="lab" style="font-size:13px;font-weight:700;margin-top:12px">Follow <span class="accent">@InkwellAlgo</span> on <a href="https://x.com/InkwellAlgo">X</a> and <a href="https://www.instagram.com/inkwellalgo/">Instagram</a></p>
 <p style="margin-top:12px"><button type="button" class="theme-toggle lab" onclick="toggleTheme()">Light / dark</button></p>
 </div>
 </footer>

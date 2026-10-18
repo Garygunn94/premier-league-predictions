@@ -12,7 +12,7 @@ def test_site_build_writes_the_posting_kit(tmp_path):
     assert any(n.startswith("reasons-") for n in names)
     for n in names:
         page = (kit / "cards" / f"{n}.html").read_text()
-        assert "Inkwell &amp; Algorithm" in page and "../../style.css" in page
+        assert 'class="amp"' in page and "../../style.css" in page
     index = (kit / "index.html").read_text()
     assert "Thursday" in index and "Friday" in index and "png/round.png" in index
 

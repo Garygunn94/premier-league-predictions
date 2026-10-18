@@ -1,1 +1,1 @@
-"""Premier League predictions: data pipeline, model and weekly backpage."""
+"""Premier League predictions: data pipeline, model and the weekly Inkwell & Algorithm site."""

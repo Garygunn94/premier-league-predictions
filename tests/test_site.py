@@ -35,6 +35,7 @@ def test_build_writes_front_page_and_match_pages(tmp_path):
     assert (out / "match" / "strong-v-weak.html").exists()
     assert (out / "badges" / "strong.png").exists()
     assert 'src="./badges/strong.png"' in index
+    assert "Inkwell <span class=\"amp\">&amp;</span> Algorithm" in index and (out / "favicon.svg").exists()
     page = (out / "match" / "strong-v-weak.html").read_text()
     assert "How we got to" in page and "../style.css" in page
 
