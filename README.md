@@ -124,9 +124,13 @@ variables > Actions > Variables), which the Publish site workflow passes to the 
 | `GOATCOUNTER` | Your [GoatCounter](https://www.goatcounter.com/) site code (the `xyz` in `xyz.goatcounter.com`). Adds its visitor counter: no cookies, so no cookie banner. |
 | `NEWSLETTER_URL` | The newsletter's sign-up page (for example a Buttondown or Substack address). Adds a sign-up link to every footer. |
 
-Each build also writes a posting kit for X and Instagram to `site/social/` (on the
-live site at `/social/`, not linked from the front page). It has square images in the
-site's dark look (the round, every call, the reasons chart for the bold call and the
+Each build also writes a posting kit for X and Instagram to `site/social/`. It is
+private: the Publish site workflow attaches it to each run as a password-locked zip
+called **posting-kit** (Actions > the latest Publish site run > Artifacts, kept 30 days)
+and publishes only the images the site uses as link previews. The password is the
+`KIT_PASSWORD` repository secret; without it the kit is not attached. Unzip it with that
+password and open `social/index.html`. It has square images in the
+site's dark look (the round, a five-slide carousel for every game and the
 scorecard, plus the FPL, projection and what-we-got-wrong cards) and the captions for
 the week, with X posts already under 280 characters. It also writes the week's
 newsletter as Markdown (`social/newsletter.md`) to paste into the newsletter service. The workflow renders the images to PNG with
