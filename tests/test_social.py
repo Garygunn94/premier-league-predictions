@@ -87,6 +87,10 @@ def test_kit_emails_carry_captions_and_images(tmp_path, monkeypatch):
 def test_results_posts_score_the_published_calls(tmp_path):
     import pandas as pd
     data = make_data(tmp_path)
+    path = data / "predictions" / "2026-10-24.json"
+    preds = json.loads(path.read_text())
+    preds["games"][1]["kickoff"] = "2026-10-26T20:00:00+00:00"  # the round ends on a Monday night
+    path.write_text(json.dumps(preds))
     (data / "upcoming").mkdir()
     pd.DataFrame({"fixture_id": [1], "status": ["FT"], "home_team": ["Strong"], "away_team": ["Weak"],
                   "home_goals": [2], "away_goals": [0]}).to_csv(data / "upcoming" / "fixtures.csv", index=False)
@@ -95,5 +99,7 @@ def test_results_posts_score_the_published_calls(tmp_path):
     assert {"results", "results-list", "verdict-strong-v-weak"} <= set(names)
     assert "verdict-average-v-good" not in names  # not played yet
     posts = {p["day"]: p for p in json.loads((kit / "posts.json").read_text())["posts"]}
-    assert "1 of 1 results right" in posts["Monday"]["instagram"]
+    assert "1 of 1 results right" in posts["Tuesday"]["instagram"]  # the day after the last game
+    assert "Average v Good still to play" in posts["Tuesday"]["how"]
+    assert posts["Result: Strong v Weak"]["when"] == "From Sunday, after the result"
     assert posts["Result: Strong v Weak"]["x"][0].startswith("Strong 2–0 Weak\nWe said Strong win")

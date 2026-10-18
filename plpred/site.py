@@ -383,13 +383,17 @@ def round_results(weeks: list[dict], matches: pd.DataFrame, data: Path) -> dict 
             result = outcome(hg, ag)
             exact = [hg, ag] == list(v["score"])
             fav = max(v["mkt"], key=v["mkt"].get) if v["mkt"] else None
-            rows.append({"g": v, "result_code": result, "result_text": f"{hg}–{ag}", "right": result == v["call"],
+            rows.append({"g": v, "after_day": (day + pd.Timedelta(days=1)).strftime("%A"), "result_code": result, "result_text": f"{hg}–{ag}", "right": result == v["call"],
                          "exact": exact, "fav_right": None if fav is None else fav == result,
                          "verdict": "Exact score" if exact else "Right result" if result == v["call"] else "Wrong",
                          "xg": None if pd.isna(hx) or pd.isna(ax) else f"{hx:.1f}–{ax:.1f}",
                          **xg_story(v["home_team"], v["away_team"], v["call"], result, hx, ax)})
         if not rows:
             continue
+        done = {r["g"]["slug"] for r in rows}
+        # Results reach the site in the morning refresh, so the round's posts go out the day after its last game.
+        last = max(pd.Timestamp(v["kickoff"]) for v in w["views"])
+        last = last.tz_convert("Europe/London") if last.tzinfo else last
         live = [r for r in rows if not r["g"].get("after_kickoff")]
         late = [r for r in rows if r["g"].get("after_kickoff")]
         priced = [r for r in rows if r["fav_right"] is not None]
@@ -397,7 +401,9 @@ def round_results(weeks: list[dict], matches: pd.DataFrame, data: Path) -> dict 
                 "of": len(w["views"]), "right": sum(r["right"] for r in rows), "exact": sum(r["exact"] for r in rows),
                 "fav_n": len(priced), "fav_right": sum(r["fav_right"] for r in priced),
                 "live_n": len(live), "live_right": sum(r["right"] for r in live),
-                "late_n": len(late), "late_right": sum(r["right"] for r in late)}
+                "late_n": len(late), "late_right": sum(r["right"] for r in late),
+                "pending": [v for v in w["views"] if v["slug"] not in done], "complete": len(rows) == len(w["views"]),
+                "post_day": (last + pd.Timedelta(days=1)).strftime("%A")}
     return None
 
 
