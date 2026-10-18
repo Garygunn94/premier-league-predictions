@@ -1,4 +1,5 @@
 import json
+import pandas as pd
 import re
 import shutil
 from pathlib import Path
@@ -122,3 +123,17 @@ def test_games_called_after_kickoff_join_the_live_calls_and_are_labelled(tmp_pat
     assert "test, not a prediction" in (out / "2026-27" / "matchweek" / "9" / "strong-v-weak.html").read_text()
     kit = (out / "social" / "index.html").read_text()
     assert "would have called" in kit and "not part of our record" in kit
+
+
+def test_newest_week_table_and_club_pages_include_results_after_the_calls(tmp_path):
+    data = make_data(tmp_path)
+    m = pd.read_csv(data / "matches.csv", parse_dates=["date"])
+    preds = json.loads((data / "predictions" / "2026-10-24.json").read_text())
+    preds["as_of"] = str((m.date.max() - pd.Timedelta(days=1)).date())  # the last round was played after the calls
+    (data / "predictions" / "2026-10-24.json").write_text(json.dumps(preds))
+    out = site.build(data, tmp_path / "site")
+    week = (out / "2026-27" / "matchweek" / "9" / "index.html").read_text()
+    assert f"Results up to {m.date.max().strftime('%d %B')}" in week
+    last = m[m.date == m.date.max()].iloc[0]
+    club = (out / "club" / site.club_slug(last.home_team) / "index.html").read_text()
+    assert m.date.max().strftime("%d %b") in club
