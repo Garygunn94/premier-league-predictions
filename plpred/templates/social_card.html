@@ -177,6 +177,32 @@ html,body{margin:0;width:{{ size }}px;height:{{ size }}px;overflow:hidden}
 <div class="r"><span class="fx disp">{{ r.team }} <span class="v" style="font-size:24px">{{ 'v' if r.venue == 'H' else 'at' }} {{ r.opponent }}</span></span><span class="c lab">{{ r.cs }}%</span></div>
 {% endfor %}
 </div>
+{% elif card.kind == "results" %}
+<div class="kicker lab accent">Matchweek {{ results.matchweek }} · the results{% if results.n < results.of %} · {{ results.n }} of {{ results.of }} played{% endif %}</div>
+<h1 class="head disp">How our calls <span class="accent">did.</span></h1>
+<div class="nums">
+<div><div class="n disp">{{ results.right }}<span style="font-size:56px"> of {{ results.n }}</span></div><div class="u lab">results right{% if results.exact %} · {{ results.exact }} exact {{ 'score' if results.exact == 1 else 'scores' }}{% endif %}</div></div>
+{% if results.fav_n %}<div><div class="n disp">{{ results.fav_right }}<span style="font-size:56px"> of {{ results.fav_n }}</span></div><div class="u lab">for the bookies' favourite</div></div>{% endif %}
+</div>
+{% if results.late_n %}<div class="why-text">{{ results.late_n }} of these were called after kick-off from pre-round data ({{ results.late_right }} right), so they aren't in our record.{% if results.live_n %} Live calls: {{ results.live_right }} of {{ results.live_n }}.{% endif %}</div>{% endif %}
+{% elif card.kind == "results-list" %}
+<div class="kicker lab accent">Matchweek {{ results.matchweek }} · every call against the result</div>
+<div class="list">
+{% for r in results.rows %}
+<div class="r"><span class="fx disp">{{ r.g.home_short }} {{ r.result_text }} {{ r.g.away_short }}</span><span class="c lab {% if not r.right %}muted{% endif %}">We said {{ 'draw' if r.g.call == 'D' else (r.g.home_short if r.g.call == 'H' else r.g.away_short) }} · {{ r.g.our_p }}%{% if r.g.after_kickoff %} · late{% endif %} {{ '✓' if r.right else '✗' }}</span></div>
+{% endfor %}
+</div>
+{% elif card.kind == "verdict" %}
+{% set r = card.r %}
+<div class="kicker lab accent">{% if g.after_kickoff %}Called after kick-off · not in our record{% else %}Matchweek {{ results.matchweek }} · the verdict{% endif %}</div>
+<div class="teams">
+<span class="team disp">{{ badge(g.home_team, root) }}{{ g.home_short }}</span>
+<span class="score disp">{{ r.result_text }}</span>
+<span class="team disp muted">{{ g.away_short }}{{ badge(g.away_team, root) }}</span>
+</div>
+<div class="verdict"><span class="lab big" style="white-space:nowrap">{{ r.verdict }}{{ ' ✓' if r.right else ' ✗' }}</span><span class="lab" style="font-size:22px;font-weight:600;text-align:right">We said {{ g.call_long if g.call != 'D' else 'draw' }} {{ g.score_text }} · {{ g.our_p }}%{% if g.mkt_p is not none %}<br>Bookies {{ g.mkt_p }}%{% endif %}</span></div>
+{% if r.xg %}<div><div class="why disp">{{ r.kind }}</div><div class="why-text">{{ r.text }}</div></div>
+{% elif g.front_reasons %}<div><div class="why disp">Why we called it: {{ g.front_reasons[0].title }}</div><div class="why-text">{{ g.front_reasons[0].text }} The xG verdict follows once the chances are in.</div></div>{% endif %}
 {% elif card.kind == "brand" %}
 <h1 class="head disp" style="font-size:120px;line-height:.95;font-style:normal;font-weight:900">{{ wordmark() }}</h1>
 <p class="why-text" style="font-size:36px;font-style:italic">Data-driven Premier League predictions, with the reasons. New every Thursday.</p>
