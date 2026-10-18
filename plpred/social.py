@@ -19,7 +19,8 @@ from jinja2 import Environment
 
 log = logging.getLogger("plpred.social")
 BRAND = "Inkwell & Algorithm"
-HANDLE = "@InkwellAlgo"
+HANDLE = "@InkwellAlgo"                 # X
+IG_HANDLE = "@inkwellandalgorithm"      # Instagram
 SITE_URL = os.environ.get("SITE_URL", "https://garygunn94.github.io/premier-league-predictions/")
 HASHTAGS = "#PremierLeague #FootballAnalytics #xG"
 SIZE = 1080
@@ -170,7 +171,7 @@ def newsletter(ctx: dict, views: list[dict]) -> str:
         top = sim["teams"][0]
         lines += ["", f"**The season in {sim['runs']:,} simulations:** {top['team']} win the title in "
                       f"{round(top['title'] * 100)}% of them. [Every club's chances]({SITE_URL}table/index.html)"]
-    lines += ["", "---", "", f"Analysis, not betting advice. Follow {HANDLE} on X and Instagram. "
+    lines += ["", "---", "", f"Analysis, not betting advice. Follow {HANDLE} on X and {IG_HANDLE} on Instagram. "
                              f"Every call, chart and reason: {SITE_URL}"]
     return "\n".join(lines) + "\n"
 
@@ -182,7 +183,7 @@ def build_kit(ctx: dict, views: list[dict], env: Environment, out: Path) -> Path
     cards_dir = out / "cards"
     cards_dir.mkdir(parents=True, exist_ok=True)
     card = env.get_template("social_card.html")
-    base = {**ctx, "brand": BRAND, "handle": HANDLE, "size": SIZE, "root": "../.."}
+    base = {**ctx, "brand": BRAND, "handle": HANDLE, "ig_handle": IG_HANDLE, "size": SIZE, "root": "../.."}
     cap = {**captions(ctx, views), **extra_captions(ctx)}
     feature = next(v for v in views if v["slug"] == cap["friday_slug"])
     cards = [{"name": "round", "kind": "round", "title": f"Matchweek {ctx['matchweek']}: all the calls", "day": "Thursday"}]
