@@ -39,14 +39,25 @@ jobs:
           pip install playwright==1.64.0
           python -m playwright install --with-deps chromium
           python -m plpred.social --png site/social
-      # The posting kit (captions, newsletter, every card) is private: it is attached to this
-      # run as a download and taken off the public site. Only the images the site uses as link
-      # previews stay public.
-      - name: Keep the posting kit private
+      # The posting kit (captions, newsletter, every card) is private. Artifacts on a public
+      # repository can be downloaded by anyone signed in to GitHub, so the kit is attached to this
+      # run as a zip locked with the KIT_PASSWORD repository secret, and only when that secret is
+      # set. Only the images the site uses as link previews stay on the public site.
+      - name: Lock the posting kit
+        env:
+          KIT_PASSWORD: ${{ secrets.KIT_PASSWORD }}
+        run: |
+          if [ -z "$KIT_PASSWORD" ]; then
+            echo "::warning::KIT_PASSWORD is not set, so the posting kit is not attached to this run."
+          else
+            (cd site && 7z a -tzip -mem=AES256 -p"$KIT_PASSWORD" ../posting-kit.zip social > /dev/null)
+          fi
+      - name: Attach the posting kit
+        if: hashFiles('posting-kit.zip') != ''
         uses: actions/upload-artifact@v4
         with:
           name: posting-kit
-          path: site/social
+          path: posting-kit.zip
           retention-days: 30
       - name: Remove the posting kit from the public site
         run: |
