@@ -22,7 +22,25 @@ BRAND = "Inkwell & Algorithm"
 HANDLE = "@InkwellAlgo"                 # X
 IG_HANDLE = "@inkwellandalgorithm"      # Instagram
 SITE_URL = os.environ.get("SITE_URL", "https://garygunn94.github.io/premier-league-predictions/")
+# Instagram allows five hashtags a post and X rewards one or two; both treat them as labels, not reach.
 HASHTAGS = "#PremierLeague #FootballAnalytics #xG"
+ROUND_TAGS = "#PremierLeague #PLPredictions #FootballAnalytics #xG #EPL"
+FPL_TAGS = "#FPL #FantasyPremierLeague #FPLCommunity #PremierLeague"
+X_TAG = "#PremierLeague"
+# The three-letter codes behind the league's matchday tags, e.g. #ARSLIV.
+CODES = {"Arsenal": "ARS", "Aston Villa": "AVL", "Bournemouth": "BOU", "Brentford": "BRE", "Brighton": "BHA",
+         "Burnley": "BUR", "Chelsea": "CHE", "Coventry": "COV", "Crystal Palace": "CRY", "Everton": "EVE",
+         "Fulham": "FUL", "Hull": "HUL", "Ipswich": "IPS", "Leeds": "LEE", "Leicester": "LEI",
+         "Liverpool": "LIV", "Luton": "LUT", "Man City": "MCI", "Man United": "MUN", "Newcastle": "NEW",
+         "Nott'm Forest": "NFO", "Sheffield United": "SHU", "Southampton": "SOU", "Sunderland": "SUN",
+         "Tottenham": "TOT", "West Ham": "WHU", "Wolves": "WOL"}
+CLUB_TAGS = {"Arsenal": "#Arsenal", "Aston Villa": "#AVFC", "Bournemouth": "#AFCB", "Brentford": "#BrentfordFC",
+             "Brighton": "#BHAFC", "Burnley": "#BurnleyFC", "Chelsea": "#ChelseaFC", "Coventry": "#PUSB",
+             "Crystal Palace": "#CPFC", "Everton": "#EFC", "Fulham": "#FulhamFC", "Hull": "#HullCity",
+             "Ipswich": "#ITFC", "Leeds": "#LUFC", "Leicester": "#LCFC", "Liverpool": "#LFC",
+             "Man City": "#MCFC", "Man United": "#MUFC", "Newcastle": "#NUFC", "Nott'm Forest": "#NFFC",
+             "Southampton": "#SaintsFC", "Sunderland": "#SAFC", "Tottenham": "#THFC", "West Ham": "#WHUFC",
+             "Wolves": "#Wolves"}
 SIZE = 1080
 X_LIMIT = 280
 X_URL_LENGTH = 23  # X counts every link as 23 characters
@@ -59,17 +77,42 @@ def match_url(v: dict) -> str:
     return f"{SITE_URL}{v['path']}"
 
 
+def club_tag(team: str) -> str:
+    return CLUB_TAGS.get(team, "#" + re.sub(r"[^A-Za-z]", "", team))
+
+
+def match_tag(v: dict) -> str:
+    """The matchday tag X groups a game's posts under, e.g. #ARSLIV."""
+    code = lambda t: CODES.get(t, re.sub(r"[^A-Za-z]", "", t)[:3].upper())
+    return f"#{code(v['home_team'])}{code(v['away_team'])}"
+
+
+def with_link(post: str, link: str, lead: str = "The full breakdown:") -> list[str]:
+    """A post and a first reply carrying the link: link posts are the likeliest to lose reach on X."""
+    return [post, f"{lead} {link}"]
+
+
 def match_post(v: dict) -> str:
     close = ", too close to call" if v["confidence"] == "too close to call" else ""
     return fit_x(f"{v['home_team']} v {v['away_team']}\n"
                  f"Our call: {v['call_long'] if v['call'] != 'D' else 'draw'} {v['score_text']} ({v['our_p']}%{close}).\n"
-                 f"Why: {reason(v)}")
+                 f"Why: {reason(v)}", match_tag(v))
+
+
+def carousel_caption(v: dict) -> str:
+    """The Instagram caption for one game's carousel: the call, the main reason, then five tags."""
+    close = ", too close to call" if v["confidence"] == "too close to call" else f", {v['confidence']}"
+    return (f"{v['home_team']} v {v['away_team']}, {v['kickoff_long']}.\n\n"
+            f"Our call: {call_phrase(v).removeprefix('a ')} ({v['our_p']}%{close}).\n\n"
+            f"Why: {reason(v)}\n\nSwipe for how we got there, the numbers behind it and the most likely "
+            f"scores. The full breakdown is at the link in bio.\n\n"
+            f"#PremierLeague {club_tag(v['home_team'])} {club_tag(v['away_team'])} #FootballAnalytics #xG")
 
 
 def captions(ctx: dict, views: list[dict]) -> dict:
     mw, lead, upset, rec = ctx["matchweek"], ctx["lead"], ctx["features"]["upset"], ctx["record"]
     thread = [fit_x(f"Matchweek {mw}: every Premier League game called, with the data behind each call.\n"
-                    f"The thread is below, and the full breakdowns are at", SITE_URL)]
+                    f"The thread is below.", X_TAG)]
     thread += [match_post(v) for v in views]
     thread.append(f"Every call, chart and reason: {SITE_URL}")
     lines = "\n".join(f"{v['home_team']} v {v['away_team']}: {call_phrase(v).removeprefix('a ')} ({v['our_p']}%)"
@@ -77,7 +120,8 @@ def captions(ctx: dict, views: list[dict]) -> dict:
     out = {
         "thursday_x": thread,
         "thursday_instagram": (f"Matchweek {mw}, called.\n\n{lines}\n\nEvery call comes with the reasons and the "
-                               f"numbers behind it. Full breakdowns at the link in bio.\n\n{HASHTAGS}"),
+                               f"numbers behind it. Each game gets its own carousel, and the full breakdowns are at the "
+                               f"link in bio.\n\n{ROUND_TAGS}"),
     }
     feature = upset or lead
     if upset:
@@ -93,7 +137,8 @@ def captions(ctx: dict, views: list[dict]) -> dict:
              f"at {lead['our_p']}%. Here is how we got there:")
         ig = (f"Match of the week: {lead['home_team']} v {lead['away_team']}.\n\nWe call {call_phrase(lead)} at "
               f"{lead['our_p']}%. The chart shows every factor that moved the number.\n\n{HASHTAGS}")
-    out["friday_x"], out["friday_instagram"], out["friday_slug"] = fit_x(x, match_url(feature)), ig, feature["slug"]
+    out["friday_x"] = with_link(fit_x(x, match_tag(feature)), match_url(feature))
+    out["friday_instagram"], out["friday_slug"] = ig, feature["slug"]
     if rec:
         last = rec["last"]
         season = f"Season so far: {rec['rate']}% of results right"
@@ -101,8 +146,8 @@ def captions(ctx: dict, views: list[dict]) -> dict:
             season += f", against {rec['fav_rate']}% for the bookmakers' favourite"
         body = (f"Last week: {last['right']} of {last['n']} results right, {last['exact']} exact "
                 f"{'score' if last['exact'] == 1 else 'scores'}.\n{season}.")
-        out["monday_x"] = fit_x(f"{body}\nEvery call, right or wrong:", SITE_URL)
-        out["monday_instagram"] = f"{body}\n\nWe publish every call, right or wrong.\n\n{HASHTAGS}"
+        out["monday_x"] = with_link(fit_x(body, X_TAG), SITE_URL, "Every call, right or wrong:")
+        out["monday_instagram"] = f"{body}\n\nWe publish every call, right or wrong.\n\n{HASHTAGS} #DataViz"
     return out
 
 
@@ -119,7 +164,7 @@ def extra_captions(ctx: dict) -> dict:
         body = (f"We played out the rest of the season {sim['runs']:,} times.\n"
                 f"{top['team']} win the title in {round(top['title'] * 100)}% of them. "
                 f"{down['team']} go down in {round(down['relegation'] * 100)}%.{move}")
-        out["projection_x"] = fit_x(f"{body}\nEvery club:", f"{SITE_URL}table/index.html")
+        out["projection_x"] = with_link(fit_x(body, X_TAG), f"{SITE_URL}table/index.html", "Every club:")
         out["projection_instagram"] = f"{body}\n\nEvery club's chances at the link in bio.\n\n{HASHTAGS}"
     if fpl and fpl.get("clean_sheets"):
         cs = fpl["clean_sheets"][:3]
@@ -127,12 +172,13 @@ def extra_captions(ctx: dict) -> dict:
         goals = fpl["scoring"][0]
         body = (f"FPL Gameweek {ctx['matchweek']}: best clean-sheet chances, from our model: {lines}.\n"
                 f"Most expected goals: {goals['team']} ({goals['xg_for']:.1f}).")
-        out["fpl_x"] = fit_x(f"{body}\nEvery club and the next six weeks:", f"{SITE_URL}fpl/index.html")
-        out["fpl_instagram"] = f"{body}\n\nThe full fixture strip is at the link in bio.\n\n#FPL {HASHTAGS}"
+        out["fpl_x"] = with_link(fit_x(body, "#FPL"), f"{SITE_URL}fpl/index.html",
+                                 "Every club and the next six weeks:")
+        out["fpl_instagram"] = f"{body}\n\nThe full fixture strip is at the link in bio.\n\n{FPL_TAGS}"
     if miss:
         body = (f"What we got wrong: {miss['match']}.\nWe said {miss['called']} at {miss['p']}%. "
                 f"It finished {miss['result']}.\n{miss['kind']}: {miss['text']}")
-        out["miss_x"] = fit_x(body)
+        out["miss_x"] = [fit_x(body)]
         out["miss_instagram"] = f"{body}\n\nWe publish every call, right or wrong.\n\n{HASHTAGS}"
     return out
 
@@ -178,6 +224,17 @@ def newsletter(ctx: dict, views: list[dict]) -> str:
 
 # ---------------------------------------------------------------- the kit
 
+def carousel(v: dict) -> list[dict]:
+    """One game's slides: the call, how we got there, the numbers, the likely scores, us v the bookies."""
+    teams = f"{v['home_team']} v {v['away_team']}"
+    slides = [("call", teams), ("reasons", f"How we got to {v['our_p']}%: {teams}"),
+              ("numbers", f"The numbers: {teams}"), ("scores", f"Most likely scores: {teams}")]
+    if v["mkt"]:
+        slides.append(("market", f"Us v the bookies: {teams}"))
+    return [{"name": f"{kind}-{v['slug']}", "kind": kind, "g": v, "title": title,
+             "day": "Thursday" if kind == "call" else None} for kind, title in slides]
+
+
 def build_kit(ctx: dict, views: list[dict], env: Environment, out: Path) -> Path:
     """Write the cards and the kit page into out (normally site/social)."""
     cards_dir = out / "cards"
@@ -187,10 +244,9 @@ def build_kit(ctx: dict, views: list[dict], env: Environment, out: Path) -> Path
     cap = {**captions(ctx, views), **extra_captions(ctx)}
     feature = next(v for v in views if v["slug"] == cap["friday_slug"])
     cards = [{"name": "round", "kind": "round", "title": f"Matchweek {ctx['matchweek']}: all the calls", "day": "Thursday"}]
-    cards += [{"name": f"call-{v['slug']}", "kind": "call", "g": v, "day": "Thursday",
-               "title": f"{v['home_team']} v {v['away_team']}"} for v in views]
-    cards.append({"name": f"reasons-{feature['slug']}", "kind": "reasons", "g": feature, "day": "Friday",
-                  "title": f"How we got to {feature['our_p']}%: {feature['home_team']} v {feature['away_team']}"})
+    carousels = {v["slug"]: carousel(v) for v in views}
+    for v in views:
+        cards += carousels[v["slug"]]
     if ctx["record"]:
         cards.append({"name": "scorecard", "kind": "scorecard", "day": "Monday", "title": "Last week's scorecard"})
     if "miss_x" in cap:
@@ -207,31 +263,37 @@ def build_kit(ctx: dict, views: list[dict], env: Environment, out: Path) -> Path
     days = [
         {"day": "Thursday", "when": "When the calls go live",
          "x": cap["thursday_x"], "instagram": cap["thursday_instagram"],
-         "cards": [c for c in cards if c["day"] == "Thursday" and c["kind"] != "fpl"],
-         "how": "Post the X thread with the round card on the first post. On Instagram, post the round card "
-                "and the match cards as one carousel."},
+         "cards": [c for c in cards if c["kind"] in ("round", "call")],
+         "how": "Post the X thread with the round card on the first post and each match card on its game's "
+                "post. On Instagram, post the round card on its own; each game's carousel follows below."},
         {"day": "Friday", "when": "The bold call",
-         "x": [cap["friday_x"]], "instagram": cap["friday_instagram"],
-         "cards": [c for c in cards if c.get("g") is feature and c["kind"] == "call"]
-                  + [c for c in cards if c["day"] == "Friday"],
-         "how": "Post the reasons chart on X. On Instagram, post the match card then the chart as a carousel."},
+         "x": cap["friday_x"], "instagram": cap["friday_instagram"],
+         "cards": [c for c in carousels[feature["slug"]] if c["kind"] in ("call", "reasons")],
+         "how": "Post the reasons chart on X, then the link as the first reply. On Instagram, post the match "
+                "card then the chart as a carousel."},
     ]
+    days += [{"day": f"{v['home_team']} v {v['away_team']}", "when": f"Carousel · {v['kickoff_text']}",
+              "x": [match_post(v), f"The full breakdown: {match_url(v)}"], "instagram": carousel_caption(v),
+              "cards": carousels[v["slug"]],
+              "how": "Post every slide, in order, as one Instagram carousel, any time from Thursday to "
+                     "matchday. On X, attach the first four slides to the post and put the link in the "
+                     "first reply."} for v in views]
     if "fpl_x" in cap:
-        days.insert(1, {"day": "Thursday, later", "when": "Before the FPL deadline", "x": [cap["fpl_x"]],
+        days.insert(1, {"day": "Thursday, later", "when": "Before the FPL deadline", "x": cap["fpl_x"],
                         "instagram": cap["fpl_instagram"], "cards": [c for c in cards if c["kind"] == "fpl"],
                         "how": "For Fantasy Premier League players. Post it a few hours after the main thread."})
     if "monday_x" in cap:
-        days.append({"day": "Monday", "when": "The scorecard", "x": [cap["monday_x"]],
+        days.append({"day": "Monday", "when": "The scorecard", "x": cap["monday_x"],
                      "instagram": cap["monday_instagram"], "cards": [c for c in cards if c["kind"] == "scorecard"],
                      "how": "The record covers the newest results the site has. Rebuild after the weekend's "
                             "results are in, so the scorecard includes them."})
     if "miss_x" in cap:
-        days.append({"day": "Monday, later", "when": "What we got wrong", "x": [cap["miss_x"]],
+        days.append({"day": "Monday, later", "when": "What we got wrong", "x": cap["miss_x"],
                      "instagram": cap["miss_instagram"], "cards": [c for c in cards if c["kind"] == "miss"],
                      "how": "Our most confident wrong call of the round, and whether the chances backed us. "
                             "Owning the misses is what makes the hits believable."})
     if "projection_x" in cap:
-        days.append({"day": "Wednesday", "when": "The season so far", "x": [cap["projection_x"]],
+        days.append({"day": "Wednesday", "when": "The season so far", "x": cap["projection_x"],
                      "instagram": cap["projection_instagram"],
                      "cards": [c for c in cards if c["kind"] == "projection"],
                      "how": "Run the Update data workflow (history step) after the weekend first, so the "

@@ -41,6 +41,25 @@ html,body{margin:0;width:{{ size }}px;height:{{ size }}px;overflow:hidden}
 .post .nums .n{font-size:150px;font-weight:900;line-height:.95}
 .post .nums .u{font-size:24px;color:var(--muted);margin-top:24px}
 .post .badge{width:1.1em;height:1.1em}
+.post .sub{font-size:24px;font-weight:700;margin-bottom:12px}
+.post .hb{display:grid;grid-template-columns:340px 1fr 80px;align-items:center;gap:16px;padding:8px 0}
+.post .hb .l{font-size:24px;line-height:1.2}
+.post .hb .t{height:30px;background:var(--rule)}
+.post .hb .t div{height:100%}
+.post .hb .v{font-size:28px;font-weight:700;text-align:right}
+.post .chips{display:flex;gap:10px}
+.post .chip{width:56px;height:56px;font-size:26px}
+.post .fr{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--rule)}
+.post .fr .who{font-size:30px;font-weight:800}
+.post .fr .pos{font-size:20px;font-weight:600;margin-left:12px}
+.post .mk{display:grid;grid-template-columns:240px 1fr;gap:20px;align-items:center;padding:14px 0;border-bottom:1px solid var(--rule)}
+.post .mk .l{font-size:36px;font-weight:800;white-space:nowrap}
+.post .mk .pair{display:flex;flex-direction:column;gap:8px}
+.post .mk .row{display:grid;grid-template-columns:150px 1fr 80px;align-items:center;gap:12px;font-size:20px;font-weight:600}
+.post .mk .trk{height:26px;background:var(--rule)}.post .mk .trk div{height:100%}
+.post .mk .num{font-size:26px;font-weight:700;text-align:right}
+.post .key{display:flex;gap:28px;font-size:20px;font-weight:600;margin-top:8px}
+.post .key i{display:inline-block;width:18px;height:18px;margin-right:8px;vertical-align:-3px}
 </style>
 </head>
 <body>
@@ -80,6 +99,53 @@ html,body{margin:0;width:{{ size }}px;height:{{ size }}px;overflow:hidden}
 <span class="v lab">{{ r.val }}</span></div>
 {% endfor %}
 </div>
+{% elif card.kind == "numbers" %}
+<div class="kicker lab accent">{{ g.home_team }} v {{ g.away_team }} · the numbers</div>
+<h1 class="head disp" style="font-size:60px">What the <span class="accent">data</span> says.</h1>
+{% if g.xg_rows %}
+<div>
+<div class="sub lab muted">Expected goals a game, this season</div>
+{% for x in g.xg_rows %}
+<div class="hb"><span class="l">{{ x.label }}</span><div class="t"><div style="width:{{ x.w }}%;background:{{ 'var(--ink)' if x.side == 'home' and x.kind == 'for' else 'var(--draw)' if x.side == 'home' else 'var(--accent)' if x.kind == 'for' else 'var(--accent-deep)' }}"></div></div><span class="v lab">{{ '%.1f'|format(x.v) }}</span></div>
+{% endfor %}
+</div>
+{% endif %}
+<div>
+<div class="sub lab muted">Last five games, oldest first</div>
+{% for t, side in ((g.home_team, 'home'), (g.away_team, 'away')) %}
+{% set st = g.standings[side] %}
+<div class="fr"><span><span class="who disp">{{ t }}</span>{% if st %}<span class="pos lab muted">{{ st.position }}{{ {1:'st',2:'nd',3:'rd'}.get(st.position, 'th') }} · {{ st.points }} pts</span>{% endif %}</span>
+<span class="chips">{% for x in g.form[side] %}<span class="chip lab {{ x.result }}">{{ x.result }}</span>{% endfor %}</span></div>
+{% endfor %}
+</div>
+{% elif card.kind == "scores" %}
+<div class="kicker lab accent">{{ g.home_team }} v {{ g.away_team }} · the scoreline</div>
+<h1 class="head disp" style="font-size:60px">Most likely <span class="accent">scores.</span></h1>
+<div>
+{% set top = g.top_scores[0].p if g.top_scores else 1 %}
+{% for s in g.top_scores %}
+<div class="hb" style="grid-template-columns:330px 1fr 80px"><span class="l disp" style="font-size:38px;font-weight:800;white-space:nowrap">{{ g.home_short if s.side == 'H' else g.away_short if s.side == 'A' else 'Draw' }} {{ s.score }}</span><div class="t"><div style="width:{{ (s.p / top * 100)|round }}%;background:{{ 'var(--ink)' if s.side == 'H' else 'var(--accent)' if s.side == 'A' else 'var(--draw)' }}"></div></div><span class="v lab">{{ s.p }}%</span></div>
+{% endfor %}
+</div>
+<div>
+<div class="sub lab muted">Expected goals in this game: {{ g.home_short }} {{ '%.1f'|format(g.expected_goals.home) }}, {{ g.away_short }} {{ '%.1f'|format(g.expected_goals.away) }}</div>
+{{ split(g) }}
+<div class="split-key lab"><span>{{ g.home_short }} {{ g.h }}%</span><span class="muted">Draw {{ g.d }}%</span><span class="accent">{{ g.away_short }} {{ g.a }}%</span></div>
+</div>
+{% elif card.kind == "market" %}
+{% set fav = g.mkt|dictsort(by='value')|last %}
+<div class="kicker lab accent">{{ g.home_team }} v {{ g.away_team }} · us v the bookies</div>
+<h1 class="head disp" style="font-size:60px">{% if fav[0] == g.call %}The market <span class="accent">agrees{% if (g.our_p - g.mkt_p)|abs <= 4 %}, just{% endif %}.</span>{% else %}We part company <span class="accent">with the market.</span>{% endif %}</h1>
+<div>
+{% for code, name in (('H', g.home_short ~ ' win'), ('D', 'Draw'), ('A', g.away_short ~ ' win')) %}
+{% set us = {'H': g.h, 'D': g.d, 'A': g.a}[code] %}
+<div class="mk"><span class="l disp">{{ name }}</span><div class="pair">
+<div class="row lab accent"><span>Our model</span><div class="trk"><div style="width:{{ us }}%;background:var(--accent)"></div></div><span class="num">{{ us }}%</span></div>
+<div class="row lab"><span>Bookmakers</span><div class="trk"><div style="width:{{ g.mkt[code] }}%;background:var(--ink)"></div></div><span class="num">{{ g.mkt[code] }}%</span></div>
+</div></div>
+{% endfor %}
+</div>
+<div class="why-text">Bookmakers' chances with their margin taken out. Analysis, not betting advice.</div>
 {% elif card.kind == "scorecard" %}
 <div class="kicker lab accent">The scorecard · games from {{ record.last.label }}</div>
 <h1 class="head disp">Right or wrong, <span class="accent">we publish it.</span></h1>
