@@ -6,21 +6,34 @@ Pages: a home page (what the site is, how it works, the data sources, every matc
 one page per matchweek in matchweek/<n>/ (the calls, our record, charts, last week's
 verdict, the table and the table the chances deserved) with a page per match beside it,
 a record/ page on how often our percentages came true (with the pre-registered luck-gap
-test), and the posting kit for social media in social/ for the newest week (see plpred.social).
+test), the projected final table in table/ (see plpred.simulate), the FPL corner in fpl/
+(see plpred.fantasy), a page per club in club/<name>/, us against the pundits in pundits/
+(see plpred.pundits), and the posting kit for social media and the weekly newsletter in
+social/ for the newest week (see plpred.social). It also writes sitemap.xml, an Atom feed
+of the matchweeks (feed.xml) and robots.txt.
+
+Optional settings, read from the environment (the Publish site workflow passes them from
+the repository's Actions variables):
+    SITE_URL        the site's public address, for share previews, the sitemap and the feed
+    GOATCOUNTER     a GoatCounter site code, to count visits (no cookies, no banner)
+    NEWSLETTER_URL  the newsletter's sign-up page, for the sign-up link in every footer
 """
 import argparse
 import json
 import logging
+import os
 import re
 import shutil
 from datetime import datetime
 from pathlib import Path
+from xml.sax.saxutils import escape
 
 import numpy as np
 import pandas as pd
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from plpred import explain, luck, seasons, social
+from plpred import explain, fantasy, luck, model, pundits, seasons, simulate, social
+from plpred.predict import load_settings
 from plpred.sources import api_football
 
 log = logging.getLogger("plpred.site")
@@ -60,6 +73,10 @@ def matchweek_of(preds: dict, matches: pd.DataFrame, season: int) -> int:
 
 def slug(home: str, away: str) -> str:
     return re.sub(r"[^a-z0-9]+", "-", f"{home}-v-{away}".lower()).strip("-")
+
+
+def club_slug(team: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "-", team.lower().replace("'", "")).strip("-")
 
 
 def pct(p: float) -> int:
@@ -254,6 +271,9 @@ def record(data: Path, season: int, before=None) -> dict | None:
     for r in last.itertuples():
         verdict = "Exact score" if r.exact else "Right result" if r.right else "Wrong"
         verdict_rows.append({"match": f"{r.home_team} v {r.away_team}",
+                             "home_team": r.home_team, "away_team": r.away_team, "call_code": r.call,
+                             "result_code": r.result, "p": pct(max(r.p_home, r.p_draw, r.p_away)),
+                             "season": int(r.season),
                              "call": f"{CALL_NAMES[r.call]} {r.score.replace('-', '–')}",
                              "result": f"{r.home_goals}–{r.away_goals}", "verdict": verdict,
                              "wrong": verdict == "Wrong"})
@@ -272,6 +292,35 @@ def record(data: Path, season: int, before=None) -> dict | None:
         "last": {"rows": verdict_rows, "right": int(last.right.sum()), "n": len(last),
                  "exact": int(last.exact.sum()), "label": last.date.min().strftime("%d %B")},
     }
+
+
+def biggest_miss(rec: dict | None, matches: pd.DataFrame) -> dict | None:
+    """Last round's most confident wrong call, and whether the chances (xG) backed us or the result."""
+    wrong = [r for r in (rec or {}).get("last", {}).get("rows", []) if r["wrong"]]
+    if not wrong:
+        return None
+    r = max(wrong, key=lambda r: r["p"])
+    m = matches[(matches.season == r["season"]) & (matches.home_team == r["home_team"])
+                & (matches.away_team == r["away_team"])]
+    called = {"H": f"{r['home_team']} to win", "A": f"{r['away_team']} to win", "D": "a draw"}[r["call_code"]]
+    out = {**r, "called": called}
+    hx, ax = (m.iloc[0].home_xg, m.iloc[0].away_xg) if len(m) else (np.nan, np.nan)
+    if np.isnan(hx) or np.isnan(ax):
+        out.update(kind="No xG yet", text="We don't have the expected goals for this one yet, so the jury is out.")
+        return out
+    margin = hx - ax
+    xg_side = "H" if margin > 0.35 else "A" if margin < -0.35 else "D"
+    xg = f"{r['home_team']} {hx:.1f}, {r['away_team']} {ax:.1f}"
+    if xg_side == r["call_code"]:
+        out.update(kind="Unlucky", text=f"The chances backed our call (xG: {xg}). On another day this lands, "
+                                        "so it doesn't change how we rate either side much.")
+    elif xg_side == r["result_code"]:
+        out.update(kind="Our mistake", text=f"The chances went the way of the result too (xG: {xg}). "
+                                            "We misread this one, and the ratings will move to reflect it.")
+    else:
+        out.update(kind="Somewhere in between", text=f"The chances pointed to neither our call nor the result "
+                                                     f"(xG: {xg}). A closer game than either the score or we suggested.")
+    return out
 
 
 def league_table(matches: pd.DataFrame, season: int) -> list[dict]:
@@ -304,10 +353,78 @@ def week_context(preds: dict, is_replay: bool, data: Path, matches: pd.DataFrame
                                   {lead["home_team"], lead["away_team"]} |
                                   ({features["upset"]["home_team"], features["upset"]["away_team"]}
                                    if features["upset"] else set())),
-        "record": record(data, season, preds["as_of"]),
+        "record": (rec := record(data, season, preds["as_of"])),
+        "miss": biggest_miss(rec, matches),
         "table": league_table(before, season),
         "deserved": luck.deserved_table(before, season),
     }
+
+
+def club_view(team: str, w: dict, sim: dict | None, strip: dict | None, matches: pd.DataFrame,
+              data: Path, season: int) -> dict:
+    """Everything a club's page needs, as of the newest matchweek."""
+    before = matches[(matches.date < w["as_of"]) & (matches.season == season)
+                     & ((matches.home_team == team) | (matches.away_team == team))].sort_values("date")
+    games = []
+    for g in before.itertuples():
+        home = g.home_team == team
+        gf, ga = (g.home_goals, g.away_goals) if home else (g.away_goals, g.home_goals)
+        xf, xa = (g.home_xg, g.away_xg) if home else (g.away_xg, g.home_xg)
+        games.append({"date": pd.Timestamp(g.date).strftime("%d %b"), "opponent": g.away_team if home else g.home_team,
+                      "venue": "H" if home else "A", "score": f"{int(gf)}–{int(ga)}",
+                      "result": "W" if gf > ga else "L" if gf < ga else "D",
+                      "xf": None if pd.isna(xf) else round(float(xf), 1), "xa": None if pd.isna(xa) else round(float(xa), 1)})
+    top = max([x for g in games for x in (g["xf"], g["xa"]) if x is not None] + [3.0])
+    for g in games:
+        g["xf_h"] = round((g["xf"] or 0) / top * 100)
+        g["xa_h"] = round((g["xa"] or 0) / top * 100)
+    calls = None
+    path = data / "backtest" / f"predictions_{season}.csv"
+    if path.exists():
+        p = pd.read_csv(path)
+        p = p[(p.home_team == team) | (p.away_team == team)]
+        if len(p):
+            calls = {"n": len(p), "right": int((p.call == p.result).sum())}
+            calls["rate"] = round(calls["right"] / calls["n"] * 100)
+    return {
+        "team": team, "slug": club_slug(team),
+        "row": next((t for t in w["table"] if t["team"] == team), None),
+        "deserved": next((t for t in w["deserved"] if t["team"] == team), None),
+        "sim": next((t for t in (sim or {}).get("teams", []) if t["team"] == team), None),
+        "games": games[::-1],
+        "calls": calls,
+        "now": next((v for v in w["views"] if team in (v["home_team"], v["away_team"])), None),
+        "strip": next((r for r in (strip or {}).get("rows", []) if r["team"] == team), None),
+        "gameweeks": (strip or {}).get("gameweeks", []),
+    }
+
+
+def page_meta(path: str, title: str, description: str, image: str | None = None) -> dict:
+    return {"path": path, "title": title, "description": description, "image": image or "social/png/brand.png"}
+
+
+def write_extras(out: Path, weeks: list[dict], pages: list[str], site_url: str, built: datetime) -> None:
+    """sitemap.xml, feed.xml (one entry per matchweek, newest first) and robots.txt."""
+    urls = "".join(f"<url><loc>{escape(site_url + p)}</loc></url>" for p in pages)
+    (out / "sitemap.xml").write_text('<?xml version="1.0" encoding="UTF-8"?>\n'
+                                     f'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{urls}</urlset>\n')
+    entries = []
+    for w in weeks[::-1]:
+        link = f"{site_url}matchweek/{w['matchweek']}/index.html"
+        when = w["as_of"].strftime("%Y-%m-%dT00:00:00Z")
+        summary = "; ".join(f"{v['home_team']} v {v['away_team']}: {v['call_long'].lower() if v['call'] != 'D' else 'draw'} "
+                            f"{v['score_text']} ({v['our_p']}%)" for v in w["views"])
+        title = f"Matchweek {w['matchweek']}: {w['lead']['headline']}"
+        entries.append(f"<entry><title>{escape(title)}</title>"
+                       f"<link href=\"{escape(link)}\"/><id>{escape(link)}</id><updated>{when}</updated>"
+                       f"<summary>{escape(summary)}</summary></entry>")
+    (out / "feed.xml").write_text(
+        '<?xml version="1.0" encoding="utf-8"?>\n<feed xmlns="http://www.w3.org/2005/Atom">'
+        f"<title>Inkwell &amp; Algorithm</title><subtitle>Data-driven Premier League predictions, with the reasons."
+        f"</subtitle><link href=\"{escape(site_url)}\"/><link rel=\"self\" href=\"{escape(site_url)}feed.xml\"/>"
+        f"<id>{escape(site_url)}</id><author><name>Inkwell &amp; Algorithm</name></author><updated>{built.strftime('%Y-%m-%dT%H:%M:%SZ')}</updated>"
+        + "".join(entries) + "</feed>\n")
+    (out / "robots.txt").write_text(f"User-agent: *\nAllow: /\nSitemap: {site_url}sitemap.xml\n")
 
 
 def build(data: Path, out: Path) -> Path:
@@ -323,11 +440,34 @@ def build(data: Path, out: Path) -> Path:
         w["next"] = weeks[i + 1] if i + 1 < len(weeks) else None
         w["first_kickoff"] = min(pd.Timestamp(v["kickoff"]) for v in w["views"]).strftime("%d %B")
     latest = weeks[-1]
+    season = int(latest["season"][:4])
+    settings = load_settings(data)
+    built = datetime.now()
+
+    # Season projection from every result we have (so a midweek rebuild includes the weekend),
+    # and as it stood a week earlier, for the week-on-week moves.
+    sim_as_of = max(latest["as_of"], matches.date.max() + pd.Timedelta(days=1))
+    sim = simulate.run(matches, season, sim_as_of, settings)
+    sim = simulate.with_changes(sim, simulate.run(matches, season, sim_as_of - pd.Timedelta(days=7), settings))
+    latest["sim"] = sim
+    latest["sim_moves"] = simulate.headline_moves(sim) if sim else []
+    known = matches[matches.date < latest["as_of"]]
+    ratings = model.fit(known, as_of=latest["as_of"], settings=settings)
+    fpl = {"this_week": fantasy.this_week(latest["views"], settings.rho),
+           "strip": fantasy.strip(fantasy.load_fixtures(data), ratings, latest["views"])}
+    fpl["clean_sheets"] = sorted(fpl["this_week"], key=lambda r: -r["cs"])
+    fpl["scoring"] = sorted(fpl["this_week"], key=lambda r: -r["xg_for"])
+
+    site_url = social.SITE_URL
     common = {
-        "built": datetime.now().strftime("%d %B %Y"),
+        "built": built.strftime("%d %B %Y"),
         "badges": {},
         "weeks": weeks[::-1],
         "latest": latest,
+        "site_url": site_url,
+        "goatcounter": os.environ.get("GOATCOUNTER", "").strip(),
+        "newsletter_url": os.environ.get("NEWSLETTER_URL", "").strip(),
+        "clubs": {t["team"]: club_slug(t["team"]) for t in latest["table"]},
     }
     env = Environment(loader=FileSystemLoader(TEMPLATES), autoescape=select_autoescape(["html"]),
                       trim_blocks=True, lstrip_blocks=True)
@@ -342,24 +482,59 @@ def build(data: Path, out: Path) -> Path:
         teams = set(matches.home_team) | {t for w in weeks for v in w["views"] for t in (v["home_team"], v["away_team"])}
         common["badges"] = {t: f"{api_football.badge_name(t)}.png" for t in teams
                             if (badge_dir / f"{api_football.badge_name(t)}.png").exists()}
-    (out / "index.html").write_text(env.get_template("home.html").render(
-        **common, record=latest["record"], replay=is_replay, root="."))
-    (out / "record").mkdir()
-    (out / "record" / "index.html").write_text(env.get_template("calibration.html").render(
-        **common, record=latest["record"], cal=luck.calibration(data, matches),
-        prereg=luck.preregistered(data, matches), root=".."))
-    pages = 2
+    written = []
+
+    def write(path: str, template: str, meta: dict, **ctx) -> None:
+        target = out / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        root = "/".join([".."] * path.count("/")) or "."
+        target.write_text(env.get_template(template).render(**common, **ctx, meta=meta, root=root))
+        written.append(path)
+
+    tagline = "Data-driven Premier League predictions, with the reasons. New every Thursday."
+    write("index.html", "home.html", page_meta("", "Inkwell & Algorithm", tagline),
+          record=latest["record"], replay=is_replay)
+    write("record/index.html", "calibration.html",
+          page_meta("record/index.html", "Are our percentages right?",
+                    "Every chance we've given, checked against what happened, and our public test."),
+          record=latest["record"], cal=luck.calibration(data, matches), prereg=luck.preregistered(data, matches))
+    if sim:
+        write("table/index.html", "projection.html",
+              page_meta("table/index.html", f"How the {latest['season']} season ends: {sim['runs']:,} simulations",
+                        "Title, top-four and relegation chances for every Premier League club, updated every week."),
+              sim=sim, moves=latest["sim_moves"])
+    write("fpl/index.html", "fpl.html",
+          page_meta("fpl/index.html", f"FPL corner, Gameweek {latest['matchweek']}",
+                    "Clean-sheet and scoring chances for every club, and the fixtures ahead."),
+          fpl=fpl)
+    write("pundits/index.html", "pundits.html",
+          page_meta("pundits/index.html", "The algorithm v the pundits",
+                    "Well-known pundits' predictions, scored beside ours on the same games."),
+          board=pundits.scoreboard(data, matches, all_preds if not is_replay else []))
+    clubs = [club_view(t, latest, sim, fpl["strip"], matches, data, season) for t in sorted(common["clubs"])]
+    write("club/index.html", "clubs.html",
+          page_meta("club/index.html", "The clubs", "Every Premier League club's season in numbers."), club_list=clubs)
+    for c in clubs:
+        write(f"club/{c['slug']}/index.html", "club.html",
+              page_meta(f"club/{c['slug']}/index.html", f"{c['team']}: the season in numbers",
+                        f"{c['team']}'s chances, form, expected goals and fixtures."), c=c)
     for w in weeks:
-        folder = out / "matchweek" / str(w["matchweek"])
-        folder.mkdir(parents=True)
-        ctx = {**w, **common}
-        (folder / "index.html").write_text(env.get_template("week.html").render(**ctx, root="../.."))
+        ctx = {**w}
+        is_latest = w is latest
+        write(f"matchweek/{w['matchweek']}/index.html", "week.html",
+              page_meta(f"matchweek/{w['matchweek']}/index.html", f"Matchweek {w['matchweek']}: {w['lead']['headline']}",
+                        f"Every Premier League match in matchweek {w['matchweek']}, called and explained.",
+                        "social/png/round.png" if is_latest else None), **ctx)
         for v in w["views"]:
-            (folder / f"{v['slug']}.html").write_text(env.get_template("match.html").render(**ctx, g=v, root="../.."))
-        pages += 1 + len(w["views"])
-    social.build_kit({**latest, **common}, latest["views"], env, out / "social")
+            write(v["path"], "match.html",
+                  page_meta(v["path"], f"{v['home_team']} v {v['away_team']}: {v['headline']}",
+                            f"Our call: {v['call_long'] if v['call'] != 'D' else 'draw'} {v['score_text']} ({v['our_p']}%). "
+                            + (v["front_reasons"][0]["text"] if v["front_reasons"] else ""),
+                            f"social/png/call-{v['slug']}.png" if is_latest else None), **ctx, g=v)
+    social.build_kit({**latest, **common, "fpl": fpl}, latest["views"], env, out / "social")
+    write_extras(out, weeks, written, site_url, built)
     (out / ".nojekyll").write_text("")
-    log.info("Built %d pages for %d matchweeks into %s (%s)", pages, len(weeks), out,
+    log.info("Built %d pages for %d matchweeks into %s (%s)", len(written), len(weeks), out,
              "replay" if is_replay else "live")
     return out
 

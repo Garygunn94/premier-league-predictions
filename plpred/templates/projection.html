@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% from "macros.html" import badge, club, page_head, pctcell, change, wordmark with context %}
+{% block title %}How the season ends: Inkwell &amp; Algorithm{% endblock %}
+{% block masthead %}{{ page_head("Season projection", root, latest, built, [("#table", "Every club"), ("#how", "How it works")]) }}{% endblock %}
+{% block content %}
+<section class="sec row">
+<article class="grow">
+<div class="kicker lab">{{ "{:,}".format(sim.runs) }} simulations · {{ sim.fixtures_left }} games left</div>
+<h2 class="lead-h disp" style="font-style:italic">How the season ends</h2>
+<p class="standfirst">We played out every remaining fixture {{ "{:,}".format(sim.runs) }} times, each one drawn from the same chances behind our weekly calls. Counting where every club finished gives its chance of the title, the top four and relegation.</p>
+</article>
+<aside class="side stack">
+{% if moves %}
+<div class="rule-top">
+<h3 class="lab small-head">Biggest moves this week</h3>
+<ul class="plain">
+{% for m in moves %}<li><span>{{ club(m.team, root) }}, {{ m.what }}</span><span class="lab" style="font-weight:700">{{ change(m.change, m.what == "relegation") }} to {{ m.now }}%</span></li>
+{% endfor %}
+</ul>
+</div>
+{% endif %}
+<div class="rule-top">
+<h3 class="lab small-head">Favourites</h3>
+<p class="body" style="font-size:16px;line-height:1.5">{% set t = sim.teams[0] %}{{ t.team }} win the title in {{ pctcell(t.title) }} of runs. {% set d = sim.teams|sort(attribute="relegation", reverse=true)|first %}{{ d.team }} go down in {{ pctcell(d.relegation) }}.</p>
+</div>
+</aside>
+</section>
+
+<section id="table" class="sec">
+<div class="sec-head rule-top"><h2 class="sec-title disp">Every club</h2><span class="lab muted" style="font-size:13px;font-weight:600">Arrows: change in points since a week ago</span></div>
+<div class="scroll">
+<table>
+<thead><tr class="lab"><th scope="col">#</th><th scope="col">Club</th><th scope="col" class="num">Pts now</th><th scope="col" class="num">Expected final pts</th><th scope="col" class="num">Likely finish</th><th scope="col" class="num">Title</th><th scope="col" class="num">Top 4</th><th scope="col" class="num">Relegation</th></tr></thead>
+<tbody>
+{% for r in sim.teams %}
+<tr><td>{{ r.projected }}</td><td style="font-weight:600"><span style="display:inline-flex;align-items:center;gap:8px">{{ badge(r.team, root) }}{{ club(r.team, root) }}</span></td><td class="num">{{ r.points }}</td><td class="num" style="font-weight:700">{{ '%.0f'|format(r.xpts) }}</td><td class="num">{% if r.low == r.high %}{{ r.low }}{% else %}{{ r.low }}–{{ r.high }}{% endif %}</td>
+<td class="num">{{ pctcell(r.title) }} <span class="lab" style="font-size:11px">{{ change(r.title_change) }}</span></td>
+<td class="num">{{ pctcell(r.top) }} <span class="lab" style="font-size:11px">{{ change(r.top_change) }}</span></td>
+<td class="num{% if r.relegation >= 0.5 %} wrong{% endif %}">{{ pctcell(r.relegation) }} <span class="lab" style="font-size:11px">{{ change(r.relegation_change, true) }}</span></td></tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+<p class="muted" style="font-size:14px;margin-top:12px">Likely finish is the range of places a club ends up in 8 runs out of 10. Red arrows are bad news: a falling title or top-four chance, or a rising relegation chance. Ties on points are settled by goal difference, then goals scored.</p>
+</section>
+
+<section id="how" class="sec">
+<h2 class="sec-title disp" style="margin-bottom:12px">How it works, and what it can't see</h2>
+<p class="body" style="font-size:17px;line-height:1.6;max-width:820px">Each remaining game is simulated from both teams' attack and defence ratings, the same ones behind our weekly calls, using results up to {{ sim.as_of }}. Every run gives a full final table. The ratings are held fixed for the whole season, so the projection can't foresee injuries, new managers or January signings. Real uncertainty is wider than these numbers suggest, especially months out. It's a picture of where each club stands today, not a promise.</p>
+</section>
+{% endblock %}

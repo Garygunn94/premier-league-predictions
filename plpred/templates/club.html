@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% from "macros.html" import badge, club, page_head, pctcell, wordmark with context %}
+{% block title %}{{ c.team }}: Inkwell &amp; Algorithm{% endblock %}
+{% block masthead %}{{ page_head(c.team, root, latest, built, [(root ~ "/club/index.html", "Every club"), (root ~ "/table/index.html", "Season projection")]) }}{% endblock %}
+{% block content %}
+<section class="sec row">
+<article class="grow">
+<div class="kicker lab">{{ latest.season }}{% if c.row %} · {{ c.row.position }}{{ {1: 'st', 2: 'nd', 3: 'rd'}.get(c.row.position, 'th') }} on {{ c.row.points }} points from {{ c.row.played }} games{% endif %}</div>
+<h2 class="lead-h disp" style="font-style:italic;display:flex;align-items:center;gap:16px">{{ badge(c.team, root) }}{{ c.team }}</h2>
+{% if c.now %}{% set g = c.now %}
+<p class="standfirst">Next: <a href="{{ root }}/{{ g.path }}">{{ g.home_team }} v {{ g.away_team }}</a>, {{ g.kickoff_text }}. We call {{ 'a draw' if g.call == 'D' else g.call_long }}, {{ g.score_text }} ({{ g.our_p }}%).</p>
+{% endif %}
+{% if c.deserved %}
+<p class="body" style="font-size:17px;line-height:1.6">On the quality of their chances, {{ c.team }} deserved {{ '%.1f'|format(c.deserved.xpts) }} points so far, against the {{ c.deserved.points }} they have. {% if c.deserved.difference >= 3 %}Results have run well ahead of the performances.{% elif c.deserved.difference <= -3 %}They've been unlucky: the performances deserve more.{% else %}Results are a fair reflection of the performances.{% endif %} That ranks {{ c.deserved.position }}{{ {1: 'st', 2: 'nd', 3: 'rd'}.get(c.deserved.position, 'th') }} in <a href="{{ root }}/matchweek/{{ latest.matchweek }}/index.html#deserved">the table they deserved</a>.</p>
+{% endif %}
+</article>
+<aside class="side stack">
+{% if c.sim %}
+<div class="rule-top">
+<h3 class="lab small-head">How their season ends</h3>
+<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px">
+<div><div class="disp" style="font-size:40px;font-weight:900">{{ pctcell(c.sim.title) }}</div><div class="muted" style="font-size:14px">title</div></div>
+<div><div class="disp" style="font-size:40px;font-weight:900">{{ pctcell(c.sim.top) }}</div><div class="muted" style="font-size:14px">top four</div></div>
+<div><div class="disp{% if c.sim.relegation >= 0.25 %} accent{% endif %}" style="font-size:40px;font-weight:900">{{ pctcell(c.sim.relegation) }}</div><div class="muted" style="font-size:14px">relegation</div></div>
+</div>
+<p class="body" style="font-size:15px;line-height:1.5;margin-top:12px">About {{ '%.0f'|format(c.sim.xpts) }} points expected, finishing {% if c.sim.low == c.sim.high %}{{ c.sim.low }}{% else %}between {{ c.sim.low }} and {{ c.sim.high }}{% endif %} in 8 of 10 <a href="{{ root }}/table/index.html">simulations</a>.</p>
+</div>
+{% endif %}
+{% if c.calls %}
+<div class="rule-top">
+<h3 class="lab small-head">Our calls on their games</h3>
+<p class="body" style="font-size:15px;line-height:1.5">{{ c.calls.right }} of {{ c.calls.n }} right this season ({{ c.calls.rate }}%).</p>
+</div>
+{% endif %}
+</aside>
+</section>
+
+{% if c.games %}
+<section class="sec row">
+<figure class="grow">
+<figcaption><div class="fig-title disp">Chances made and given away</div>
+<div class="fig-sub">Expected goals (xG) in every league game this season, oldest on the left: created above the line, allowed below.</div></figcaption>
+<div class="key lab"><span><i class="sw" style="background:var(--ink)"></i>Created</span><span><i class="sw" style="background:var(--accent)"></i>Allowed</span></div>
+<div class="xgbars" role="img" aria-label="Expected goals created and allowed per game">
+{% for g in c.games|reverse %}
+<div class="g" title="{{ g.date }}: {{ 'v' if g.venue == 'H' else 'at' }} {{ g.opponent }}, {{ g.score }}. xG {{ g.xf if g.xf is not none else '?' }} created, {{ g.xa if g.xa is not none else '?' }} allowed"><div class="up"><i style="height:{{ g.xf_h }}%"></i></div><div class="dn"><i style="height:{{ g.xa_h }}%"></i></div></div>
+{% endfor %}
+</div>
+</figure>
+<div class="side scroll">
+<table style="font-size:15px">
+<thead><tr class="lab"><th scope="col">Game</th><th scope="col" class="num">Score</th><th scope="col" class="num">xG</th></tr></thead>
+<tbody>
+{% for g in c.games %}
+<tr><td><span class="lab muted" style="font-size:11px">{{ g.date }}</span> {{ 'v' if g.venue == 'H' else 'at' }} {{ club(g.opponent, root) }}</td><td class="num{% if g.result == 'L' %} wrong{% endif %}" style="font-weight:700">{{ g.result }} {{ g.score }}</td><td class="num">{% if g.xf is not none %}{{ g.xf }}–{{ g.xa }}{% endif %}</td></tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+</section>
+{% endif %}
+
+{% if c.strip %}
+<section class="sec">
+<div class="sec-head rule-top"><h2 class="sec-title disp">The fixtures ahead</h2></div>
+<div class="scroll">
+<table class="strip">
+<thead><tr class="lab">{% for gw in c.gameweeks %}<th scope="col" style="text-align:center">GW{{ gw }}</th>{% endfor %}</tr></thead>
+<tbody><tr>{% for wk in c.strip.weeks %}{% if wk %}<td class="fx b{{ wk[0].band }} lab">{% for g in wk %}{{ g.opponent }} ({{ g.venue }})<small>win {{ g.win }}%</small>{% endfor %}</td>{% else %}<td class="fx lab muted">blank</td>{% endif %}{% endfor %}</tr></tbody>
+</table>
+</div>
+</section>
+{% endif %}
+{% endblock %}

@@ -44,6 +44,14 @@
 </div>
 </section>
 {% endfor %}
+<section class="kit-day">
+<div class="sec-head"><h2 class="sec-title disp">Newsletter</h2><span class="lab muted" style="font-size:14px;font-weight:600">Thursday, with the calls</span></div>
+<p class="body" style="font-size:16px;line-height:1.5">The week's email in Markdown. Paste it into the newsletter service as a new email (Buttondown and Substack both accept Markdown). Also saved as <a href="newsletter.md">newsletter.md</a>.</p>
+<div class="cap" style="margin-top:16px">
+<textarea readonly aria-label="Newsletter" style="min-height:420px">{{ newsletter }}</textarea>
+<div class="bar lab muted"><span></span><button type="button" class="theme-toggle lab" onclick="copyPrev(this)">Copy</button></div>
+</div>
+</section>
 <script>
 function copyPrev(btn) {
   var t = btn.parentNode.previousElementSibling;

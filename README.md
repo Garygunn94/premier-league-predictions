@@ -94,11 +94,42 @@ pre-registered luck-gap test. It follows the
 approved newspaper design, works on phones and has light and dark modes. Club crests
 are saved from API-Football into `data/badges/`.
 
+Alongside those:
+
+- **Season projection** (`table/`, `plpred/simulate.py`): the rest of the season played
+  out 10,000 times from the team ratings, giving each club's title, top-four and
+  relegation chances, expected points and likely finishing range, with the change since
+  a week earlier. The remaining fixtures are the unplayed home-and-away pairings, so it
+  needs no fixture list.
+- **FPL corner** (`fpl/`, `plpred/fantasy.py`): each club's clean-sheet, two-plus-goals
+  and win chances this gameweek, and a six-gameweek fixture strip from our ratings. The
+  strip uses the FPL fixture list (`data/upcoming/fpl_fixtures.csv`, saved by the `fpl`
+  update step); without it the page shows this week only.
+- **Club pages** (`club/<name>/`): position, deserved points, season projection, xG made
+  and allowed in every game, our record on their games and the fixtures ahead.
+- **V the pundits** (`pundits/`, `plpred/pundits.py`): pundits' public predictions,
+  typed into `data/pundits.csv`, scored beside ours and the bookmakers' favourite on the
+  same games. Only add predictions published before kick-off, with a link to the source.
+- **What we got wrong**: each matchweek page picks last round's most confident wrong
+  call and says whether the chances (xG) backed us or the result.
+- **Sharing**: every page has share-preview tags (the posting-kit card for the newest
+  week's pages, a brand card otherwise), plus `sitemap.xml`, an Atom feed of the
+  matchweeks (`feed.xml`) and `robots.txt`.
+
+Two optional extras switch on from repository variables (Settings > Secrets and
+variables > Actions > Variables), which the Publish site workflow passes to the build:
+
+| Variable | What it does |
+|---|---|
+| `GOATCOUNTER` | Your [GoatCounter](https://www.goatcounter.com/) site code (the `xyz` in `xyz.goatcounter.com`). Adds its visitor counter: no cookies, so no cookie banner. |
+| `NEWSLETTER_URL` | The newsletter's sign-up page (for example a Buttondown or Substack address). Adds a sign-up link to every footer. |
+
 Each build also writes a posting kit for X and Instagram to `site/social/` (on the
 live site at `/social/`, not linked from the front page). It has square images in the
 site's dark look (the round, every call, the reasons chart for the bold call and the
-scorecard) and the captions for Thursday, Friday and Monday, with X posts already
-under 280 characters. The workflow renders the images to PNG with
+scorecard, plus the FPL, projection and what-we-got-wrong cards) and the captions for
+the week, with X posts already under 280 characters. It also writes the week's
+newsletter as Markdown (`social/newsletter.md`) to paste into the newsletter service. The workflow renders the images to PNG with
 `python -m plpred.social --png site/social`, which needs Playwright and Chromium.
 
 The **Publish site** workflow builds and deploys it to GitHub Pages after every data

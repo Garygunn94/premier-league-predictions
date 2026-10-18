@@ -11,3 +11,35 @@ Inkwell <span class="amp">&amp;</span> Algorithm
 <div class="h" style="width:{{ g.h }}%"></div><div class="d" style="width:{{ g.d }}%"></div><div class="a" style="width:{{ g.a }}%"></div>
 </div>
 {%- endmacro %}
+
+{% macro club(team, root) -%}
+{% if team in clubs %}<a href="{{ root }}/club/{{ clubs[team] }}/index.html" style="text-decoration:none">{{ team }}</a>{% else %}{{ team }}{% endif %}
+{%- endmacro %}
+
+{% macro page_head(label, root, latest, built, links=[]) -%}
+<header>
+<div class="dateline lab">
+<span>{{ built }}</span>
+<span>Premier League {{ latest.season }}</span>
+<span class="accent">{{ label }}</span>
+</div>
+<h1 class="masthead disp"><a href="{{ root }}/index.html">{{ wordmark() }}</a></h1>
+<p class="tagline">Data-driven Premier League predictions, with the reasons. New every Thursday.</p>
+<nav class="sections" aria-label="Sections">
+<ul class="lab">
+<li><a href="{{ root }}/index.html">Home</a></li>
+<li><a href="{{ root }}/matchweek/{{ latest.matchweek }}/index.html" class="accent">This week's calls</a></li>
+{% for href, text in links %}<li><a href="{{ href }}">{{ text }}</a></li>
+{% endfor %}
+</ul>
+</nav>
+</header>
+{%- endmacro %}
+
+{% macro pctcell(p) -%}
+{% set v = (p * 100)|round|int %}{% if p > 0 and v == 0 %}&lt;1%{% elif p < 1 and v == 100 %}&gt;99%{% else %}{{ v }}%{% endif %}
+{%- endmacro %}
+
+{% macro change(c, up_is_bad=false) -%}
+{% if c is none or c == 0 %}<span class="muted">–</span>{% elif c > 0 %}<span{% if up_is_bad %} class="wrong"{% endif %}>▲{{ c }}</span>{% else %}<span{% if not up_is_bad %} class="wrong"{% endif %}>▼{{ -c }}</span>{% endif %}
+{%- endmacro %}

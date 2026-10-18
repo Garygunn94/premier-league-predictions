@@ -30,6 +30,10 @@ jobs:
           cache: pip
       - run: pip install -r requirements.txt
       - run: python -m plpred.site
+        env:
+          # Optional repository variables (Settings > Secrets and variables > Actions > Variables).
+          GOATCOUNTER: ${{ vars.GOATCOUNTER }}
+          NEWSLETTER_URL: ${{ vars.NEWSLETTER_URL }}
       - name: Render the social media cards
         run: |
           pip install playwright==1.64.0

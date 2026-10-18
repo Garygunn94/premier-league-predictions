@@ -163,3 +163,19 @@ table.sources td{vertical-align:top}
 .aw-head{font-size:22px;font-weight:800;font-style:italic;line-height:1.2}
 .aw-date{font-size:12px;font-weight:600}
 @media (max-width:600px){.archive a{grid-template-columns:1fr}table.sources td:first-child{white-space:normal;padding-right:12px}}
+
+/* fixture strip (FPL corner, club pages): five shades from a tough fixture (1) to a kind one (5) */
+.strip td.fx{padding:4px;text-align:center;font-size:12px;line-height:1.2;white-space:nowrap;border-left:2px solid var(--paper)}
+.fx.b1{background:var(--accent);color:var(--on-accent)}.fx.b2{background:color-mix(in srgb,var(--accent) 45%,var(--paper))}
+.fx.b3{background:var(--chip)}.fx.b4{background:color-mix(in srgb,var(--ink) 45%,var(--paper));color:var(--paper)}
+.fx.b5{background:var(--ink);color:var(--paper)}
+.fx small{display:block;font-size:10px;opacity:.85}
+/* club page: xG for (up) and against (down) per game */
+.xgbars{display:flex;gap:4px;height:180px;align-items:stretch}
+.xgbars .g{flex:1;display:flex;flex-direction:column;min-width:10px}
+.xgbars .up,.xgbars .dn{flex:1;display:flex}
+.xgbars .up{align-items:flex-end;border-bottom:1px solid var(--ink)}.xgbars .dn{align-items:flex-start}
+.xgbars .up i,.xgbars .dn i{display:block;width:100%}
+.xgbars .up i{background:var(--ink)}.xgbars .dn i{background:var(--accent)}
+.club-grid{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0 24px}
+.club-grid a{display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--rule);text-decoration:none;font-size:20px;font-weight:800}

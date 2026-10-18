@@ -55,8 +55,10 @@ def update_xg(data: Path) -> None:
 def update_fpl(data: Path) -> None:
     out = data / "upcoming"
     out.mkdir(parents=True, exist_ok=True)
-    players = fpl.availability(fpl.fetch_raw())
+    raw = fpl.fetch_raw()
+    players = fpl.availability(raw)
     players.to_csv(out / "fpl_players.csv", index=False)
+    fpl.fixtures(raw, fpl.fetch_fixtures_raw()).to_csv(out / "fpl_fixtures.csv", index=False)
     fpl.key_absences(players).to_csv(out / "key_absences.csv", index=False)
     log.info("FPL: %d players, %d key absences", len(players), len(fpl.key_absences(players)))
 

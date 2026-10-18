@@ -4,9 +4,23 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{% block title %}Inkwell &amp; Algorithm{% endblock %}</title>
-<meta name="description" content="Data-driven Premier League predictions, with the reasons. New every Thursday.">
+{% set m = meta or {"path": "", "title": "Inkwell & Algorithm", "description": "Data-driven Premier League predictions, with the reasons. New every Thursday.", "image": "social/png/brand.png"} %}
+<meta name="description" content="{{ m.description }}">
 <meta property="og:site_name" content="Inkwell &amp; Algorithm">
+<meta property="og:type" content="website">
+<meta property="og:title" content="{{ m.title }}">
+<meta property="og:description" content="{{ m.description }}">
+{% if site_url %}<meta property="og:url" content="{{ site_url }}{{ m.path }}">
+<link rel="canonical" href="{{ site_url }}{{ m.path }}">
+<meta property="og:image" content="{{ site_url }}{{ m.image }}">
+<meta property="og:image:width" content="1080">
+<meta property="og:image:height" content="1080">
+<meta name="twitter:image" content="{{ site_url }}{{ m.image }}">{% endif %}
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@InkwellAlgo">
+<meta name="twitter:title" content="{{ m.title }}">
+<meta name="twitter:description" content="{{ m.description }}">
+<link rel="alternate" type="application/atom+xml" title="Inkwell &amp; Algorithm, every matchweek" href="{{ root }}/feed.xml">
 <link rel="icon" href="{{ root }}/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -30,6 +44,8 @@ try { var t = localStorage.getItem('theme'); if (t) document.documentElement.dat
 <div class="side">
 <p class="lab muted" style="font-size:12px;font-weight:600;line-height:1.7">Data: football-data.co.uk, API-Football, Understat, FPL.<br>Odds are a benchmark, not betting advice.<br>Club crests belong to their clubs.<br>Updated Thursdays and Saturdays. Built {{ built }}.</p>
 <p class="lab" style="font-size:13px;font-weight:700;margin-top:12px">Follow <span class="accent">@InkwellAlgo</span> on <a href="https://x.com/InkwellAlgo">X</a> and <a href="https://www.instagram.com/inkwellalgo/">Instagram</a></p>
+{% if newsletter_url %}<p class="lab" style="font-size:13px;font-weight:700;margin-top:12px">Every call in your inbox on Thursdays: <a href="{{ newsletter_url }}">get the newsletter</a></p>{% endif %}
+<p class="lab muted" style="font-size:12px;font-weight:600;margin-top:12px"><a href="{{ root }}/table/index.html">Season projection</a> · <a href="{{ root }}/fpl/index.html">FPL corner</a> · <a href="{{ root }}/club/index.html">Clubs</a> · <a href="{{ root }}/pundits/index.html">V the pundits</a> · <a href="{{ root }}/feed.xml">Feed</a></p>
 <p style="margin-top:12px"><button type="button" class="theme-toggle lab" onclick="toggleTheme()">Light / dark</button></p>
 </div>
 </footer>
@@ -42,5 +58,6 @@ function toggleTheme() {
   try { localStorage.setItem('theme', root.dataset.theme); } catch (e) {}
 }
 </script>
+{% if goatcounter %}<script data-goatcounter="https://{{ goatcounter }}.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>{% endif %}
 </body>
 </html>
