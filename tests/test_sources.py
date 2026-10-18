@@ -1,4 +1,3 @@
-import json
 from datetime import date
 
 from plpred import seasons, teams
@@ -20,6 +19,7 @@ def test_season_helpers():
     assert seasons.fd_code(2026) == "2627"
     assert seasons.fd_code(1999) == "9900"
     assert seasons.label(2026) == "2026/27"
+    assert seasons.window(date(2026, 10, 18)) == [2024, 2025, 2026]
 
 
 def test_team_aliases():
@@ -45,13 +45,13 @@ def test_parse_old_season_falls_back_to_betbrain_odds():
     assert df.home_shots.isna().all()
 
 
-def test_build_matches_reads_seasons_from_file_names(tmp_path):
+def test_build_matches_only_reads_wanted_seasons(tmp_path):
     folder = tmp_path / "raw" / "football-data-uk"
     folder.mkdir(parents=True)
     (folder / "E0_1011.csv").write_bytes(OLD_CSV)
     (folder / "E0_2526.csv").write_bytes(NEW_CSV)
-    matches = football_data_uk.build_matches(tmp_path)
-    assert sorted(matches.season.unique()) == [2010, 2025]
+    matches = football_data_uk.build_matches(tmp_path, [2024, 2025, 2026])
+    assert sorted(matches.season.unique()) == [2025]
 
 
 UNDERSTAT_MATCHES = [
@@ -64,11 +64,8 @@ UNDERSTAT_MATCHES = [
 ]
 
 
-def test_understat_embedded_page_and_frame():
-    escaped = json.dumps(UNDERSTAT_MATCHES).replace('"', "\\x22")
-    html = f"<script>var datesData = JSON.parse('{escaped}');</script>"
-    raw = understat.parse_page(html)
-    df = understat.to_frame(raw, 2025)
+def test_understat_frame():
+    df = understat.to_frame(UNDERSTAT_MATCHES, 2025)
     assert len(df) == 2  # unplayed match skipped
     assert df.iloc[1].home_team == "Man United" and df.iloc[1].away_team == "Wolves"
     assert df.iloc[0].home_xg == 2.71

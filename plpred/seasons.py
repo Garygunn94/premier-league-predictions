@@ -8,6 +8,16 @@ def current_season(today: date | None = None) -> int:
     return today.year if today.month >= 7 else today.year - 1
 
 
+# We only use recent form: the current season plus the two before it.
+SEASONS_KEPT = 3
+
+
+def window(today: date | None = None) -> list[int]:
+    """Seasons we collect, oldest first, ending with the current one."""
+    current = current_season(today)
+    return list(range(current - SEASONS_KEPT + 1, current + 1))
+
+
 def label(season: int) -> str:
     return f"{season}/{str(season + 1)[-2:]}"
 

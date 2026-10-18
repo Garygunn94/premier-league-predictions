@@ -9,10 +9,14 @@ real numbers.
 
 ## Data
 
+We only collect the current season and the two before it. Recent form matters most,
+so the model weights the current season most heavily. The window is set by
+`SEASONS_KEPT` in `plpred/seasons.py`.
+
 | Source | What we use | Folder |
 |---|---|---|
-| [football-data.co.uk](https://www.football-data.co.uk/englandm.php) | Every result since 1993/94, shots, corners, cards, bookmaker odds | `data/raw/football-data-uk/`, combined in `data/matches.csv` |
-| [Understat](https://understat.com/league/EPL) | Expected goals (xG) per match since 2014/15 | `data/xg/` |
+| [football-data.co.uk](https://www.football-data.co.uk/englandm.php) | Results, shots, corners, cards, bookmaker odds | `data/raw/football-data-uk/`, combined in `data/matches.csv` |
+| [Understat](https://understat.com/league/EPL) | Expected goals (xG) per match | `data/xg/` |
 | [Fantasy Premier League](https://fantasy.premierleague.com/) | Player availability, injury news, chance of playing | `data/upcoming/fpl_players.csv`, `key_absences.csv` |
 | [API-Football](https://www.api-football.com/) | This round's fixtures, injuries and pre-match odds | `data/upcoming/fixtures.csv`, `injuries.csv`, `odds.csv` |
 

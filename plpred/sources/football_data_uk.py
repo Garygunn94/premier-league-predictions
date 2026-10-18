@@ -1,4 +1,4 @@
-"""Historical Premier League results, match stats and odds from football-data.co.uk.
+"""Recent Premier League results, match stats and odds from football-data.co.uk.
 
 One CSV per season at https://www.football-data.co.uk/mmz4281/<code>/E0.csv.
 Past seasons never change, so they are downloaded once and kept; only the current
@@ -16,7 +16,6 @@ from plpred.http import session
 log = logging.getLogger(__name__)
 
 URL = "https://www.football-data.co.uk/mmz4281/{code}/E0.csv"
-FIRST_SEASON = 1993
 
 STAT_COLUMNS = {
     "HTHG": "home_ht_goals", "HTAG": "away_ht_goals",
@@ -36,11 +35,12 @@ def raw_path(data_dir: Path, season: int) -> Path:
     return data_dir / "raw" / "football-data-uk" / f"E0_{seasons.fd_code(season)}.csv"
 
 
-def download(data_dir: Path, first: int = FIRST_SEASON, last: int | None = None) -> list[Path]:
-    last = last if last is not None else seasons.current_season()
+def download(data_dir: Path, wanted: list[int] | None = None) -> list[Path]:
+    wanted = wanted or seasons.window()
+    last = wanted[-1]
     s = session()
     paths = []
-    for season in range(first, last + 1):
+    for season in wanted:
         path = raw_path(data_dir, season)
         if path.exists() and season < last:
             paths.append(path)
@@ -84,12 +84,11 @@ def parse(raw: bytes, season: int) -> pd.DataFrame:
     return out.reset_index(drop=True)
 
 
-def build_matches(data_dir: Path) -> pd.DataFrame:
+def build_matches(data_dir: Path, wanted: list[int] | None = None) -> pd.DataFrame:
     frames = []
-    for path in sorted((data_dir / "raw" / "football-data-uk").glob("E0_*.csv")):
-        code = path.stem.split("_")[1]
-        start = int(code[:2])
-        season = (1900 if start >= 90 else 2000) + start
-        frames.append(parse(path.read_bytes(), season))
+    for season in wanted or seasons.window():
+        path = raw_path(data_dir, season)
+        if path.exists():
+            frames.append(parse(path.read_bytes(), season))
     matches = pd.concat(frames, ignore_index=True).sort_values(["date", "home_team"])
     return matches.reset_index(drop=True)

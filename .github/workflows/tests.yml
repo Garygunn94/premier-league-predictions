@@ -40,5 +40,8 @@ jobs:
           p = os.path.join(os.environ["RUNNER_TEMP"], "data", "matches.csv")
           if os.path.exists(p):
               m = pd.read_csv(p)
-              print(m.groupby("season").agg(matches=("home_team", "size"), xg=("home_xg", "count"), odds=("odds_home", "count")).to_string())
+              cols = {"matches": ("home_team", "size"), "odds": ("odds_home", "count")}
+              if "home_xg" in m:
+                  cols["xg"] = ("home_xg", "count")
+              print(m.groupby("season").agg(**cols).to_string())
           PY

@@ -24,15 +24,14 @@ DATA = Path(__file__).resolve().parent.parent / "data"
 def update_history(data: Path) -> None:
     football_data_uk.download(data)
     matches = football_data_uk.build_matches(data)
-    xg_files = sorted((data / "xg").glob("understat_*.csv"))
+    xg_files = [f for f in (data / "xg" / f"understat_{s}.csv" for s in seasons.window()) if f.exists()]
     if xg_files:
         xg = pd.concat([pd.read_csv(f) for f in xg_files], ignore_index=True)
         matches = matches.merge(xg[["season", "home_team", "away_team", "home_xg", "away_xg"]],
                                 on=["season", "home_team", "away_team"], how="left")
-        recent = matches[matches.season >= understat.FIRST_SEASON]
-        missing = recent[recent.home_xg.isna()]
+        missing = matches[matches.home_xg.isna()]
         if len(missing):
-            log.warning("%d matches since 2014/15 have no xG (team name mismatch?): %s",
+            log.warning("%d matches have no xG (team name mismatch?): %s",
                         len(missing), missing[["home_team", "away_team"]].head().values.tolist())
     matches.to_csv(data / "matches.csv", index=False)
     log.info("matches.csv: %d matches, %s to %s", len(matches),
@@ -40,10 +39,11 @@ def update_history(data: Path) -> None:
 
 
 def update_xg(data: Path) -> None:
-    current = seasons.current_season()
+    wanted = seasons.window()
+    current = wanted[-1]
     out = data / "xg"
     out.mkdir(parents=True, exist_ok=True)
-    for season in range(understat.FIRST_SEASON, current + 1):
+    for season in wanted:
         path = out / f"understat_{season}.csv"
         if path.exists() and season < current:
             continue
