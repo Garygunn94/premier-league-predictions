@@ -118,5 +118,6 @@ def test_extra_captions_fit_x():
     cap = social.extra_captions({"sim": sim, "fpl": {"clean_sheets": fpl_rows, "scoring": fpl_rows},
                                  "miss": miss, "matchweek": 9, "sim_moves": []})
     for k in ("projection_x", "fpl_x", "miss_x"):
-        assert social.x_length(cap[k]) <= social.X_LIMIT
-    assert "B go down in 70%" in cap["projection_x"]
+        assert all(social.x_length(post) <= social.X_LIMIT for post in cap[k])
+    assert "B go down in 70%" in cap["projection_x"][0]
+    assert "http" not in cap["projection_x"][0] and cap["projection_x"][1].endswith("table/index.html")
