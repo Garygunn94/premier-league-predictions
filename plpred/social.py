@@ -312,9 +312,9 @@ def build_kit(ctx: dict, views: list[dict], env: Environment, out: Path) -> Path
     if ctx["record"]:
         cards.append({"name": "scorecard", "kind": "scorecard", "day": "Monday", "title": "Last week's scorecard"})
     if res:
-        cards += [{"name": "results", "kind": "results", "day": "Monday", "title": f"Matchweek {res['matchweek']}: the results"},
-                  {"name": "results-list", "kind": "results-list", "day": "Monday", "title": "Every call against the result"}]
-        cards += [{"name": f"verdict-{r['g']['slug']}", "kind": "verdict", "g": r["g"], "r": r, "day": "Monday",
+        cards += [{"name": "results", "kind": "results", "day": res["post_day"], "title": f"Matchweek {res['matchweek']}: the results"},
+                  {"name": "results-list", "kind": "results-list", "day": res["post_day"], "title": "Every call against the result"}]
+        cards += [{"name": f"verdict-{r['g']['slug']}", "kind": "verdict", "g": r["g"], "r": r, "day": res["post_day"],
                    "title": f"The verdict: {r['g']['home_team']} v {r['g']['away_team']}"} for r in res["rows"]]
     if "miss_x" in cap:
         cards.append({"name": "miss", "kind": "miss", "day": "Monday", "title": "What we got wrong"})
@@ -351,23 +351,29 @@ def build_kit(ctx: dict, views: list[dict], env: Environment, out: Path) -> Path
                         "instagram": cap["fpl_instagram"], "cards": [c for c in cards if c["kind"] == "fpl"],
                         "how": "For Fantasy Premier League players. Post it a few hours after the main thread."})
     if res:
-        days.append({"day": "Monday", "when": f"Matchweek {res['matchweek']}: the results", "x": cap["results_x"],
+        post_day = res["post_day"]
+        wait = ("" if res["complete"] else
+                f" The round isn't finished yet ({', '.join(v['home_team'] + ' v ' + v['away_team'] for v in res['pending'])}"
+                f" still to play), so wait for {post_day}'s Publish site run and the carousel will cover every game.")
+        days.append({"day": post_day, "when": f"Matchweek {res['matchweek']}: the results", "x": cap["results_x"],
                      "instagram": cap["results_instagram"],
                      "cards": [c for c in cards if c["kind"] in ("results", "results-list", "scorecard")],
-                     "how": "Post all three slides as one Instagram carousel. On X, attach the first two and put "
-                            "the link in the first reply. The game-by-game verdicts follow below."})
-        days += [{"day": f"Result: {r['g']['home_team']} v {r['g']['away_team']}", "when": "Monday, after the results",
+                     "how": "Post all three slides as one Instagram carousel, the day after the round's last game. "
+                            "On X, attach the first two and put the link in the first reply. The game-by-game "
+                            "verdicts follow below." + wait})
+        days += [{"day": f"Result: {r['g']['home_team']} v {r['g']['away_team']}",
+                  "when": f"From {r['after_day']}, after the result",
                   "x": cap["verdicts"][r["g"]["slug"]]["x"], "instagram": cap["verdicts"][r["g"]["slug"]]["instagram"],
                   "cards": [c for c in cards if c["name"] == f"verdict-{r['g']['slug']}"],
-                  "how": "One game's verdict. Space these out through Monday and Tuesday rather than posting "
-                         "them all at once."} for r in res["rows"]]
+                  "how": "One game's verdict. It's ready the morning after the game, so space these out over the "
+                         "days after the round rather than posting them all at once."} for r in res["rows"]]
     elif "monday_x" in cap:
         days.append({"day": "Monday", "when": "The scorecard", "x": cap["monday_x"],
                      "instagram": cap["monday_instagram"], "cards": [c for c in cards if c["kind"] == "scorecard"],
                      "how": "The site picks up results every morning, so use the kit from Monday's "
                             "Publish site run to get the weekend's results in the scorecard."})
     if "miss_x" in cap:
-        days.append({"day": "Monday, later", "when": "What we got wrong", "x": cap["miss_x"],
+        days.append({"day": f"{res['post_day'] if res else 'Monday'}, later", "when": "What we got wrong", "x": cap["miss_x"],
                      "instagram": cap["miss_instagram"], "cards": [c for c in cards if c["kind"] == "miss"],
                      "how": "Our most confident wrong call of the round, and whether the chances backed us. "
                             "Owning the misses is what makes the hits believable."})
