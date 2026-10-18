@@ -145,7 +145,18 @@ site's dark look (the round, a five-slide carousel for every game and the
 scorecard, plus the FPL, projection and what-we-got-wrong cards) and the captions for
 the week, with X posts already under 280 characters. It also writes the week's
 newsletter as Markdown (`social/newsletter.md`) to paste into the newsletter service. The workflow renders the images to PNG with
-`python -m plpred.social --png site/social`, which needs Playwright and Chromium.
+`python -m plpred.social --png site/social`, which needs Playwright and Chromium, and lays
+the kit out in `social/ready/` as one numbered folder per post: its images in slide
+order, `instagram.txt`, `x.txt` (posts and first replies labelled) and `how.txt`.
+
+The kit can also arrive by email, one message per post with both captions in the body and
+the images attached, so a post can be saved and posted from a phone. It is sent after the
+scheduled Thursday update that makes the week's calls (not after the other daily
+refreshes), or on a manual Publish site run with **Email the posting kit** ticked, for
+example after a manual Update data run with **predict** ticked. It needs two repository secrets: `KIT_EMAIL`, a Gmail address that sends the kit
+to itself, and `KIT_EMAIL_PASSWORD`, an [app password](https://myaccount.google.com/apppasswords)
+for it (Google asks for 2-Step Verification first). Set the `KIT_EMAIL_TO` variable to send
+it somewhere else. Without the secrets nothing is emailed.
 
 The **Publish site** workflow builds and deploys it to GitHub Pages after every data
 update and every push to `main`. GitHub Pages must be set to deploy from GitHub

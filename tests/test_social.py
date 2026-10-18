@@ -47,3 +47,38 @@ def test_x_posts_fit_the_limit():
     assert social.x_length(post) <= social.X_LIMIT
     assert post.endswith("a" * 100) and "…" in post
     assert social.x_length("see https://example.com/" + "a" * 100) == 4 + social.X_URL_LENGTH
+
+
+def fake_render(kit):
+    (kit / "png").mkdir(exist_ok=True)
+    for c in json.loads((kit / "cards.json").read_text()):
+        (kit / "png" / f"{c['name']}.png").write_bytes(b"\x89PNG fake")
+
+
+def test_kit_is_laid_out_one_folder_per_post(tmp_path):
+    kit = site.build(make_data(tmp_path), tmp_path / "site") / "social"
+    fake_render(kit)
+    folders = social.ready_to_post(kit)
+    assert folders[0].name == "01-thursday"
+    game = next(f for f in folders if (f / "how.txt").read_text().startswith("Carousel"))
+    images = sorted(p.name for p in game.glob("*.png"))
+    assert images[0].startswith("01-call-") and images[1].startswith("02-reasons-")
+    assert "#PremierLeague" in (game / "instagram.txt").read_text()
+    assert "[First reply]" in (game / "x.txt").read_text()
+    assert "[Post 1 of" in (folders[0] / "x.txt").read_text()
+
+
+def test_kit_emails_carry_captions_and_images(tmp_path, monkeypatch):
+    kit = site.build(make_data(tmp_path), tmp_path / "site") / "social"
+    fake_render(kit)
+    folders = social.ready_to_post(kit)
+    msgs = social.kit_emails(kit, "me@example.com", "me@example.com")
+    assert len(msgs) == len(folders)
+    first = msgs[0]
+    assert first["Subject"].startswith("Matchweek ") and f"1 of {len(folders)} · Thursday" in first["Subject"]
+    body = first.get_body(("plain",)).get_content()
+    assert "INSTAGRAM" in body and "---- X ----" in body
+    names = [a.get_filename() for a in first.iter_attachments()]
+    assert names[0] == "01-round.png" and all(n.endswith(".png") for n in names)
+    monkeypatch.delenv("KIT_EMAIL", raising=False)
+    assert social.email_kit(kit) == 0

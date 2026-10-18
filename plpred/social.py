@@ -7,12 +7,21 @@ image (1080 x 1080, the site's dark look) and a page listing every card with its
 caption, ready to copy, plus the week's newsletter as Markdown (newsletter.md) for
 pasting into the newsletter service. Rendering the cards to PNG needs Playwright and Chromium, so
 it is a separate step that the Publish site workflow runs after the build.
+
+    python -m plpred.social --email site/social # email the rendered kit, one message per post
+
+After rendering, ready/ holds one numbered folder per post with its images in slide order and its
+captions as text files. The email sends the same posts from and to the KIT_EMAIL Gmail account
+(KIT_EMAIL_PASSWORD is its app password), so each post can be saved and posted from a phone.
 """
 import argparse
 import json
 import logging
 import os
 import re
+import shutil
+import smtplib
+from email.message import EmailMessage
 from pathlib import Path
 
 from jinja2 import Environment
@@ -322,6 +331,9 @@ def build_kit(ctx: dict, views: list[dict], env: Environment, out: Path) -> Path
                      "cards": [c for c in cards if c["kind"] == "projection"],
                      "how": "Use the kit from the newest Publish site run: the data updates every morning, "
                             "so the projection includes the latest results."})
+    (out / "posts.json").write_text(json.dumps({"matchweek": ctx["matchweek"], "posts": [
+        {"day": d["day"], "when": d["when"], "how": d["how"], "x": d["x"], "instagram": d["instagram"],
+         "images": [c["name"] for c in d["cards"]]} for d in days]}))
     letter = newsletter(ctx, views)
     (out / "newsletter.md").write_text(letter)
     (out / "index.html").write_text(env.get_template("social_kit.html").render(
@@ -355,13 +367,86 @@ def render_pngs(kit: Path) -> list[Path]:
     return done
 
 
+# ---------------------------------------------------------------- ready to post
+
+def slugify(text: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")
+
+
+def x_text(posts: list[str]) -> str:
+    """An X post, a post and its first reply, or a thread, labelled so each part is easy to copy."""
+    if len(posts) == 1:
+        return posts[0]
+    names = ["Post", "First reply"] if len(posts) == 2 else [f"Post {i} of {len(posts)}" for i in range(1, len(posts) + 1)]
+    return "\n\n".join(f"[{n}]\n{p}" for n, p in zip(names, posts))
+
+
+def ready_to_post(kit: Path) -> list[Path]:
+    """Copy the rendered kit into kit/ready/: one folder per post, images numbered in slide order."""
+    data = json.loads((kit / "posts.json").read_text())
+    ready = kit / "ready"
+    shutil.rmtree(ready, ignore_errors=True)
+    folders = []
+    for i, post in enumerate(data["posts"], 1):
+        folder = ready / f"{i:02d}-{slugify(post['day'])}"
+        folder.mkdir(parents=True)
+        for n, name in enumerate(post["images"], 1):
+            shutil.copy(kit / "png" / f"{name}.png", folder / f"{n:02d}-{name}.png")
+        (folder / "instagram.txt").write_text(post["instagram"] + "\n")
+        (folder / "x.txt").write_text(x_text(post["x"]) + "\n")
+        (folder / "how.txt").write_text(f"{post['when']}\n\n{post['how']}\n")
+        folders.append(folder)
+    log.info("Laid out %d posts in %s", len(folders), ready)
+    return folders
+
+
+def kit_emails(kit: Path, sender: str, to: str) -> list[EmailMessage]:
+    """One email per post: what it is, both captions to copy, and its images in slide order."""
+    data = json.loads((kit / "posts.json").read_text())
+    folders = sorted(p for p in (kit / "ready").iterdir() if p.is_dir())
+    out = []
+    for i, (post, folder) in enumerate(zip(data["posts"], folders), 1):
+        how = (folder / "how.txt").read_text().strip()
+        msg = EmailMessage()
+        msg["Subject"] = f"Matchweek {data['matchweek']} · {i} of {len(folders)} · {post['day']}"
+        msg["From"], msg["To"] = sender, to
+        msg.set_content(f"{how}\n\n"
+                        f"---- INSTAGRAM ----\n\n{(folder / 'instagram.txt').read_text().strip()}\n\n"
+                        f"---- X ----\n\n{(folder / 'x.txt').read_text().strip()}\n")
+        for img in sorted(folder.glob("*.png")):
+            msg.add_attachment(img.read_bytes(), maintype="image", subtype="png", filename=img.name)
+        out.append(msg)
+    return out
+
+
+def email_kit(kit: Path) -> int:
+    """Send the ready-to-post kit to KIT_EMAIL (or KIT_EMAIL_TO). Skips with a warning when unset."""
+    sender, password = os.environ.get("KIT_EMAIL"), os.environ.get("KIT_EMAIL_PASSWORD")
+    if not sender or not password:
+        log.warning("KIT_EMAIL and KIT_EMAIL_PASSWORD are not both set, so the kit was not emailed.")
+        return 0
+    msgs = kit_emails(kit, sender, os.environ.get("KIT_EMAIL_TO") or sender)
+    with smtplib.SMTP_SSL(os.environ.get("KIT_SMTP_HOST", "smtp.gmail.com"), 465) as smtp:
+        smtp.login(sender, password)
+        for m in msgs:
+            smtp.send_message(m)
+    log.info("Emailed %d posts", len(msgs))
+    return len(msgs)
+
+
 def main(argv=None) -> None:
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--png", type=Path, metavar="KIT", required=True,
-                        help="the kit folder written by plpred.site, normally site/social")
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument("--png", type=Path, metavar="KIT",
+                       help="render the kit folder written by plpred.site (normally site/social) and lay it out")
+    group.add_argument("--email", type=Path, metavar="KIT", help="email a rendered kit, one message per post")
     args = parser.parse_args(argv)
-    render_pngs(args.png)
+    if args.png:
+        render_pngs(args.png)
+        ready_to_post(args.png)
+    else:
+        email_kit(args.email)
 
 
 if __name__ == "__main__":

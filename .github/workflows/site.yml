@@ -7,6 +7,11 @@ on:
     workflows: ["Update data"]
     types: [completed]
   workflow_dispatch:
+    inputs:
+      email_kit:
+        description: "Email the posting kit to KIT_EMAIL, one message per post"
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -39,6 +44,25 @@ jobs:
           pip install playwright==1.64.0
           python -m playwright install --with-deps chromium
           python -m plpred.social --png site/social
+      # The posting kit also goes by email, one message per post, from and to the KIT_EMAIL Gmail
+      # account (KIT_EMAIL_PASSWORD is a Gmail app password). It is sent only after the scheduled
+      # Thursday update, the one that makes the week's calls, not after the other daily refreshes,
+      # or on a manual run with "Email the posting kit" ticked (after a manual predict run, say).
+      # Never on a push to main.
+      - name: Email the posting kit
+        if: >-
+          (github.event_name == 'workflow_run' && github.event.workflow_run.event == 'schedule')
+          || (github.event_name == 'workflow_dispatch' && inputs.email_kit)
+        env:
+          KIT_EMAIL: ${{ secrets.KIT_EMAIL }}
+          KIT_EMAIL_PASSWORD: ${{ secrets.KIT_EMAIL_PASSWORD }}
+          KIT_EMAIL_TO: ${{ vars.KIT_EMAIL_TO }}
+        run: |
+          if [ "${{ github.event_name }}" = workflow_run ] && [ "$(date -u +%u)" != 4 ]; then
+            echo "Not the Thursday calls run, so the kit is not emailed."
+          else
+            python -m plpred.social --email site/social
+          fi
       # The posting kit (captions, newsletter, every card) is private. Artifacts on a public
       # repository can be downloaded by anyone signed in to GitHub, so the kit is attached to this
       # run as a zip locked with the KIT_PASSWORD repository secret, and only when that secret is
