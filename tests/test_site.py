@@ -31,19 +31,24 @@ def make_data(tmp_path: Path) -> Path:
 def test_build_writes_home_week_and_match_pages(tmp_path):
     out = site.build(make_data(tmp_path), tmp_path / "site")
     home = (out / "index.html").read_text()
-    assert "Matchweek 9" in home and 'href="./matchweek/9/strong-v-weak.html"' in home  # the front page is this week
+    assert "Matchweek 9" in home and 'href="./2026-27/matchweek/9/strong-v-weak.html"' in home  # the front page is this week
     assert 'href="./about/"' in home
     about = (out / "about" / "index.html").read_text()
     assert "Where the data comes from" in about and "Understat" in about
     assert 'href="../"' in about
     assert "Inkwell <span class=\"amp\">&amp;</span> Algorithm" in home and (out / "favicon.svg").exists()
-    week = (out / "matchweek" / "9" / "index.html").read_text()
+    week = (out / "2026-27" / "matchweek" / "9" / "index.html").read_text()
     assert "Matchweek 9" in week
     assert "Replay" not in week.split("<body>")[1].split("</header>")[0]
     assert (out / "badges" / "strong.png").exists()
-    assert 'src="../../badges/strong.png"' in week and 'href="../../matchweek/9/strong-v-weak.html"' in week
-    page = (out / "matchweek" / "9" / "strong-v-weak.html").read_text()
-    assert "How we got to" in page and "../../style.css" in page
+    assert 'src="../../../badges/strong.png"' in week and 'href="../../../2026-27/matchweek/9/strong-v-weak.html"' in week
+    page = (out / "2026-27" / "matchweek" / "9" / "strong-v-weak.html").read_text()
+    assert "How we got to" in page and "../../../style.css" in page
+    # The first addresses had no season; they redirect, keeping any #section.
+    old = (out / "matchweek" / "9" / "strong-v-weak.html").read_text()
+    new_url = f"{site.social.SITE_URL}2026-27/matchweek/9/strong-v-weak.html"
+    assert f'<link rel="canonical" href="{new_url}">' in old and f'url={new_url}"' in old and "location.hash" in old
+    assert "matchweek/9/" not in (out / "sitemap.xml").read_text().replace("2026-27/matchweek/9/", "")
 
 
 def test_each_matchweek_keeps_its_own_page(tmp_path):
@@ -52,23 +57,23 @@ def test_each_matchweek_keeps_its_own_page(tmp_path):
     first.update(round="Regular Season - 8", as_of="2026-12-24")
     (data / "predictions" / "2026-10-17.json").write_text(json.dumps(first))
     out = site.build(data, tmp_path / "site")
-    assert (out / "matchweek" / "8" / "strong-v-weak.html").exists()
+    assert (out / "2026-27" / "matchweek" / "8" / "strong-v-weak.html").exists()
     home = (out / "about" / "index.html").read_text()
     assert home.index("Matchweek 9</span>") < home.index("Matchweek 8</span>")  # newest first
-    week8 = (out / "matchweek" / "8" / "index.html").read_text()
-    assert 'href="../../matchweek/9/"' in week8
+    week8 = (out / "2026-27" / "matchweek" / "8" / "index.html").read_text()
+    assert 'href="../../../2026-27/matchweek/9/"' in week8
     # The newest week is the front page, so it points search engines there; older weeks stand alone.
-    week9 = (out / "matchweek" / "9" / "index.html").read_text()
+    week9 = (out / "2026-27" / "matchweek" / "9" / "index.html").read_text()
     assert f'<link rel="canonical" href="{site.social.SITE_URL}">' in week9
-    assert f'<link rel="canonical" href="{site.social.SITE_URL}matchweek/8/">' in week8
+    assert f'<link rel="canonical" href="{site.social.SITE_URL}2026-27/matchweek/8/">' in week8
     sitemap = (out / "sitemap.xml").read_text()
-    assert f"<loc>{site.social.SITE_URL}matchweek/8/</loc>" in sitemap
+    assert f"<loc>{site.social.SITE_URL}2026-27/matchweek/8/</loc>" in sitemap
     assert "matchweek/9/</loc>" not in sitemap and "index.html" not in sitemap and "404" not in sitemap
 
 
 def test_pages_carry_search_titles_and_structured_data(tmp_path):
     out = site.build(make_data(tmp_path), tmp_path / "site")
-    page = (out / "matchweek" / "9" / "strong-v-weak.html").read_text()
+    page = (out / "2026-27" / "matchweek" / "9" / "strong-v-weak.html").read_text()
     assert "<title>Strong v Weak prediction: " in page and "| Inkwell &amp; Algorithm</title>" in page
     blocks = [json.loads(b) for b in re.findall(r'<script type="application/ld\+json">(.*?)</script>', page)]
     kinds = {b["@type"] for b in blocks}
@@ -111,9 +116,9 @@ def test_games_called_after_kickoff_join_the_live_calls_and_are_labelled(tmp_pat
     (data / "predictions" / "2026-10-24.json").write_text(json.dumps(live))
     (data / "predictions" / "2026-10-23-after-kickoff.json").write_text(json.dumps(late))
     out = site.build(data, tmp_path / "site")
-    week = (out / "matchweek" / "9" / "index.html").read_text()
+    week = (out / "2026-27" / "matchweek" / "9" / "index.html").read_text()
     assert "after 1 of its 2 games had kicked off" in week and "Final 2–0" in week
-    assert "After kick-off" not in (out / "matchweek" / "9" / "average-v-good.html").read_text()
-    assert "test, not a prediction" in (out / "matchweek" / "9" / "strong-v-weak.html").read_text()
+    assert "After kick-off" not in (out / "2026-27" / "matchweek" / "9" / "average-v-good.html").read_text()
+    assert "test, not a prediction" in (out / "2026-27" / "matchweek" / "9" / "strong-v-weak.html").read_text()
     kit = (out / "social" / "index.html").read_text()
     assert "would have called" in kit and "not part of our record" in kit

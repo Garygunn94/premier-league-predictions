@@ -73,4 +73,4 @@ def test_record_page_is_built(tmp_path):
     page = (out / "record" / "index.html").read_text()
     assert "When we say 60%, does it happen?" in page and "Our public test" in page
     assert 'href="../record/"' in (out / "about" / "index.html").read_text()
-    assert "The table they deserved" in (out / "matchweek" / "9" / "index.html").read_text()
+    assert "The table they deserved" in (out / "2026-27" / "matchweek" / "9" / "index.html").read_text()

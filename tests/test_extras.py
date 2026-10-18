@@ -91,11 +91,11 @@ def test_build_writes_the_new_pages_and_feeds(tmp_path):
     for page in ("table/index.html", "fpl/index.html", "pundits/index.html", "club/index.html",
                  "club/strong/index.html", "sitemap.xml", "feed.xml", "robots.txt", "social/newsletter.md"):
         assert (out / page).exists(), page
-    week = (out / "matchweek" / "9" / "index.html").read_text()
+    week = (out / "2026-27" / "matchweek" / "9" / "index.html").read_text()
     assert 'property="og:image" content="https://' in week and "social/png/round.png" in week
-    assert 'href="../../club/strong/"' in week
+    assert 'href="../../../club/strong/"' in week
     assert "goatcounter" not in week and "get the newsletter" not in week
-    assert "matchweek/9/strong-v-weak.html" in (out / "sitemap.xml").read_text()
+    assert "2026-27/matchweek/9/strong-v-weak.html" in (out / "sitemap.xml").read_text()
     assert "<entry><title>Matchweek 9" in (out / "feed.xml").read_text()
     letter = (out / "social" / "newsletter.md").read_text()
     assert letter.startswith("# Matchweek 9, called") and "not betting advice" in letter

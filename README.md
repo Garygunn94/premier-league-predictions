@@ -96,7 +96,7 @@ earlier results only (without team news), which is handy for checking the output
 
 `python -m plpred.site` builds the site into `site/` from every predictions file:
 a home page (what the site is, how it works, the data sources, our record and a list
-of every matchweek), then for each matchweek a page at `matchweek/<n>/` (match of the
+of every matchweek), then for each matchweek a page at `<season>/matchweek/<n>/` (for example `2026-27/matchweek/7/`; the first, season-less `matchweek/<n>/` addresses redirect there) (match of the
 week, the rest of the round, charts, our record, last week's verdict, the table and the
 table the chances deserved) with a breakdown page for every match beside it, and a
 record page at `record/` showing how often our percentages came true, our labels'
