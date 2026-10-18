@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% from "macros.html" import club, page_head, wordmark with context %}
+{% block title %}The algorithm v the pundits: Inkwell &amp; Algorithm{% endblock %}
+{% block masthead %}{{ page_head("V the pundits", root, latest, built) }}{% endblock %}
+{% block content %}
+<section class="sec">
+<div class="kicker lab">Same games, same rules</div>
+<h2 class="lead-h disp" style="font-style:italic">The algorithm v the pundits</h2>
+<p class="standfirst">Well-known pundits publish their predictions every week. We score them beside ours and the bookmakers' favourite on exactly the same games, all season. It's a friendly contest: the pundits are making calls on instinct and a lot of watching, we're making them from data.</p>
+</section>
+{% if board.pundits %}
+<section class="sec">
+<div class="sec-head rule-top"><h2 class="sec-title disp">The season so far</h2></div>
+<div class="scroll">
+<table>
+<thead><tr class="lab"><th scope="col">Pundit</th><th scope="col" class="num">Games</th><th scope="col" class="num">Their results right</th><th scope="col" class="num">Ours</th><th scope="col" class="num">Bookies' favourite</th><th scope="col" class="num">Their exact scores</th><th scope="col" class="num">Ours</th></tr></thead>
+<tbody>
+{% for p in board.pundits %}
+<tr><td style="font-weight:600">{{ p.pundit }}</td><td class="num">{{ p.n }}</td><td class="num" style="font-weight:700">{{ p.right }}</td><td class="num" style="font-weight:700">{{ p.us_right }}</td><td class="num">{{ p.fav_right }}</td><td class="num">{{ p.exact }}</td><td class="num">{{ p.us_exact }}</td></tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+<p class="muted" style="font-size:14px;margin-top:12px">Each row compares one pundit with us on only the games that pundit predicted. Small samples swing a lot, so a few weeks either way mean little.</p>
+</section>
+{% if board.latest %}
+<section class="sec">
+<div class="sec-head rule-top"><h2 class="sec-title disp">Matchweek {{ board.latest.matchweek }}</h2></div>
+<div class="scroll">
+<table>
+<thead><tr class="lab"><th scope="col">Match</th><th scope="col">Pundit</th><th scope="col" class="num">Their call</th><th scope="col" class="num">Ours</th><th scope="col" class="num">Result</th></tr></thead>
+<tbody>
+{% for r in board.latest.rows %}
+<tr><td style="font-weight:600">{{ r.match }}</td><td>{% if r.source %}<a href="{{ r.source }}">{{ r.pundit }}</a>{% else %}{{ r.pundit }}{% endif %}</td><td class="num">{{ r.pick }}</td><td class="num">{{ r.ours or '–' }}</td><td class="num" style="font-weight:700">{{ r.result or 'to play' }}</td></tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+</section>
+{% endif %}
+{% else %}
+<section class="sec">
+<p class="body" style="font-size:17px;line-height:1.6;max-width:760px">The contest starts with the next matchweek's predictions. Check back after the weekend for the first scores.</p>
+</section>
+{% endif %}
+{% endblock %}

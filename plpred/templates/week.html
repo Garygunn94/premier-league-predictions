@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% from "macros.html" import badge, split, wordmark with context %}
+{% from "macros.html" import badge, club, split, wordmark with context %}
 {% block title %}Inkwell &amp; Algorithm, Matchweek {{ matchweek }}{% endblock %}
 {% block masthead %}
 <header>
@@ -15,9 +15,12 @@
 <li><a href="{{ root }}/index.html">Home</a></li>
 <li><a href="#this-week" class="accent">The calls</a></li>
 {% if record %}<li><a href="#verdict">Last week's verdict</a></li>
+{% if miss %}<li><a href="#miss">What we got wrong</a></li>{% endif %}
 <li><a href="#record">Our record</a></li>{% endif %}
 <li><a href="#table">Table</a></li>
 {% if deserved %}<li><a href="#deserved">The table they deserved</a></li>{% endif %}
+{% if not next %}<li><a href="{{ root }}/table/index.html">How the season ends</a></li>
+<li><a href="{{ root }}/fpl/index.html">FPL corner</a></li>{% endif %}
 <li><a href="#method">How we call it</a></li>
 </ul>
 </nav>
@@ -192,6 +195,21 @@
 </section>
 {% endif %}
 
+{% if miss %}
+<section id="miss" class="sec row">
+<div class="side rule-top">
+<div class="kicker lab">Owning the misses</div>
+<h2 class="sec-title disp" style="margin:8px 0 12px">What we got wrong</h2>
+<p class="lab{% if miss.kind == 'Our mistake' %} accent{% endif %}" style="font-size:15px;font-weight:700">Verdict: {{ miss.kind }}</p>
+</div>
+<div class="grow">
+<p class="feature-h disp">{{ miss.match }}: we said {{ miss.called }} at {{ miss.p }}%. It finished {{ miss.result }}.</p>
+<p class="body" style="font-size:17px;line-height:1.6">{{ miss.text }}</p>
+<p class="muted" style="font-size:14px;margin-top:8px">Each week we pick our most confident wrong call and check it against the chances both sides created. Unlucky means the chances backed us; our mistake means they didn't.</p>
+</div>
+</section>
+{% endif %}
+
 <section id="table" class="sec">
 <div class="sec-head rule-top"><h2 class="sec-title disp">The table</h2></div>
 <div class="scroll">
@@ -199,7 +217,7 @@
 <thead><tr class="lab"><th scope="col">#</th><th scope="col">Club</th><th scope="col" class="num">P</th><th scope="col" class="num">GD</th><th scope="col" class="num">Pts</th></tr></thead>
 <tbody>
 {% for t in table %}
-<tr><td>{{ t.position }}</td><td style="font-weight:600"><span style="display:inline-flex;align-items:center;gap:8px">{{ badge(t.team, root) }}{{ t.team }}</span></td><td class="num">{{ t.played }}</td><td class="num">{{ '%+d'|format(t.gd) }}</td><td class="num" style="font-weight:700">{{ t.points }}</td></tr>
+<tr><td>{{ t.position }}</td><td style="font-weight:600"><span style="display:inline-flex;align-items:center;gap:8px">{{ badge(t.team, root) }}{{ club(t.team, root) }}</span></td><td class="num">{{ t.played }}</td><td class="num">{{ '%+d'|format(t.gd) }}</td><td class="num" style="font-weight:700">{{ t.points }}</td></tr>
 {% endfor %}
 </tbody>
 </table>
@@ -215,7 +233,7 @@
 <thead><tr class="lab"><th scope="col">#</th><th scope="col">Club</th><th scope="col" class="num">P</th><th scope="col" class="num">Pts</th><th scope="col" class="num">Deserved</th><th scope="col" class="num">+/−</th><th scope="col" class="num">Real place</th></tr></thead>
 <tbody>
 {% for t in deserved %}
-<tr><td>{{ t.position }}</td><td style="font-weight:600"><span style="display:inline-flex;align-items:center;gap:8px">{{ badge(t.team, root) }}{{ t.team }}</span></td><td class="num">{{ t.played }}</td><td class="num">{{ t.points }}</td><td class="num" style="font-weight:700">{{ '%.1f'|format(t.xpts) }}</td><td class="num{% if t.difference <= -3 %} wrong{% endif %}">{{ '%+.1f'|format(t.difference) }}</td><td class="num muted">{{ t.actual }}</td></tr>
+<tr><td>{{ t.position }}</td><td style="font-weight:600"><span style="display:inline-flex;align-items:center;gap:8px">{{ badge(t.team, root) }}{{ club(t.team, root) }}</span></td><td class="num">{{ t.played }}</td><td class="num">{{ t.points }}</td><td class="num" style="font-weight:700">{{ '%.1f'|format(t.xpts) }}</td><td class="num{% if t.difference <= -3 %} wrong{% endif %}">{{ '%+.1f'|format(t.difference) }}</td><td class="num muted">{{ t.actual }}</td></tr>
 {% endfor %}
 </tbody>
 </table>

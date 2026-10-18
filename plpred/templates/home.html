@@ -17,6 +17,10 @@
 <li><a href="#data">The data</a></li>
 {% if record %}<li><a href="#record">Our record</a></li>{% endif %}
 <li><a href="{{ root }}/record/index.html">Are our percentages right?</a></li>
+{% if latest.sim %}<li><a href="{{ root }}/table/index.html">How the season ends</a></li>{% endif %}
+<li><a href="{{ root }}/fpl/index.html">FPL corner</a></li>
+<li><a href="{{ root }}/club/index.html">Clubs</a></li>
+<li><a href="{{ root }}/pundits/index.html">V the pundits</a></li>
 <li><a href="#archive">Every matchweek</a></li>
 </ul>
 </nav>
@@ -47,6 +51,24 @@
 </div>
 </aside>
 </section>
+
+{% if latest.sim %}{% set t = latest.sim.teams[0] %}{% set d = latest.sim.teams|sort(attribute="relegation", reverse=true)|first %}
+<section id="projection" class="sec row">
+<div class="grow">
+<div class="kicker lab">{{ "{:,}".format(latest.sim.runs) }} simulations of the rest of the season</div>
+<h2 class="sec-title disp" style="margin:8px 0 12px">How the season ends</h2>
+<p class="body" style="font-size:17px;line-height:1.6">{{ t.team }} win the title in {{ (t.title * 100)|round|int }}% of our simulations, and {{ d.team }} go down in {{ (d.relegation * 100)|round|int }}%. Every club's chances of the title, the top four and relegation, updated each week.</p>
+<p style="margin-top:16px"><a class="cta lab" href="{{ root }}/table/index.html">See every club</a></p>
+</div>
+<div class="side">
+<div class="homebox">
+<div class="kicker lab">For FPL managers</div>
+<p class="body" style="font-size:16px;line-height:1.5;margin-top:8px">Clean-sheet and scoring chances for every club this gameweek, and how kind the next six fixtures are.</p>
+<p style="margin-top:12px"><a class="cta lab" href="{{ root }}/fpl/index.html">FPL corner</a></p>
+</div>
+</div>
+</section>
+{% endif %}
 
 <section id="how" class="sec">
 <h2 class="sec-title disp" style="margin-bottom:24px">How it works</h2>

@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% from "macros.html" import badge, club, page_head, wordmark with context %}
+{% block title %}FPL corner, Gameweek {{ latest.matchweek }}: Inkwell &amp; Algorithm{% endblock %}
+{% block masthead %}{{ page_head("FPL corner", root, latest, built, [("#clean-sheets", "Clean sheets"), ("#goals", "Goals"), ("#fixtures", "Fixtures ahead")]) }}{% endblock %}
+{% block content %}
+<section class="sec">
+<div class="kicker lab">For Fantasy Premier League managers · Gameweek {{ latest.matchweek }}</div>
+<h2 class="lead-h disp" style="font-style:italic">Who keeps a clean sheet, who scores</h2>
+<p class="standfirst">The same expected goals behind our calls, turned into the numbers FPL managers care about: each club's chance of a clean sheet, of scoring twice or more, and how kind its next few fixtures are.</p>
+</section>
+
+<section class="sec row">
+<div class="grow" id="clean-sheets">
+<div class="sec-head rule-top"><h2 class="sec-title disp">Clean-sheet chances</h2></div>
+<div class="scroll">
+<table>
+<thead><tr class="lab"><th scope="col">Club</th><th scope="col">Opponent</th><th scope="col" class="num">Clean sheet</th><th scope="col" class="num">xG against</th><th scope="col" class="num">Win</th></tr></thead>
+<tbody>
+{% for r in fpl.clean_sheets %}
+<tr><td style="font-weight:600"><span style="display:inline-flex;align-items:center;gap:8px">{{ badge(r.team, root) }}{{ club(r.team, root) }}</span></td><td><a href="{{ root }}/{{ r.path }}">{{ 'v' if r.venue == 'H' else 'at' }} {{ r.opponent }}</a></td><td class="num" style="font-weight:700">{{ r.cs }}%</td><td class="num">{{ '%.2f'|format(r.xg_against) }}</td><td class="num">{{ r.win }}%</td></tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+</div>
+<div class="side" id="goals">
+<div class="sec-head rule-top"><h2 class="sec-title disp">Goals expected</h2></div>
+<table>
+<thead><tr class="lab"><th scope="col">Club</th><th scope="col" class="num">xG</th><th scope="col" class="num">2+ goals</th></tr></thead>
+<tbody>
+{% for r in fpl.scoring %}
+<tr><td style="font-weight:600">{{ club(r.team, root) }} <span class="muted lab" style="font-size:11px">{{ 'v' if r.venue == 'H' else 'at' }} {{ r.opponent }}</span></td><td class="num" style="font-weight:700">{{ '%.2f'|format(r.xg_for) }}</td><td class="num">{{ r.two }}%</td></tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+</section>
+
+<section id="fixtures" class="sec">
+<div class="sec-head rule-top"><h2 class="sec-title disp">The fixtures ahead</h2>{% if fpl.strip %}<span class="lab muted" style="font-size:13px;font-weight:600">Gameweeks {{ fpl.strip.gameweeks[0] }} to {{ fpl.strip.gameweeks[-1] }} · kindest run first</span>{% endif %}</div>
+{% if fpl.strip %}
+<p class="body" style="font-size:16px;line-height:1.5;margin-bottom:16px">Each cell is a fixture with the club's chance of winning it, the strongest shade for the kindest games and red for the toughest. Upper case is at home. Unlike the 1 to 5 scale in the FPL app, these come from our attack and defence ratings, before any team news.</p>
+<div class="scroll">
+<table class="strip">
+<thead><tr class="lab"><th scope="col">Club</th>{% for gw in fpl.strip.gameweeks %}<th scope="col" style="text-align:center">GW{{ gw }}</th>{% endfor %}<th scope="col" class="num">Avg win</th></tr></thead>
+<tbody>
+{% for r in fpl.strip.rows %}
+<tr><td style="font-weight:600;white-space:nowrap">{{ club(r.team, root) }}</td>{% for wk in r.weeks %}{% if wk %}<td class="fx b{{ wk[0].band }} lab">{% for g in wk %}<span title="{{ g.opponent }}{{ ' (home)' if g.venue == 'H' else ' (away)' }}">{{ g.code if g.venue == 'H' else g.code|lower }}</span><small>{{ g.win }}%</small>{% endfor %}</td>{% else %}<td class="fx lab muted">blank</td>{% endif %}{% endfor %}<td class="num" style="font-weight:700">{{ r.avg_win }}%</td></tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+{% else %}
+<p class="body" style="font-size:16px">The fixture strip appears once the fixture list has been fetched from the FPL feed at the next weekly update.</p>
+{% endif %}
+<p class="muted" style="font-size:14px;margin-top:12px">Chances, not tips. Clean-sheet chances are for the whole match, so a defender subbed off early can miss out even when the team keeps one.</p>
+</section>
+{% endblock %}

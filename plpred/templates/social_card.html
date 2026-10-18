@@ -45,7 +45,7 @@ html,body{margin:0;width:{{ size }}px;height:{{ size }}px;overflow:hidden}
 </head>
 <body>
 <div class="post">
-<div class="top"><span class="brand disp">{{ wordmark() }}</span><span class="tag lab muted">Premier League · Matchweek {{ matchweek }}</span></div>
+<div class="top"><span class="brand disp">{{ wordmark() }}</span><span class="tag lab muted">{% if card.kind != "brand" %}Premier League · Matchweek {{ matchweek }}{% else %}Premier League{% endif %}</span></div>
 <div class="main">
 {% if card.kind == "round" %}
 <div class="kicker lab accent">Every game called</div>
@@ -87,6 +87,33 @@ html,body{margin:0;width:{{ size }}px;height:{{ size }}px;overflow:hidden}
 <div><div class="n disp">{{ record.last.right }}<span style="font-size:56px"> of {{ record.last.n }}</span></div><div class="u lab">results right last week</div></div>
 <div><div class="n disp">{{ record.rate }}%</div><div class="u lab">right this season{% if record.fav_rate is not none %} · bookies' favourite {{ record.fav_rate }}%{% endif %}</div></div>
 </div>
+{% elif card.kind == "miss" %}
+<div class="kicker lab accent">What we got wrong · games from {{ record.last.label }}</div>
+<h1 class="head disp">{{ miss.match }}: <span class="accent">{{ miss.kind|lower }}.</span></h1>
+<div class="verdict" style="flex-wrap:wrap;gap:8px 24px"><span class="lab big" style="font-size:32px">We said {{ miss.called }}</span><span class="lab" style="font-size:22px;font-weight:600">{{ miss.p }}% · it finished {{ miss.result }}</span></div>
+<div class="why-text" style="font-size:30px">{{ miss.text }}</div>
+{% elif card.kind == "projection" %}
+<div class="kicker lab accent">{{ "{:,}".format(sim.runs) }} simulations of the rest of the season</div>
+<h1 class="head disp">How it <span class="accent">ends.</span></h1>
+<div class="list">
+{% for r in sim.teams[:3] %}
+<div class="r"><span class="fx disp">{{ r.team }}</span><span class="c lab">Title {{ (r.title * 100)|round|int }}%</span></div>
+{% endfor %}
+{% for r in (sim.teams|sort(attribute="relegation", reverse=true))[:3] %}
+<div class="r"><span class="fx disp">{{ r.team }}</span><span class="c lab accent">Relegation {{ (r.relegation * 100)|round|int }}%</span></div>
+{% endfor %}
+</div>
+{% elif card.kind == "fpl" %}
+<div class="kicker lab accent">FPL corner · Gameweek {{ matchweek }}</div>
+<h1 class="head disp">Most likely to keep a <span class="accent">clean sheet.</span></h1>
+<div class="list">
+{% for r in fpl.clean_sheets[:6] %}
+<div class="r"><span class="fx disp">{{ r.team }} <span class="v" style="font-size:24px">{{ 'v' if r.venue == 'H' else 'at' }} {{ r.opponent }}</span></span><span class="c lab">{{ r.cs }}%</span></div>
+{% endfor %}
+</div>
+{% elif card.kind == "brand" %}
+<h1 class="head disp" style="font-size:120px;line-height:.95;font-style:normal;font-weight:900">{{ wordmark() }}</h1>
+<p class="why-text" style="font-size:36px;font-style:italic">Data-driven Premier League predictions, with the reasons. New every Thursday.</p>
 {% endif %}
 </div>
 <div class="foot lab muted"><span>Data-driven predictions, with the reasons</span><span>{{ handle }}</span></div>

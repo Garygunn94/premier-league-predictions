@@ -1,7 +1,8 @@
 """Player availability from the official Fantasy Premier League feed.
 
 Gives each player's status (a = available, d = doubtful, i = injured, s = suspended,
-u = unavailable, n = not in squad), injury news and chance of playing next round.
+u = unavailable, n = not in squad), injury news and chance of playing next round,
+and the season's fixture list by FPL gameweek (for the fixture strip on the FPL page).
 """
 import pandas as pd
 
@@ -9,6 +10,7 @@ from plpred import teams
 from plpred.http import session
 
 URL = "https://fantasy.premierleague.com/api/bootstrap-static/"
+FIXTURES_URL = "https://fantasy.premierleague.com/api/fixtures/"
 POSITIONS = {1: "GK", 2: "DEF", 3: "MID", 4: "FWD"}
 
 
@@ -16,6 +18,21 @@ def fetch_raw() -> dict:
     resp = session().get(URL, timeout=30)
     resp.raise_for_status()
     return resp.json()
+
+
+def fetch_fixtures_raw() -> list:
+    resp = session().get(FIXTURES_URL, timeout=30)
+    resp.raise_for_status()
+    return resp.json()
+
+
+def fixtures(raw: dict, raw_fixtures: list) -> pd.DataFrame:
+    """Every fixture this season: FPL gameweek (blank if not scheduled yet), kick-off and the two clubs."""
+    team_names = {t["id"]: teams.canonical(t["name"]) for t in raw["teams"]}
+    rows = [{"gameweek": f.get("event"), "kickoff": f.get("kickoff_time"),
+             "home_team": team_names[f["team_h"]], "away_team": team_names[f["team_a"]],
+             "finished": bool(f.get("finished"))} for f in raw_fixtures]
+    return pd.DataFrame(rows, columns=["gameweek", "kickoff", "home_team", "away_team", "finished"])
 
 
 def availability(raw: dict) -> pd.DataFrame:
