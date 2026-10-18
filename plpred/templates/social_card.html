@@ -1,0 +1,95 @@
+{% from "macros.html" import badge, split with context %}
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<title>{{ card.title }}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700;1,800;1,900&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="{{ root }}/style.css">
+<style>
+html,body{margin:0;width:{{ size }}px;height:{{ size }}px;overflow:hidden}
+.post{width:{{ size }}px;height:{{ size }}px;padding:64px 72px 56px;display:flex;flex-direction:column;background:var(--paper)}
+.post .top{display:flex;justify-content:space-between;align-items:baseline;border-bottom:3px solid var(--ink);padding-bottom:14px}
+.post .brand{font-size:44px;font-weight:900;font-style:italic;letter-spacing:-.01em}
+.post .tag{font-size:20px;font-weight:700}
+.post .main{flex:1;display:flex;flex-direction:column;justify-content:center;gap:28px;min-height:0}
+.post .foot{display:flex;justify-content:space-between;border-top:1px solid var(--ink);padding-top:14px;font-size:18px;font-weight:600}
+.post .kicker{font-size:22px}
+.post .head{font-size:68px;font-weight:800;font-style:italic;line-height:1.04;letter-spacing:-.01em}
+.post .teams{display:flex;align-items:center;justify-content:space-between;gap:24px}
+.post .team{font-size:52px;font-weight:800;display:flex;align-items:center;gap:16px;line-height:1.05}
+.post .score{font-size:120px;font-weight:900;line-height:1}
+.post .verdict{display:flex;justify-content:space-between;align-items:center;background:var(--ink);color:var(--paper);padding:20px 28px}
+.post .verdict .big{font-size:40px;font-weight:700;letter-spacing:.04em}
+.post .split{height:28px}
+.post .split-key{font-size:22px;margin-top:10px}
+.post .why{font-size:34px;font-weight:700;font-style:italic;line-height:1.2}
+.post .why-text{font-size:26px;line-height:1.45;color:var(--body);margin-top:10px}
+.post .list{display:flex;flex-direction:column}
+.post .list .r{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:11px 0;border-bottom:1px solid var(--rule)}
+.post .list .fx{font-size:30px;font-weight:800}
+.post .list .c{font-size:22px;font-weight:700;white-space:nowrap}
+.post .wf .r{display:grid;grid-template-columns:330px 1fr 72px;align-items:center;gap:16px;padding:9px 0;border-bottom:1px solid var(--rule)}
+.post .wf .l{font-size:22px;line-height:1.2}
+.post .wf .track{position:relative;height:30px}
+.post .wf .bar{position:absolute;top:0;bottom:0}
+.post .wf .start{background:var(--draw)}.post .wf .up{background:var(--ink)}.post .wf .down{background:var(--accent)}.post .wf .total{background:var(--accent)}
+.post .wf .v{font-size:24px;font-weight:700;text-align:right}
+.post .nums{display:flex;gap:56px}
+.post .nums .n{font-size:150px;font-weight:900;line-height:.95}
+.post .nums .u{font-size:24px;color:var(--muted);margin-top:24px}
+.post .badge{width:1.1em;height:1.1em}
+</style>
+</head>
+<body>
+<div class="post">
+<div class="top"><span class="brand disp">{{ brand }}</span><span class="tag lab muted">Premier League · Matchweek {{ matchweek }}</span></div>
+<div class="main">
+{% if card.kind == "round" %}
+<div class="kicker lab accent">Every game called</div>
+<h1 class="head disp">Matchweek {{ matchweek }}, <span class="accent">called.</span></h1>
+<div class="list">
+{% for v in [lead] + rest %}
+<div class="r"><span class="fx disp">{{ v.home_short }} v {{ v.away_short }}</span><span class="c lab {% if v.call == 'A' %}accent{% elif v.call == 'D' %}muted{% endif %}">{{ 'Draw' if v.call == 'D' else (v.home_short if v.call == 'H' else v.away_short) ~ ' win' }} {{ v.score_text }} · {{ v.our_p }}%</span></div>
+{% endfor %}
+</div>
+{% elif card.kind == "call" %}
+<div class="kicker lab accent">{% if g is sameas features.upset %}The model v the market{% elif g is sameas lead %}Match of the week{% else %}Our call{% endif %} · {{ g.kickoff_text }}</div>
+<div class="teams">
+<span class="team disp">{{ badge(g.home_team, root) }}{{ g.home_short }}</span>
+<span class="score disp">{{ g.score_text }}</span>
+<span class="team disp muted">{{ g.away_short }}{{ badge(g.away_team, root) }}</span>
+</div>
+<div class="verdict"><span class="lab big">{{ g.call_label }}</span><span class="lab" style="font-size:22px;font-weight:600">{{ g.our_p }}% · {{ g.confidence }}</span></div>
+<div>
+{{ split(g) }}
+<div class="split-key lab"><span>{{ g.home_short }} {{ g.h }}%</span><span class="muted">Draw {{ g.d }}%</span><span class="accent">{{ g.away_short }} {{ g.a }}%</span></div>
+</div>
+{% if g.front_reasons %}
+<div><div class="why disp">{{ g.front_reasons[0].title }}</div><div class="why-text">{{ g.front_reasons[0].text }}</div></div>
+{% endif %}
+{% elif card.kind == "reasons" %}
+<div class="kicker lab accent">{{ g.home_team }} v {{ g.away_team }} · {{ g.kickoff_text }}</div>
+<h1 class="head disp">How we got to <span class="accent">{{ g.our_p }}%</span></h1>
+<div class="wf">
+{% for r in g.waterfall_rows.rows %}
+<div class="r"><span class="l"{% if r.bold %} style="font-weight:700"{% endif %}>{{ r.label }}</span>
+<span class="track"><span class="bar {{ r.fill }}" style="left:{{ r.left }}%;width:{{ r.width }}%"></span></span>
+<span class="v lab">{{ r.val }}</span></div>
+{% endfor %}
+</div>
+{% elif card.kind == "scorecard" %}
+<div class="kicker lab accent">The scorecard · games from {{ record.last.label }}</div>
+<h1 class="head disp">Right or wrong, <span class="accent">we publish it.</span></h1>
+<div class="nums">
+<div><div class="n disp">{{ record.last.right }}<span style="font-size:56px"> of {{ record.last.n }}</span></div><div class="u lab">results right last week</div></div>
+<div><div class="n disp">{{ record.rate }}%</div><div class="u lab">right this season{% if record.fav_rate is not none %} · bookies' favourite {{ record.fav_rate }}%{% endif %}</div></div>
+</div>
+{% endif %}
+</div>
+<div class="foot lab muted"><span>Data-driven predictions, with the reasons</span><span>{{ handle }}</span></div>
+</div>
+</body>
+</html>

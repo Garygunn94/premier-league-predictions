@@ -77,6 +77,13 @@ week's verdict and the table) and a breakdown page for every match. It follows t
 approved newspaper design, works on phones and has light and dark modes. Club crests
 are saved from API-Football into `data/badges/`.
 
+Each build also writes a posting kit for X and Instagram to `site/social/` (on the
+live site at `/social/`, not linked from the front page). It has square images in the
+site's dark look (the round, every call, the reasons chart for the bold call and the
+scorecard) and the captions for Thursday, Friday and Monday, with X posts already
+under 280 characters. The workflow renders the images to PNG with
+`python -m plpred.social --png site/social`, which needs Playwright and Chromium.
+
 The **Publish site** workflow builds and deploys it to GitHub Pages after every data
 update and every push to `main`. GitHub Pages must be set to deploy from GitHub
 Actions (Settings > Pages > Source).
