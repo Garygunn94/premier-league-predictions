@@ -3,7 +3,8 @@
     python -m plpred.site            # writes site/
 
 Pages: the front page (this week's calls, our record, charts, last week's verdict,
-the table) and one page per match with the full breakdown.
+the table), one page per match with the full breakdown, and the posting kit for
+social media in social/ (see plpred.social).
 """
 import argparse
 import json
@@ -17,7 +18,7 @@ import numpy as np
 import pandas as pd
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from plpred import explain, seasons
+from plpred import explain, seasons, social
 from plpred.sources import api_football
 
 log = logging.getLogger("plpred.site")
@@ -290,6 +291,7 @@ def build(data: Path, out: Path) -> Path:
     for v in views:
         (out / "match" / f"{v['slug']}.html").write_text(
             env.get_template("match.html").render(**ctx, g=v, root=".."))
+    social.build_kit(ctx, views, env, out / "social")
     (out / ".nojekyll").write_text("")
     log.info("Built %d pages into %s (%s)", len(views) + 1, out, "replay" if is_replay else "live")
     return out
