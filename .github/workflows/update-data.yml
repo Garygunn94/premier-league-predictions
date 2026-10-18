@@ -21,6 +21,7 @@ on:
 
 permissions:
   contents: write
+  issues: write  # to raise an issue when a run fails (see the last two steps)
 
 concurrency:
   group: update-data
@@ -63,3 +64,26 @@ jobs:
             git commit -m "Update data $(date -u +%Y-%m-%d)"
             git push
           fi
+      # An independent, dated copy of the new calls that we can't edit afterwards: proof they
+      # were made before kick-off (see plpred/proof.py). The Wayback Machine is sometimes slow or
+      # busy, so this never fails the run.
+      - name: Save the calls to the Internet Archive
+        if: github.event.schedule == '0 6 * * 4' || inputs.predict || inputs.after_kickoff
+        continue-on-error: true
+        run: python -m plpred.proof archive --calls $(git diff --name-only ${{ github.sha }} HEAD -- data/predictions)
+      # A run can succeed and still bring in nothing, when a source stops updating or changes its
+      # format. On Thursday this also checks the coming round was called.
+      - name: Check the data is healthy
+        run: >-
+          python -m plpred.health --report health.md
+          ${{ (github.event.schedule == '0 6 * * 4' || inputs.predict) && '--calls' || '' }}
+      - name: Raise an issue
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: .github/scripts/alert.sh open "Update data needs a look" health.md
+      - name: Close the issue
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: .github/scripts/alert.sh close "Update data needs a look"

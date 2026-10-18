@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% from "macros.html" import page_head with context %}
+{% block masthead %}{{ page_head("Terms", root, latest, built) }}{% endblock %}
+{% block content %}
+<section class="sec">
+<div class="kicker lab">Terms of use · updated {{ policy_date }}</div>
+<h2 class="lead-h disp" style="font-style:italic">The small print, in plain English</h2>
+<h3 class="lab small-head" style="margin-top:28px">Analysis, not betting advice</h3>
+<p class="body" style="font-size:17px;line-height:1.6">Everything here is a statistical model's opinion, published for interest and entertainment. Our record is public, and it is roughly level with the bookmakers', not better. Nothing on this site is a tip or a recommendation to bet, and we take no money from bookmakers. We show their odds only as a yardstick.</p>
+<p class="body" style="font-size:17px;line-height:1.6;margin-top:12px">If you bet, you must be 18 or over. If gambling is causing you or someone you know a problem, free, confidential help is available from <a href="https://www.begambleaware.org/">BeGambleAware</a> and the National Gambling Helpline on 0808 8020 133.</p>
+<h3 class="lab small-head" style="margin-top:28px">No guarantees</h3>
+<p class="body" style="font-size:17px;line-height:1.6">We work to get the data and the numbers right, but they come from third parties and can be wrong or late. The site is provided as it is, and we aren't liable for any loss from using it, as far as the law allows.</p>
+<h3 class="lab small-head" style="margin-top:28px">Names, crests and data</h3>
+<p class="body" style="font-size:17px;line-height:1.6">Inkwell &amp; Algorithm is independent and isn't affiliated with or endorsed by the Premier League, any club or any data provider. Club names and crests are the property of their clubs and are used only to identify the teams. Results, statistics and odds come from football-data.co.uk, Understat, Fantasy Premier League and API-Football, which own their data.</p>
+<h3 class="lab small-head" style="margin-top:28px">Sharing our work</h3>
+<p class="body" style="font-size:17px;line-height:1.6">You're welcome to share our calls, reasons and charts, with a credit to Inkwell &amp; Algorithm and a link back to this site. Please don't copy whole pages or present them as your own. The code behind the site is <a href="https://github.com/Garygunn94/premier-league-predictions">on GitHub</a>.</p>
+<p class="body" style="font-size:17px;line-height:1.6;margin-top:20px">Questions about any of this? <a href="{{ root }}/contact/">Contact us</a>.</p>
+</section>
+{% endblock %}

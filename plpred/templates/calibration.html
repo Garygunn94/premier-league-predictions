@@ -17,6 +17,7 @@
 <li><a href="#labels">Our labels</a></li>
 <li><a href="#bookies">Against the bookies</a></li>{% endif %}
 <li><a href="#test">Our public test</a></li>
+{% if proofs %}<li><a href="#proof">Proof we called it first</a></li>{% endif %}
 </ul>
 </nav>
 </header>
@@ -109,4 +110,22 @@
 {% endif %}
 </div>
 </section>
+{% if proofs %}
+<section id="proof" class="sec">
+<div class="kicker lab">Dated by someone else</div>
+<h2 class="sec-title disp" style="margin-bottom:12px;font-style:italic">Proof we called it first</h2>
+<p class="body" style="font-size:17px;line-height:1.6">Anyone can claim they saw a result coming. Each week's calls are saved as a file, and every file has a fingerprint: a code worked out from its exact contents, so changing a single character gives a completely different one. We post the fingerprint in our Thursday thread on <a href="https://x.com/InkwellAlgo">X</a>, and the Internet Archive saves a copy of the file and of this site, both dated by them, not us.</p>
+<p class="body" style="font-size:17px;line-height:1.6;margin-top:12px"><strong>To check a week:</strong> download its file from GitHub, run <code>sha256sum</code> on it (or any SHA-256 tool) and compare the answer with the fingerprint below and in our post.</p>
+<div class="scroll" style="margin-top:20px">
+<table style="font-size:15px">
+<thead><tr class="lab"><th scope="col">Calls</th><th scope="col" class="num">Games</th><th scope="col">Fingerprint (SHA-256)</th><th scope="col">Check it</th></tr></thead>
+<tbody>
+{% for p in proofs %}
+<tr><td>From {{ p.first_kickoff }}{% if p.after_kickoff %} <span class="muted">(called after kick-off)</span>{% endif %}</td><td class="num">{{ p.games }}</td><td><code style="word-break:break-all;font-size:13px">{{ p.sha256 }}</code></td><td class="lab" style="font-size:13px;white-space:nowrap"><a href="{{ p.raw }}">File</a> · <a href="{{ p.github }}">History</a> · <a href="{{ p.archive }}">Archive</a></td></tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+</section>
+{% endif %}
 {% endblock %}

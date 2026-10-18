@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% from "macros.html" import page_head with context %}
+{% block masthead %}{{ page_head("For fan sites", root, latest, built) }}{% endblock %}
+{% block content %}
+<section class="sec row">
+<div class="grow">
+<div class="kicker lab">Free for blogs, fanzines and club sites</div>
+<h2 class="lead-h disp" style="font-style:italic">Put your club's next call on your site</h2>
+<p class="standfirst">A small card with our call on your club's next game, the chances and the main reason. It updates itself every Thursday, so you paste it once and never touch it again.</p>
+<label class="lab" for="club" style="font-size:13px;font-weight:700;display:block;margin-top:20px">Pick your club</label>
+<select id="club" class="lab" style="font-size:16px;padding:8px;margin-top:6px;background:var(--paper);color:var(--ink);border:1px solid var(--ink)">
+{% for team, s in clubs|dictsort %}<option value="{{ s }}"{% if team == first %} selected{% endif %}>{{ team }}</option>
+{% endfor %}
+</select>
+<label class="lab" for="code" style="font-size:13px;font-weight:700;display:block;margin-top:20px">Then copy this into your page</label>
+<textarea id="code" readonly rows="4" style="width:100%;box-sizing:border-box;margin-top:6px;font:13px/1.5 monospace;padding:10px;background:var(--chip);color:var(--ink);border:1px solid var(--rule)"></textarea>
+<p style="margin-top:10px"><button type="button" id="copy" class="theme-toggle lab">Copy the code</button></p>
+<p class="body" style="font-size:16px;line-height:1.6;margin-top:16px">The card follows your readers' light or dark setting. To fix it, add <code>?theme=light</code> or <code>?theme=dark</code> to the address. It sets no cookies and shows no ads. Please keep the link back to us; that's the only thing we ask.</p>
+<noscript><p class="body">The address for each club is {{ site_url }}embed/<em>club</em>/, for example {{ site_url }}embed/{{ clubs[first] }}/.</p></noscript>
+</div>
+<div class="side">
+<div class="kicker lab" style="margin-bottom:8px">Preview</div>
+<iframe id="preview" src="{{ root }}/embed/{{ clubs[first] }}/" width="100%" height="250" style="border:0;max-width:480px" title="Preview of the card" loading="lazy"></iframe>
+</div>
+</section>
+<script>
+(function () {
+  var site = {{ site_url|tojson }}, root = {{ root|tojson }};
+  var club = document.getElementById('club'), code = document.getElementById('code');
+  function update() {
+    var name = club.options[club.selectedIndex].text;
+    code.value = '<iframe src="' + site + 'embed/' + club.value + '/" width="100%" height="250" ' +
+      'style="border:0;max-width:480px" loading="lazy" title="' + name + ': the next call from Inkwell & Algorithm"></iframe>';
+    document.getElementById('preview').src = root + '/embed/' + club.value + '/';
+  }
+  club.addEventListener('change', update);
+  document.getElementById('copy').addEventListener('click', function () {
+    code.select();
+    try { navigator.clipboard.writeText(code.value); } catch (e) { document.execCommand('copy'); }
+    this.textContent = 'Copied';
+  });
+  update();
+})();
+</script>
+{% endblock %}

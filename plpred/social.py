@@ -5,7 +5,7 @@
 `plpred.site` calls `build_kit` to write the kit into site/social/: one HTML card per
 image (1080 x 1080, the site's dark look) and a page listing every card with its
 caption, ready to copy, plus the week's newsletter as Markdown (newsletter.md) for
-pasting into the newsletter service. Rendering the cards to PNG needs Playwright and Chromium, so
+pasting into the newsletter service, and the scores for our Superbru entry (superbru.txt). Rendering the cards to PNG needs Playwright and Chromium, so
 it is a separate step that the Publish site workflow runs after the build.
 
     python -m plpred.social --email site/social # email the rendered kit, one message per post
@@ -139,7 +139,12 @@ def captions(ctx: dict, views: list[dict]) -> dict:
              f"model would have called from pre-round data, and how it went.\n")
     thread = [fit_x(intro + "The thread is below.", X_TAG)]
     thread += [match_post(v) for v in views]
-    thread.append(f"Every call, chart and reason: {SITE_URL}")
+    last = f"Every call, chart and reason: {SITE_URL}"
+    if ctx.get("proof"):
+        # The calls file's fingerprint, dated by X: proof the calls came before kick-off (plpred.proof).
+        last += (f"\n\nThis week's calls have the fingerprint {ctx['proof']['short']}, the start of their "
+                 f"SHA-256 hash. How to check it: {SITE_URL}record/#proof")
+    thread.append(last)
     lines = "\n".join(f"{v['home_team']} v {v['away_team']}: {call_phrase(v).removeprefix('a ')} ({v['our_p']}%)"
                       + (f", finished {v['result_text']}" if v.get("result_text") else
                          ", called after kick-off" if v.get("after_kickoff") else "")
@@ -283,6 +288,17 @@ def newsletter(ctx: dict, views: list[dict]) -> str:
 
 # ---------------------------------------------------------------- the kit
 
+def superbru(ctx: dict, views: list[dict]) -> str:
+    """The week's scores to type into our Superbru Premier League predictor entry, where the model
+    plays against the public: an outside leaderboard that dates every pick before kick-off."""
+    games = [v for v in views if not v.get("after_kickoff") and not v.get("result_text")]
+    lines = [f"{v['home_team']} {v['score_text'].replace('–', '-')} {v['away_team']}   ({v['kickoff_text']})"
+             for v in games]
+    return (f"Matchweek {ctx['matchweek']}: enter these on Superbru (account InkwellAndAlgorithm) before the "
+            "first kick-off. Enter them exactly, even when you disagree: the point is the model's own record.\n\n"
+            + "\n".join(lines) + "\n")
+
+
 def carousel(v: dict) -> list[dict]:
     """One game's slides: the call, how we got there, the numbers, the likely scores, us v the bookies."""
     teams = f"{v['home_team']} v {v['away_team']}"
@@ -386,6 +402,7 @@ def build_kit(ctx: dict, views: list[dict], env: Environment, out: Path) -> Path
     (out / "posts.json").write_text(json.dumps({"matchweek": ctx["matchweek"], "posts": [
         {"day": d["day"], "when": d["when"], "how": d["how"], "x": d["x"], "instagram": d["instagram"],
          "images": [c["name"] for c in d["cards"]]} for d in days]}))
+    (out / "superbru.txt").write_text(superbru(ctx, views))
     letter = newsletter(ctx, views)
     (out / "newsletter.md").write_text(letter)
     (out / "index.html").write_text(env.get_template("social_kit.html").render(
@@ -453,10 +470,17 @@ def ready_to_post(kit: Path) -> list[Path]:
 
 
 def kit_emails(kit: Path, sender: str, to: str) -> list[EmailMessage]:
-    """One email per post: what it is, both captions to copy, and its images in slide order."""
+    """The Superbru picks, then one email per post: what it is, both captions to copy, and its images in slide order."""
     data = json.loads((kit / "posts.json").read_text())
     folders = sorted(p for p in (kit / "ready").iterdir() if p.is_dir())
     out = []
+    picks = kit / "superbru.txt"
+    if picks.exists():
+        msg = EmailMessage()
+        msg["Subject"] = f"Matchweek {data['matchweek']} · Superbru picks"
+        msg["From"], msg["To"] = sender, to
+        msg.set_content(picks.read_text())
+        out.append(msg)
     for i, (post, folder) in enumerate(zip(data["posts"], folders), 1):
         how = (folder / "how.txt").read_text().strip()
         msg = EmailMessage()

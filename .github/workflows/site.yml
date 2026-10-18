@@ -39,6 +39,7 @@ jobs:
           # Optional repository variables (Settings > Secrets and variables > Actions > Variables).
           GOATCOUNTER: ${{ vars.GOATCOUNTER || 'garygunn94' }}
           NEWSLETTER_URL: ${{ vars.NEWSLETTER_URL }}
+          CONTACT_EMAIL: ${{ vars.CONTACT_EMAIL || 'hello@inkwellandalgorithm.com' }}
       - name: Render the social media cards
         run: |
           pip install playwright==1.64.0
@@ -103,3 +104,42 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
+
+  # After each data update, ask the Wayback Machine to save the front page and the newest
+  # matchweek page, a dated copy of the calls as readers saw them (see plpred/proof.py).
+  archive:
+    needs: deploy
+    if: github.event_name == 'workflow_run'
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: python -m plpred.proof archive --site
+
+  # A failed build or deploy raises an issue, so it reaches Gary by email; the next clean
+  # run closes it.
+  alert:
+    needs: [build, deploy]
+    if: always()
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Raise or close the issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "${{ needs.build.result }}" = failure ] || [ "${{ needs.deploy.result }}" = failure ]; then
+            .github/scripts/alert.sh open "Publish site needs a look"
+          elif [ "${{ needs.deploy.result }}" = success ]; then
+            .github/scripts/alert.sh close "Publish site needs a look"
+          fi
