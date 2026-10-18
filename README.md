@@ -71,7 +71,7 @@ earlier results only (without team news), which is handy for checking the output
 
 ## The site
 
-`python -m plpred.site` builds The Backpage into `site/` from the newest predictions:
+`python -m plpred.site` builds the site into `site/` from the newest predictions:
 a front page (match of the week, the rest of the round, charts, our record, last
 week's verdict and the table) and a breakdown page for every match. It follows the
 approved newspaper design, works on phones and has light and dark modes. Club crests

@@ -1,4 +1,4 @@
-"""Build The Backpage: a static site from this week's predictions and our record.
+"""Build the Inkwell & Algorithm site: a static site from this week's predictions and our record.
 
     python -m plpred.site            # writes site/
 

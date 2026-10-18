@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% from "macros.html" import badge with context %}
-{% block title %}{{ g.home_team }} v {{ g.away_team }}, the breakdown · The Backpage{% endblock %}
+{% block title %}{{ g.home_team }} v {{ g.away_team }}, the breakdown · Inkwell &amp; Algorithm{% endblock %}
 {% block masthead %}
 <header class="dateline" style="padding:16px 0 12px;border-bottom:3px solid var(--ink);align-items:baseline">
-<a href="{{ root }}/index.html" class="disp" style="font-size:32px;font-weight:900;text-decoration:none;text-transform:none;letter-spacing:0">The Backpage</a>
+<a href="{{ root }}/index.html" class="disp" style="font-size:32px;font-weight:900;text-decoration:none;text-transform:none;letter-spacing:0">Inkwell &amp; Algorithm</a>
 <span class="lab" style="font-size:13px;font-weight:600"><a href="{{ root }}/index.html">Back to Matchweek {{ matchweek }}</a>{% if replay %} · <span class="accent">Replay</span>{% endif %}</span>
 </header>
 {% endblock %}
