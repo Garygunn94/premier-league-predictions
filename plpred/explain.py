@@ -13,7 +13,7 @@ from dataclasses import dataclass
 import numpy as np
 import pandas as pd
 
-from plpred import model
+from plpred import luck, model
 
 OUTCOME_NAMES = {"H": "home win", "D": "draw", "A": "away win"}
 
@@ -284,6 +284,10 @@ def explain(ratings: model.Ratings, matches: pd.DataFrame, home: str, away: str,
         "head_to_head": head_to_head(matches, home, away),
         "team_news": news_rows,
     }
+    games = luck.team_games(matches)
+    result["luck"] = {"home": luck.recent(games, home), "away": luck.recent(games, away)}
+    # Written into every published call before kick-off, so the pre-registered test can't be back-fitted.
+    result["luck_gap"] = luck.luck_gap(games, home, away)
     result["reasons"] = reasons(result)
     result["headline"] = headline(result)
     result["change_our_mind"] = change_our_mind(ratings, fs, base_lam, base_mu, call, home, away, steps)
@@ -369,9 +373,13 @@ def reasons(r: dict) -> list[dict]:
             "text": f"Last five league games: {home} took {ph} points, {away} took {pa}.",
         })
 
+    luck_reason = results_vs_performance(r)
+    if luck_reason:
+        out.append(luck_reason)
+
     fin = [(t, r["finishing"][s]) for t, s in ((home, "home"), (away, "away")) if r["finishing"][s]]
     lucky = [(t, f) for t, f in fin if abs(f["difference"]) >= 3]
-    if lucky:
+    if lucky and not luck_reason:
         t, f = max(lucky, key=lambda x: abs(x[1]["difference"]))
         more = f["difference"] > 0
         out.append({
@@ -400,6 +408,30 @@ def reasons(r: dict) -> list[dict]:
                     "Past meetings count for little in the model.",
         })
     return out
+
+
+def results_vs_performance(r: dict) -> dict | None:
+    """Whose results over the last 10 games have run furthest from what their chances deserved."""
+    sides = [(t, r.get("luck", {}).get(s)) for t, s in ((r["home_team"], "home"), (r["away_team"], "away"))]
+    notable = [(t, l) for t, l in sides if l and abs(l["difference"]) >= luck.NOTABLE_POINTS]
+    if not notable:
+        return None
+    notable.sort(key=lambda x: -abs(x[1]["difference"]))
+    t, l = notable[0]
+    up = l["difference"] > 0
+    gap = abs(round(l["difference"]))
+    text = (f"{t} have {l['points']} points from their last {l['games']} league games, but their chances "
+            f"were worth {l['xpts']:.0f}.")
+    if len(notable) > 1:
+        t2, l2 = notable[1]
+        text += f" {t2} have {l2['points']}, from chances worth {l2['xpts']:.0f}."
+    text += f" We rate teams on their chances, so {t} get {'less' if up else 'more'} credit than their results."
+    return {
+        "topic": "Results vs performance",
+        "title": f"{_pos(t)} results {'flatter them' if up else 'undersell them'} by {gap} "
+                 f"{'point' if gap == 1 else 'points'}",
+        "text": text,
+    }
 
 
 def _xg_title(home: str, away: str, hx: dict, ax: dict) -> str:

@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% from "macros.html" import wordmark with context %}
+{% block title %}Are our percentages right? Inkwell &amp; Algorithm{% endblock %}
+{% block masthead %}
+<header>
+<div class="dateline lab">
+<span>{{ built }}</span>
+<span>Premier League {{ latest.season }}</span>
+<span class="accent">Our record</span>
+</div>
+<h1 class="masthead disp"><a href="{{ root }}/index.html">{{ wordmark() }}</a></h1>
+<p class="tagline">Data-driven Premier League predictions, with the reasons. New every Thursday.</p>
+<nav class="sections" aria-label="Sections">
+<ul class="lab">
+<li><a href="{{ root }}/index.html">Home</a></li>
+<li><a href="{{ root }}/matchweek/{{ latest.matchweek }}/index.html" class="accent">This week's calls</a></li>
+{% if cal %}<li><a href="#chart">Said v happened</a></li>
+<li><a href="#labels">Our labels</a></li>
+<li><a href="#bookies">Against the bookies</a></li>{% endif %}
+<li><a href="#test">Our public test</a></li>
+</ul>
+</nav>
+</header>
+{% endblock %}
+
+{% block content %}
+<section class="sec">
+<div class="kicker lab">Checking our work</div>
+<h2 class="lead-h disp" style="font-style:italic">When we say 60%, does it happen?</h2>
+<p class="standfirst">A percentage is only worth something if it comes true about as often as it says. So we check every one we've given: the home win, the draw and the away win in every game. If our 60% calls come off about 6 times in 10, you can take our numbers at face value.</p>
+{% if cal %}<p class="muted" style="font-size:14px">Based on {{ cal.n }} games from {{ cal.seasons|join(' and ') }}, replayed week by week using only results known before each game. The model's settings were tuned on 2025/26, so this season's games are the fairer test. Live calls join these as the season goes on.</p>{% endif %}
+</section>
+
+{% if cal %}
+<section id="chart" class="sec row">
+<figure class="grow">
+<figcaption><div class="fig-title disp">What we said against what happened</div>
+<div class="fig-sub">Each dot is a group of percentages we gave. On the line, they came true exactly as often as we said. Above it, more often; below it, less often.</div></figcaption>
+<div style="display:flex;gap:8px">
+<div class="lab muted" style="writing-mode:vertical-rl;transform:rotate(180deg);text-align:center;font-size:11px;font-weight:600">How often it happened</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:6px">
+<div class="scatter" role="img" aria-label="Chart of the chances we gave against how often those outcomes happened">
+<svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%" aria-hidden="true"><line x1="0" y1="100" x2="100" y2="0" stroke="var(--rule)" stroke-width="1.5" vector-effect="non-scaling-stroke" stroke-dasharray="4 4"/></svg>
+<span class="lab muted" style="position:absolute;left:8px;top:6px;font-size:11px;font-weight:700">Happens more than we say</span>
+<span class="lab muted" style="position:absolute;right:6px;bottom:6px;font-size:11px;font-weight:700">Happens less than we say</span>
+{% for b in cal.bands %}
+<div class="pt on" title="We said {{ b.label }} ({{ b.said }}% on average) {{ b.n }} times. It happened {{ b.hits }} times ({{ b.came }}%)." style="left:{{ b.said }}%;top:{{ 100 - b.came }}%"><i></i></div>
+{% endfor %}
+</div>
+<div class="axis lab"><span>0%</span><span>What we said</span><span>100%</span></div>
+</div>
+</div>
+</figure>
+<div class="side">
+<div class="scroll">
+<table style="font-size:15px">
+<thead><tr class="lab"><th scope="col">We said</th><th scope="col" class="num">Times</th><th scope="col" class="num">Average</th><th scope="col" class="num">Happened</th></tr></thead>
+<tbody>
+{% for b in cal.bands %}
+<tr><td>{{ b.label }}</td><td class="num">{{ b.n }}</td><td class="num">{{ b.said }}%</td><td class="num" style="font-weight:700">{{ b.came }}%</td></tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+</div>
+</section>
+
+<section id="labels" class="sec">
+<div class="sec-head rule-top"><h2 class="sec-title disp">Do our labels mean what they say?</h2></div>
+<ul class="steps" style="margin-top:20px">
+{% for f in cal.favourites %}
+<li><h3 class="lab small-head">{{ f.label }}</h3><p class="disp" style="font-size:44px;font-weight:900;line-height:1;margin:8px 0">{{ f.came }}%</p><p class="body">Our pick won {{ f.won }} of {{ f.n }} games. We'd given it {{ f.said }}% on average.</p></li>
+{% endfor %}
+</ul>
+</section>
+
+<section id="bookies" class="sec row">
+<div class="grow">
+<h2 class="sec-title disp" style="margin-bottom:12px">Against the bookmakers</h2>
+<p class="body" style="font-size:17px;line-height:1.6">Over the same {{ cal.scores.n }} games our pick was right {{ cal.scores.us_rate }}% of the time, and the bookmakers' favourite {{ cal.scores.books_rate }}%. The score beside this grades the percentages themselves, not just the picks: it is the ranked probability score, where lower is better and the gaps that matter are in the third decimal place.</p>
+<p class="muted" style="font-size:14px;margin-top:8px">The bookmakers' numbers are their average odds as collected by football-data.co.uk a day or two before each round, with their margin removed by the power method. We publish on Thursday, so they often have more team news than we do. Odds are a benchmark, not betting advice.</p>
+</div>
+<div class="side" style="display:flex;gap:32px">
+<div><div class="big-num disp" style="font-size:44px">{{ '%.3f'|format(cal.scores.us_rps) }}</div><div class="muted" style="font-size:15px;margin-top:4px">us</div></div>
+<div><div class="big-num disp muted" style="font-size:44px">{{ '%.3f'|format(cal.scores.books_rps) }}</div><div class="muted" style="font-size:15px;margin-top:4px">bookmakers</div></div>
+</div>
+</section>
+{% endif %}
+
+<section id="test" class="sec row">
+<div class="grow">
+<div class="kicker lab">Written down before a ball was kicked</div>
+<h2 class="sec-title disp" style="margin-bottom:12px;font-style:italic">Our public test: do we see through luck?</h2>
+<p class="body" style="font-size:17px;line-height:1.6">Our ratings lean on the quality of chances rather than the goals that went in. Looking back over past seasons, that seemed to help most when one side's results had run well ahead of, or behind, its chances. It wasn't enough to prove anything, so we've written the test down in advance and will score it on our live calls only.</p>
+<p class="body" style="font-size:17px;line-height:1.6;margin-top:12px"><strong>The rule:</strong> take each side's goals minus expected goals, scored and conceded, per game over its last 20 league games. If the two sides differ by {{ '%.2f'|format(prereg.threshold) }} goals a game or more, the match is in the test. Every published call records this number before kick-off. At the end of the season we compare our percentages in those games with the bookmakers'. The full rule is <a href="https://github.com/Garygunn94/premier-league-predictions/blob/main/preregistered/luck-gap-2026-27.md">on GitHub</a>, dated by its commit.</p>
+</div>
+<div class="side">
+{% if prereg.n %}
+<div class="homebox">
+<div class="kicker lab">So far · {{ prereg.n }} {{ 'game' if prereg.n == 1 else 'games' }} in the test</div>
+<p class="body" style="font-size:16px;line-height:1.5;margin-top:8px">Right results: us {{ prereg.us_right }}, the bookmakers' favourite {{ prereg.books_right }}.</p>
+<p class="body" style="font-size:16px;line-height:1.5">Score (lower is better): us {{ '%.3f'|format(prereg.us_rps) }}, bookmakers {{ '%.3f'|format(prereg.books_rps) }}.</p>
+<p class="muted" style="font-size:14px">Too few games to mean much until late in the season.</p>
+</div>
+{% else %}
+<div class="homebox">
+<div class="kicker lab">Started {{ prereg.start }}</div>
+<p class="body" style="font-size:16px;line-height:1.5;margin-top:8px">No live games have been scored yet. The first ones count after the next matchweek is played.</p>
+</div>
+{% endif %}
+</div>
+</section>
+{% endblock %}

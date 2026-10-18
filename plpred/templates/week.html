@@ -17,6 +17,7 @@
 {% if record %}<li><a href="#verdict">Last week's verdict</a></li>
 <li><a href="#record">Our record</a></li>{% endif %}
 <li><a href="#table">Table</a></li>
+{% if deserved %}<li><a href="#deserved">The table they deserved</a></li>{% endif %}
 <li><a href="#method">How we call it</a></li>
 </ul>
 </nav>
@@ -203,4 +204,21 @@
 </table>
 </div>
 </section>
+
+{% if deserved %}
+<section id="deserved" class="sec">
+<div class="sec-head rule-top"><h2 class="sec-title disp">The table they deserved</h2></div>
+<p class="body" style="font-size:17px;line-height:1.6;margin-bottom:16px">The same season ranked by the points each side's chances were worth, from expected goals (xG). A plus means results have run ahead of the chances. This describes the season so far. It is not a forecast of where anyone will finish.</p>
+<div class="scroll">
+<table>
+<thead><tr class="lab"><th scope="col">#</th><th scope="col">Club</th><th scope="col" class="num">P</th><th scope="col" class="num">Pts</th><th scope="col" class="num">Deserved</th><th scope="col" class="num">+/−</th><th scope="col" class="num">Real place</th></tr></thead>
+<tbody>
+{% for t in deserved %}
+<tr><td>{{ t.position }}</td><td style="font-weight:600"><span style="display:inline-flex;align-items:center;gap:8px">{{ badge(t.team, root) }}{{ t.team }}</span></td><td class="num">{{ t.played }}</td><td class="num">{{ t.points }}</td><td class="num" style="font-weight:700">{{ '%.1f'|format(t.xpts) }}</td><td class="num{% if t.difference <= -3 %} wrong{% endif %}">{{ '%+.1f'|format(t.difference) }}</td><td class="num muted">{{ t.actual }}</td></tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+</section>
+{% endif %}
 {% endblock %}

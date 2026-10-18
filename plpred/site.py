@@ -4,8 +4,9 @@
 
 Pages: a home page (what the site is, how it works, the data sources, every matchweek),
 one page per matchweek in matchweek/<n>/ (the calls, our record, charts, last week's
-verdict, the table) with a page per match beside it, and the posting kit for social
-media in social/ for the newest week (see plpred.social).
+verdict, the table and the table the chances deserved) with a page per match beside it,
+a record/ page on how often our percentages came true (with the pre-registered luck-gap
+test), and the posting kit for social media in social/ for the newest week (see plpred.social).
 """
 import argparse
 import json
@@ -19,7 +20,7 @@ import numpy as np
 import pandas as pd
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from plpred import explain, seasons, social
+from plpred import explain, luck, seasons, social
 from plpred.sources import api_football
 
 log = logging.getLogger("plpred.site")
@@ -103,11 +104,15 @@ def game_view(g: dict) -> dict:
 
 
 def front_reasons(v: dict) -> list[dict]:
-    """Three short reasons for the front page: the two strongest factors, then the market."""
+    """Three short reasons for the front page: the two strongest factors, then the market. When a
+    side's results have run well away from its chances, that takes the second factor's place."""
     out = []
-    for s in [s for s in v["waterfall"]["steps"] if s["change"] > 0][:2]:
+    luck_reason = next((r for r in v["reasons"] if r["topic"] == "Results vs performance"), None)
+    for s in [s for s in v["waterfall"]["steps"] if s["change"] > 0][:1 if luck_reason else 2]:
         out.append({"title": s["label"].capitalize() if s["label"][0].islower() else s["label"],
                     "text": s["detail"] + f". Worth {s['change']:+.0f} points to our call."})
+    if luck_reason:
+        out.append({"title": luck_reason["title"], "text": luck_reason["text"]})
     if v["mkt"]:
         fav = max(v["mkt"], key=v["mkt"].get)
         fav_name = {"H": v["home_team"], "A": v["away_team"], "D": "a draw"}[fav]
@@ -296,6 +301,7 @@ def week_context(preds: dict, is_replay: bool, data: Path, matches: pd.DataFrame
                                    if features["upset"] else set())),
         "record": record(data, season, preds["as_of"]),
         "table": league_table(before, season),
+        "deserved": luck.deserved_table(before, season),
     }
 
 
@@ -333,7 +339,11 @@ def build(data: Path, out: Path) -> Path:
                             if (badge_dir / f"{api_football.badge_name(t)}.png").exists()}
     (out / "index.html").write_text(env.get_template("home.html").render(
         **common, record=latest["record"], replay=is_replay, root="."))
-    pages = 1
+    (out / "record").mkdir()
+    (out / "record" / "index.html").write_text(env.get_template("calibration.html").render(
+        **common, record=latest["record"], cal=luck.calibration(data, matches),
+        prereg=luck.preregistered(data, matches), root=".."))
+    pages = 2
     for w in weeks:
         folder = out / "matchweek" / str(w["matchweek"])
         folder.mkdir(parents=True)
