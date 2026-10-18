@@ -14,7 +14,7 @@
       "away_team": "Leeds",
       "call": "H",
       "call_name": "home win",
-      "confidence": "solid",
+      "confidence": "strong",
       "probabilities": {
         "H": 0.595,
         "D": 0.257,
@@ -222,6 +222,21 @@
         }
       ],
       "team_news": [],
+      "luck": {
+        "home": {
+          "games": 10,
+          "points": 27,
+          "xpts": 19.8,
+          "difference": 7.2
+        },
+        "away": {
+          "games": 10,
+          "points": 17,
+          "xpts": 13.7,
+          "difference": 3.3
+        }
+      },
+      "luck_gap": -0.079,
       "reasons": [
         {
           "topic": "Chances created and allowed",
@@ -232,6 +247,11 @@
           "topic": "Form",
           "title": "Arsenal arrive in better form",
           "text": "Last five league games: Arsenal took 12 points, Leeds took 9."
+        },
+        {
+          "topic": "Results vs performance",
+          "title": "Arsenal's results flatter them by 7 points",
+          "text": "Arsenal have 27 points from their last 10 league games, but their chances were worth 20. Leeds have 17, from chances worth 14. We rate teams on their chances, so Arsenal get less credit than their results."
         },
         {
           "topic": "Head to head",
@@ -467,6 +487,21 @@
         }
       ],
       "team_news": [],
+      "luck": {
+        "home": {
+          "games": 10,
+          "points": 11,
+          "xpts": 11.7,
+          "difference": -0.7
+        },
+        "away": {
+          "games": 10,
+          "points": 14,
+          "xpts": 13.6,
+          "difference": 0.4
+        }
+      },
+      "luck_gap": -0.614,
       "reasons": [
         {
           "topic": "Chances created and allowed",
@@ -712,6 +747,21 @@
         }
       ],
       "team_news": [],
+      "luck": {
+        "home": {
+          "games": 10,
+          "points": 11,
+          "xpts": 10.2,
+          "difference": 0.8
+        },
+        "away": {
+          "games": 10,
+          "points": 12,
+          "xpts": 15.7,
+          "difference": -3.7
+        }
+      },
+      "luck_gap": -0.805,
       "reasons": [
         {
           "topic": "Chances created and allowed",
@@ -722,6 +772,11 @@
           "topic": "Form",
           "title": "Chelsea arrive in better form",
           "text": "Last five league games: Chelsea took 7 points, Bournemouth took 3."
+        },
+        {
+          "topic": "Results vs performance",
+          "title": "Bournemouth's results undersell them by 4 points",
+          "text": "Bournemouth have 12 points from their last 10 league games, but their chances were worth 16. We rate teams on their chances, so Bournemouth get more credit than their results."
         },
         {
           "topic": "Head to head",
@@ -947,6 +1002,21 @@
         }
       ],
       "team_news": [],
+      "luck": {
+        "home": {
+          "games": 10,
+          "points": 7,
+          "xpts": 11.4,
+          "difference": -4.4
+        },
+        "away": {
+          "games": 10,
+          "points": 9,
+          "xpts": 12.5,
+          "difference": -3.5
+        }
+      },
+      "luck_gap": -0.127,
       "reasons": [
         {
           "topic": "Chances created and allowed",
@@ -959,9 +1029,9 @@
           "text": "Last five league games: Ipswich took 6 points, Fulham took 2."
         },
         {
-          "topic": "Finishing",
-          "title": "Fulham are scoring below their chances",
-          "text": "Fulham have 5 goals from 8.0 xG this season. Finishing like that tends to pick up, so we lean on the chances, not the goals."
+          "topic": "Results vs performance",
+          "title": "Ipswich's results undersell them by 4 points",
+          "text": "Ipswich have 7 points from their last 10 league games, but their chances were worth 11. Fulham have 9, from chances worth 12. We rate teams on their chances, so Ipswich get more credit than their results."
         },
         {
           "topic": "Head to head",
@@ -1197,6 +1267,21 @@
         }
       ],
       "team_news": [],
+      "luck": {
+        "home": {
+          "games": 10,
+          "points": 18,
+          "xpts": 17.8,
+          "difference": 0.2
+        },
+        "away": {
+          "games": 10,
+          "points": 12,
+          "xpts": 14.4,
+          "difference": -2.4
+        }
+      },
+      "luck_gap": 0.47,
       "reasons": [
         {
           "topic": "Chances created and allowed",
@@ -1437,6 +1522,21 @@
         }
       ],
       "team_news": [],
+      "luck": {
+        "home": {
+          "games": 10,
+          "points": 12,
+          "xpts": 14.6,
+          "difference": -2.6
+        },
+        "away": {
+          "games": 10,
+          "points": 16,
+          "xpts": 17.8,
+          "difference": -1.8
+        }
+      },
+      "luck_gap": -0.56,
       "reasons": [
         {
           "topic": "Chances created and allowed",
@@ -1687,6 +1787,21 @@
         }
       ],
       "team_news": [],
+      "luck": {
+        "home": {
+          "games": 10,
+          "points": 6,
+          "xpts": 10.2,
+          "difference": -4.2
+        },
+        "away": {
+          "games": 10,
+          "points": 13,
+          "xpts": 15.9,
+          "difference": -2.9
+        }
+      },
+      "luck_gap": -0.702,
       "reasons": [
         {
           "topic": "Chances created and allowed",
@@ -1699,9 +1814,9 @@
           "text": "Last five league games: Crystal Palace took 4 points, Nott'm Forest took 5."
         },
         {
-          "topic": "Finishing",
-          "title": "Nott'm Forest are scoring below their chances",
-          "text": "Nott'm Forest have 4 goals from 8.5 xG this season. Finishing like that tends to pick up, so we lean on the chances, not the goals."
+          "topic": "Results vs performance",
+          "title": "Crystal Palace's results undersell them by 4 points",
+          "text": "Crystal Palace have 6 points from their last 10 league games, but their chances were worth 10. We rate teams on their chances, so Crystal Palace get more credit than their results."
         },
         {
           "topic": "Head to head",
@@ -1916,6 +2031,21 @@
       },
       "head_to_head": [],
       "team_news": [],
+      "luck": {
+        "home": {
+          "games": 5,
+          "points": 8,
+          "xpts": 5.7,
+          "difference": 2.3
+        },
+        "away": {
+          "games": 10,
+          "points": 11,
+          "xpts": 12.9,
+          "difference": -1.9
+        }
+      },
+      "luck_gap": null,
       "reasons": [
         {
           "topic": "Chances created and allowed",
@@ -2156,6 +2286,21 @@
         }
       ],
       "team_news": [],
+      "luck": {
+        "home": {
+          "games": 10,
+          "points": 14,
+          "xpts": 13.7,
+          "difference": 0.3
+        },
+        "away": {
+          "games": 10,
+          "points": 23,
+          "xpts": 17.7,
+          "difference": 5.3
+        }
+      },
+      "luck_gap": -0.012,
       "reasons": [
         {
           "topic": "Chances created and allowed",
@@ -2166,6 +2311,11 @@
           "topic": "Form",
           "title": "Man City arrive in better form",
           "text": "Last five league games: Liverpool took 9 points, Man City took 15."
+        },
+        {
+          "topic": "Results vs performance",
+          "title": "Man City's results flatter them by 5 points",
+          "text": "Man City have 23 points from their last 10 league games, but their chances were worth 18. We rate teams on their chances, so Man City get less credit than their results."
         },
         {
           "topic": "Head to head",
@@ -2380,6 +2530,21 @@
       },
       "head_to_head": [],
       "team_news": [],
+      "luck": {
+        "home": {
+          "games": 5,
+          "points": 3,
+          "xpts": 4.8,
+          "difference": -1.8
+        },
+        "away": {
+          "games": 10,
+          "points": 15,
+          "xpts": 12.3,
+          "difference": 2.7
+        }
+      },
+      "luck_gap": null,
       "reasons": [
         {
           "topic": "Chances created and allowed",

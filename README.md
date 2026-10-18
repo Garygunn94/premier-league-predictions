@@ -64,8 +64,13 @@ bookmakers', likely scores, and why. The "why" has two parts:
   defence, and each side's team news. Starting from an average home side against an
   average visitor, every factor's exact share of the final percentage is worked out
   (Shapley values), so the steps always add up to our number.
-- **Reasons a reader can check:** recent xG home and away, form, finishing against
-  xG, key absences and head to head, plus a headline and what would change our mind.
+- **Reasons a reader can check:** recent xG home and away, form, results against
+  performance, key absences and head to head, plus a headline and what would change
+  our mind. "Results vs performance" (`plpred/luck.py`) compares each side's points over
+  its last 10 league games with the points its chances were worth (expected points, from
+  xG); a gap of 3 or more gets a reason, and it takes the second slot on the front page.
+  Each call also stores its `luck_gap` for the pre-registered test in
+  [preregistered/](preregistered/luck-gap-2026-27.md).
 
 Team news comes from the FPL feed. A missing regular reduces his team's attack by
 half his share of its goal involvements, and a missing defender or keeper raises
@@ -81,8 +86,11 @@ earlier results only (without team news), which is handy for checking the output
 `python -m plpred.site` builds the site into `site/` from every predictions file:
 a home page (what the site is, how it works, the data sources, our record and a list
 of every matchweek), then for each matchweek a page at `matchweek/<n>/` (match of the
-week, the rest of the round, charts, our record, last week's verdict and the table)
-with a breakdown page for every match beside it. It follows the
+week, the rest of the round, charts, our record, last week's verdict, the table and the
+table the chances deserved) with a breakdown page for every match beside it, and a
+record page at `record/` showing how often our percentages came true, our labels'
+hit rates, our score against the bookmakers and the running tally of the
+pre-registered luck-gap test. It follows the
 approved newspaper design, works on phones and has light and dark modes. Club crests
 are saved from API-Football into `data/badges/`.
 
