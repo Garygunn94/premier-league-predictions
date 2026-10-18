@@ -61,9 +61,9 @@
 <h3 class="lab small-head">Our record this season</h3>
 <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px">
 <div><div class="big-num disp">{{ record.rate }}%</div><div class="muted" style="font-size:15px;margin-top:4px">results right<br>{{ record.right }} of {{ record.n }}</div></div>
-<div><div class="big-num disp">{{ record.exact }}</div><div class="muted" style="font-size:15px;margin-top:4px">exact scores<br>of {{ record.n }}</div></div>
+{% if record.fav_rate is not none %}<div><div class="big-num disp">{{ record.fav_rate }}%</div><div class="muted" style="font-size:15px;margin-top:4px">bookmakers'<br>favourite</div></div>{% endif %}
 </div>
-{% if record.fav_rate is not none %}<p class="body" style="margin-top:16px;font-size:15px;line-height:1.5">The bookmakers' favourite won {{ record.fav_rate }}% of these games, so we're {% if record.rate > record.fav_rate %}{{ record.rate - record.fav_rate }} points ahead of{% elif record.rate < record.fav_rate %}{{ record.fav_rate - record.rate }} points behind{% else %}level with{% endif %} the market.</p>{% endif %}
+{% if record.fav_rate is not none %}<p class="body" style="margin-top:16px;font-size:15px;line-height:1.5">The bookmakers' favourite won {{ record.fav_rate }}% of these games, so we're {% if record.rate > record.fav_rate %}{{ record.rate - record.fav_rate }} points ahead of{% elif record.rate < record.fav_rate %}{{ record.fav_rate - record.rate }} points behind{% else %}level with{% endif %} the market.{% if record.disagree.n %} When we disagreed with them ({{ record.disagree.n }} {{ 'game' if record.disagree.n == 1 else 'games' }}), we were right {{ record.disagree.us }} {{ 'time' if record.disagree.us == 1 else 'times' }} and they were right {{ record.disagree.fav }}.{% endif %} We also got {{ record.exact }} exact {{ 'score' if record.exact == 1 else 'scores' }}.</p>{% endif %}
 </div>
 {% endif %}
 {% if features.upset %}{% set u = features.upset %}
