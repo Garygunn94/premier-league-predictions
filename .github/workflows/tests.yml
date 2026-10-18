@@ -28,9 +28,8 @@ jobs:
           cache: pip
       - run: pip install -r requirements.txt
       - name: Fetch into a scratch folder
-        env:
-          API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
-        run: python -m plpred.update --data "$RUNNER_TEMP/data"
+        # No API-Football key here on purpose: its calls are rationed for the weekly job.
+        run: python -m plpred.update xg history fpl --data "$RUNNER_TEMP/data"
       - name: Summarise
         if: always()
         run: |

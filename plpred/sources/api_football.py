@@ -1,8 +1,8 @@
-"""Upcoming fixtures, injuries and pre-match odds from API-Football (api-sports.io).
+"""Upcoming fixtures and pre-match odds from API-Football (api-sports.io).
 
-Needs an API key in the API_FOOTBALL_KEY environment variable. The free plan allows
-100 requests a day; one weekly run uses about 22 (rounds, fixtures, then
-injuries and odds for each of the 10 matches).
+Needs an API key in the API_FOOTBALL_KEY environment variable. Calls are kept to a
+minimum: 2 per run for the round's fixtures, plus 1 per match for odds the first
+time we see it (so about 12 a week). Injuries come from the free FPL feed instead.
 """
 import logging
 import os
@@ -26,15 +26,17 @@ class Client:
     def __init__(self, key: str | None = None):
         key = key or os.environ.get("API_FOOTBALL_KEY")
         if not key:
-            raise MissingKey("Set API_FOOTBALL_KEY to fetch fixtures, injuries and odds")
+            raise MissingKey("Set API_FOOTBALL_KEY to fetch fixtures and odds")
         self.s = session()
         self.s.headers["x-apisports-key"] = key
+        self.remaining = None
 
     def get(self, path: str, **params) -> list[dict]:
         results, page = [], 1
         while True:
             resp = self.s.get(f"{BASE}/{path}", params={**params, **({"page": page} if page > 1 else {})}, timeout=30)
             resp.raise_for_status()
+            self.remaining = resp.headers.get("x-ratelimit-requests-remaining")
             body = resp.json()
             if body.get("errors"):
                 raise RuntimeError(f"API-Football {path}: {body['errors']}")
@@ -59,16 +61,6 @@ def fixtures_frame(raw: list[dict]) -> pd.DataFrame:
     } for f in raw])
 
 
-def injuries_frame(raw: list[dict]) -> pd.DataFrame:
-    return pd.DataFrame([{
-        "fixture_id": i["fixture"]["id"],
-        "team": teams.canonical(i["team"]["name"]),
-        "player": i["player"]["name"],
-        "type": i["player"]["type"],
-        "reason": i["player"]["reason"],
-    } for i in raw])
-
-
 def odds_frame(raw: list[dict]) -> pd.DataFrame:
     """Average 1X2 price across bookmakers for each fixture."""
     rows = []
@@ -90,13 +82,6 @@ def upcoming_round(client: Client, season: int) -> pd.DataFrame:
     if not current:
         return fixtures_frame([])
     return fixtures_frame(client.get("fixtures", league=PREMIER_LEAGUE, season=season, round=current[0]))
-
-
-def injuries(client: Client, fixture_ids: list[int]) -> pd.DataFrame:
-    raw = []
-    for fid in fixture_ids:
-        raw += client.get("injuries", fixture=fid)
-    return injuries_frame(raw)
 
 
 def odds(client: Client, fixture_ids: list[int]) -> pd.DataFrame:

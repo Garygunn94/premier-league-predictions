@@ -67,11 +67,16 @@ def update_fixtures(data: Path) -> None:
     client = api_football.Client()
     fixtures = api_football.upcoming_round(client, seasons.current_season())
     fixtures.to_csv(out / "fixtures.csv", index=False)
-    ids = fixtures.fixture_id.tolist()
-    api_football.injuries(client, ids).to_csv(out / "injuries.csv", index=False)
-    api_football.odds(client, ids).to_csv(out / "odds.csv", index=False)
-    log.info("API-Football: %d fixtures (%s)", len(fixtures),
-             fixtures["round"].iloc[0] if len(fixtures) else "no current round")
+    # Odds are fetched once per match: later runs reuse what we already have.
+    odds_path = out / "odds.csv"
+    known = pd.read_csv(odds_path) if odds_path.exists() else api_football.odds_frame([])
+    known = known[known.fixture_id.isin(fixtures.fixture_id)]
+    new_ids = [i for i in fixtures.fixture_id if i not in set(known.fixture_id)]
+    odds = pd.concat([known, api_football.odds(client, new_ids)], ignore_index=True)
+    odds.to_csv(odds_path, index=False)
+    log.info("API-Football: %d fixtures (%s), odds fetched for %d new, %s requests left today",
+             len(fixtures), fixtures["round"].iloc[0] if len(fixtures) else "no current round",
+             len(new_ids), client.remaining)
 
 
 STEPS = {"xg": update_xg, "history": update_history, "fpl": update_fpl, "fixtures": update_fixtures}
