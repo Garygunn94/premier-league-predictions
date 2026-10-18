@@ -68,7 +68,7 @@ def test_reasons_and_words(setup):
 
 def test_confidence_labels():
     assert explain.confidence({"H": 0.40, "D": 0.25, "A": 0.36}) == "too close to call"
-    assert explain.confidence({"H": 0.62, "D": 0.2, "A": 0.18}) == "strong"
+    assert explain.confidence({"H": 0.56, "D": 0.24, "A": 0.2}) == "strong"
     assert explain.confidence({"H": 0.5, "D": 0.25, "A": 0.25}) == "solid"
     assert explain.confidence({"H": 0.42, "D": 0.3, "A": 0.28}) == "too close to call"
 
