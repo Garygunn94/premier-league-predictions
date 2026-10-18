@@ -16,6 +16,7 @@ from plpred.http import session
 log = logging.getLogger(__name__)
 
 URL = "https://www.football-data.co.uk/mmz4281/{code}/E0.csv"
+FIXTURES_URL = "https://www.football-data.co.uk/fixtures.csv"  # the coming games in every league, with odds
 
 STAT_COLUMNS = {
     "HTHG": "home_ht_goals", "HTAG": "away_ht_goals",
@@ -72,16 +73,40 @@ def parse(raw: bytes, season: int) -> pd.DataFrame:
     })
     for src, dst in STAT_COLUMNS.items():
         out[dst] = df[src] if src in df else pd.NA
-    for prefix in ODDS_PREFIXES:
-        cols = [f"{prefix}{x}" for x in "HDA"]
-        if all(c in df for c in cols) and df[cols].notna().any().all():
-            out["odds_home"], out["odds_draw"], out["odds_away"] = (df[c] for c in cols)
-            out["odds_source"] = prefix
-            break
+    cols = odds_columns(df)
+    if cols:
+        out["odds_home"], out["odds_draw"], out["odds_away"] = (df[c] for c in cols)
+        out["odds_source"] = cols[0][:-1]
     else:
         out["odds_home"] = out["odds_draw"] = out["odds_away"] = pd.NA
         out["odds_source"] = pd.NA
     return out.reset_index(drop=True)
+
+
+def odds_columns(df: pd.DataFrame) -> list[str] | None:
+    for prefix in ODDS_PREFIXES:
+        cols = [f"{prefix}{x}" for x in "HDA"]
+        if all(c in df for c in cols) and df[cols].notna().any().all():
+            return cols
+    return None
+
+
+def parse_upcoming(raw: bytes) -> pd.DataFrame:
+    """Premier League games from the fixtures file, with the market-average 1X2 odds."""
+    df = pd.read_csv(io.BytesIO(raw), encoding="latin-1", on_bad_lines="skip")
+    df = df[df.get("Div", pd.Series(dtype=str)).eq("E0")]
+    cols = odds_columns(df)
+    out = pd.DataFrame({"home_team": df["HomeTeam"].map(teams.canonical),
+                        "away_team": df["AwayTeam"].map(teams.canonical)})
+    for name, col in zip(("odds_home", "odds_draw", "odds_away"), cols or [None] * 3):
+        out[name] = df[col] if col else pd.NA
+    return out.dropna().reset_index(drop=True)
+
+
+def upcoming_odds() -> pd.DataFrame:
+    resp = session().get(FIXTURES_URL, timeout=30)
+    resp.raise_for_status()
+    return parse_upcoming(resp.content)
 
 
 def build_matches(data_dir: Path, wanted: list[int] | None = None) -> pd.DataFrame:

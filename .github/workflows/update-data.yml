@@ -10,6 +10,10 @@ on:
         description: "Steps to run (blank = all): xg history fpl fixtures"
         required: false
         default: ""
+      after_kickoff:
+        description: "Also call this round's games that have already kicked off (a round first run late)"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -33,6 +37,9 @@ jobs:
         env:
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
         run: python -m plpred.update ${{ inputs.steps }}
+      - name: Call the games already under way
+        if: inputs.after_kickoff
+        run: python -m plpred.predict --after-kickoff
       - name: Predict the coming round
         run: python -m plpred.predict
       - name: Refresh our record

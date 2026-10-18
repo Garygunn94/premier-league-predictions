@@ -4,7 +4,7 @@
 {% block masthead %}
 <header class="dateline" style="padding:16px 0 12px;border-bottom:3px solid var(--ink);align-items:baseline">
 <a href="{{ root }}/index.html" class="disp wordmark-sm">{{ wordmark() }}</a>
-<span class="lab" style="font-size:13px;font-weight:600"><a href="index.html">Back to Matchweek {{ matchweek }}</a>{% if replay %} · <span class="accent">Replay</span>{% endif %}</span>
+<span class="lab" style="font-size:13px;font-weight:600"><a href="index.html">Back to Matchweek {{ matchweek }}</a>{% if replay %} · <span class="accent">Replay</span>{% elif g.after_kickoff %} · <span class="accent">After kick-off</span>{% endif %}</span>
 </header>
 {% endblock %}
 
@@ -13,7 +13,8 @@
 <section class="mhead">
 <div class="kicker lab">The breakdown · {{ g.kickoff_long }}{% if g.venue %} · {{ g.venue }}{% endif %}</div>
 <h1 class="disp">{{ g.headline }}</h1>
-<p class="standfirst" style="max-width:820px;margin:0">We call {{ 'a draw' if g.call == 'D' else g.call_long }}, {{ g.score_text }}, with a {{ g.our_p }}% chance{% if g.mkt_p is not none %} (bookmakers {{ g.mkt_p }}%){% endif %}. Here is everything that went into it.</p>
+{% if g.after_kickoff %}<p class="banner" style="margin:0 0 16px">This game had kicked off before we first ran the round. This is what the model would have called before the round started, from earlier results only and without team news. It's a test, not a prediction, and it doesn't count towards our live record.{% if g.result_text %} It finished {{ g.home_team }} {{ g.result_text }} {{ g.away_team }}.{% endif %}</p>{% endif %}
+<p class="standfirst" style="max-width:820px;margin:0">{% if g.after_kickoff %}The model would have called{% else %}We call{% endif %} {{ 'a draw' if g.call == 'D' else g.call_long }}, {{ g.score_text }}, with a {{ g.our_p }}% chance{% if g.mkt_p is not none %} (bookmakers {{ g.mkt_p }}%){% endif %}. Here is everything that went into it.</p>
 <div class="trio">
 <div>
 <div class="lab muted" style="font-size:12px;font-weight:600">Home</div>
@@ -21,7 +22,7 @@
 {% if hs %}<div class="lab muted" style="font-size:13px;font-weight:600;margin-top:4px">{{ hs.position }}{{ 'st' if hs.position in [1,21] else 'nd' if hs.position in [2,22] else 'rd' if hs.position in [3,23] else 'th' }} · {{ hs.points }} pts</div>{% endif %}
 </div>
 <div class="mid">
-<div class="lab" style="font-size:12px;font-weight:600;opacity:.85">Our call · confidence: {{ g.confidence }}</div>
+<div class="lab" style="font-size:12px;font-weight:600;opacity:.85">{% if g.after_kickoff %}Called after kick-off{% else %}Our call{% endif %} · confidence: {{ g.confidence }}</div>
 <div class="bigscore disp">{{ g.score_text }}</div>
 <div class="lab" style="font-size:20px;font-weight:700;margin-top:6px">{{ g.call_label }}</div>
 </div>

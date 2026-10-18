@@ -73,3 +73,20 @@ def test_record_counts_strong_calls_against_the_bookies(tmp_path):
     (tmp_path / "backtest" / "predictions_2026.csv").write_text("\n".join(rows))
     r = site.record(tmp_path, 2026)
     assert r["strong"] == {"n": 2, "right": 1, "rate": 50, "fav_rate": 100}
+
+
+def test_games_called_after_kickoff_join_the_live_calls_and_are_labelled(tmp_path):
+    data = make_data(tmp_path)
+    live = json.loads((data / "predictions" / "2026-10-24.json").read_text())
+    late = {**live, "as_of": "2026-12-30", "games": [{**g, "after_kickoff": True, "result": [2, 0]}
+                                                      for g in live["games"]]}
+    live["games"] = live["games"][1:]  # only the second game was still to come
+    (data / "predictions" / "2026-10-24.json").write_text(json.dumps(live))
+    (data / "predictions" / "2026-10-23-after-kickoff.json").write_text(json.dumps(late))
+    out = site.build(data, tmp_path / "site")
+    week = (out / "matchweek" / "9" / "index.html").read_text()
+    assert "after 1 of its 2 games had kicked off" in week and "Final 2–0" in week
+    assert "After kick-off" not in (out / "matchweek" / "9" / "average-v-good.html").read_text()
+    assert "test, not a prediction" in (out / "matchweek" / "9" / "strong-v-weak.html").read_text()
+    kit = (out / "social" / "index.html").read_text()
+    assert "would have called" in kit and "not part of our record" in kit

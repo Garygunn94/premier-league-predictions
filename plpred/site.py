@@ -63,6 +63,25 @@ def all_predictions(data: Path) -> tuple[list[dict], bool]:
     return [json.loads(f.read_text()) for f in chosen], not real
 
 
+def merge_weeks(all_preds: list[dict], matches: pd.DataFrame) -> list[dict]:
+    """One predictions dict per matchweek. Files are read oldest first, so a later run for a game
+    replaces an earlier one, and games only in the earlier run (say, called after kick-off) stay."""
+    weeks = {}
+    for preds in all_preds:
+        season = int(preds["season"][:4])
+        key = (season, matchweek_of(preds, matches, season))
+        if key not in weeks:
+            weeks[key] = {**preds, "games": list(preds["games"])}
+            continue
+        w = weeks[key]
+        fresh = {(g["home_team"], g["away_team"]) for g in preds["games"]}
+        w["games"] = sorted([g for g in w["games"] if (g["home_team"], g["away_team"]) not in fresh] + preds["games"],
+                            key=lambda g: g["kickoff"])
+        w["as_of"] = min(w["as_of"], preds["as_of"])
+        w["round"] = w.get("round") or preds.get("round")
+    return list(weeks.values())
+
+
 def matchweek_of(preds: dict, matches: pd.DataFrame, season: int) -> int:
     mw = re.search(r"(\d+)$", preds.get("round") or "")
     if mw:
@@ -107,6 +126,9 @@ def game_view(g: dict) -> dict:
         "our_p": pct(p[g["call"]]),
         "mkt": {k: pct(v) for k, v in mkt.items()} if mkt else None,
         "mkt_p": pct(mkt[g["call"]]) if mkt else None,
+        "result_text": f"{g['result'][0]}–{g['result'][1]}" if g.get("result") else None,
+        "result_call": ("H" if g["result"][0] > g["result"][1] else "A" if g["result"][0] < g["result"][1] else "D")
+                       if g.get("result") else None,
         "top_scores": [{"score": f"{s['score'][0]}–{s['score'][1]}", "p": round(s["probability"] * 100),
                         "side": "H" if s["score"][0] > s["score"][1] else "A" if s["score"][0] < s["score"][1] else "D"}
                        for s in g["top_scores"]],
@@ -337,7 +359,9 @@ def week_context(preds: dict, is_replay: bool, data: Path, matches: pd.DataFrame
     views = [game_view(g) for g in preds["games"]]
     for v in views:
         v["path"] = f"matchweek/{matchweek}/{v['slug']}.html"
-    features = pick_features(views)
+    late = [v for v in views if v.get("after_kickoff")]
+    # The features (match of the week, banker, upset) are predictions, so they come from live calls.
+    features = pick_features([v for v in views if not v.get("after_kickoff")] or views)
     lead = features["lead"]
     before = matches[matches.date < preds["as_of"]]
     return {
@@ -346,6 +370,7 @@ def week_context(preds: dict, is_replay: bool, data: Path, matches: pd.DataFrame
         "as_of": pd.Timestamp(preds["as_of"]),
         "date_text": pd.Timestamp(preds["as_of"]).strftime("%A %d %B %Y"),
         "replay": is_replay,
+        "late": len(late),
         "views": views,
         "lead": lead, "rest": [v for v in views if v is not lead], "features": features,
         "gaps": gaps(views),
@@ -430,11 +455,8 @@ def write_extras(out: Path, weeks: list[dict], pages: list[str], site_url: str, 
 def build(data: Path, out: Path) -> Path:
     all_preds, is_replay = all_predictions(data)
     matches = pd.read_csv(data / "matches.csv", parse_dates=["date"])
-    weeks = {}
-    for preds in all_preds:  # oldest first, so a later run for the same week replaces an earlier one
-        w = week_context(preds, is_replay, data, matches)
-        weeks[(w["season"], w["matchweek"])] = w
-    weeks = sorted(weeks.values(), key=lambda w: w["as_of"])
+    weeks = [week_context(preds, is_replay, data, matches) for preds in merge_weeks(all_preds, matches)]
+    weeks.sort(key=lambda w: w["as_of"])
     for i, w in enumerate(weeks):
         w["prev"] = weeks[i - 1] if i else None
         w["next"] = weeks[i + 1] if i + 1 < len(weeks) else None

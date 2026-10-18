@@ -12,6 +12,7 @@ import sys
 from pathlib import Path
 
 import pandas as pd
+import requests
 
 from plpred import seasons
 from plpred.sources import api_football, football_data_uk, fpl, understat
@@ -66,20 +67,49 @@ def update_fpl(data: Path) -> None:
 def update_fixtures(data: Path) -> None:
     out = data / "upcoming"
     out.mkdir(parents=True, exist_ok=True)
-    client = api_football.Client()
-    fixtures = api_football.upcoming_round(client, seasons.current_season())
+    try:
+        client = api_football.Client()
+        fixtures = api_football.upcoming_round(client, seasons.current_season())
+    except (api_football.MissingKey, RuntimeError, requests.RequestException) as exc:
+        # API-Football's free plan doesn't cover the current season, so this is the usual path.
+        log.warning("API-Football unavailable (%s), so using the FPL fixture list and football-data.co.uk odds", exc)
+        return update_fixtures_free(data)
     fixtures.to_csv(out / "fixtures.csv", index=False)
     badges = api_football.save_badges(fixtures, data / "badges")
     # Odds are fetched once per match: later runs reuse what we already have.
     odds_path = out / "odds.csv"
-    known = pd.read_csv(odds_path) if odds_path.exists() else api_football.odds_frame([])
-    known = known[known.fixture_id.isin(fixtures.fixture_id)]
+    known = known_odds(odds_path, fixtures)
     new_ids = [i for i in fixtures.fixture_id if i not in set(known.fixture_id)]
     odds = pd.concat([known, api_football.odds(client, new_ids)], ignore_index=True)
     odds.to_csv(odds_path, index=False)
     log.info("API-Football: %d fixtures (%s), odds fetched for %d new, %d new badges, %s requests left today",
              len(fixtures), fixtures["round"].iloc[0] if len(fixtures) else "no current round",
              len(new_ids), badges, client.remaining)
+
+
+def known_odds(path: Path, fixtures: pd.DataFrame) -> pd.DataFrame:
+    """Odds already saved for this round. Each match keeps the first prices we saw for it."""
+    known = pd.read_csv(path) if path.exists() else api_football.odds_frame([])
+    return known[known.fixture_id.isin(fixtures.fixture_id)]
+
+
+def update_fixtures_free(data: Path) -> None:
+    out = data / "upcoming"
+    fixtures = fpl.round_fixtures(fpl.fetch_raw(), fpl.fetch_fixtures_raw())
+    fixtures.to_csv(out / "fixtures.csv", index=False)
+    badges = api_football.save_badges(fixtures, data / "badges")
+    odds_path = out / "odds.csv"
+    known = known_odds(odds_path, fixtures)
+    new = fixtures[~fixtures.fixture_id.isin(known.fixture_id)]
+    try:
+        priced = new.merge(football_data_uk.upcoming_odds(), on=["home_team", "away_team"])
+    except requests.RequestException as exc:
+        log.warning("No odds from football-data.co.uk: %s", exc)
+        priced = new.iloc[:0]
+    odds = pd.concat([known, priced[["fixture_id", "odds_home", "odds_draw", "odds_away"]]], ignore_index=True)
+    odds.to_csv(odds_path, index=False)
+    log.info("FPL: %d fixtures (%s), odds for %d new, %d new badges", len(fixtures),
+             fixtures["round"].iloc[0] if len(fixtures) else "no current round", len(priced), badges)
 
 
 STEPS = {"xg": update_xg, "history": update_history, "fpl": update_fpl, "fixtures": update_fixtures}
