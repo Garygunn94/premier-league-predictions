@@ -134,3 +134,9 @@ def test_football_data_upcoming_odds():
     odds = football_data_uk.parse_upcoming(csv)
     assert odds.to_dict("records") == [{"home_team": "Tottenham", "away_team": "Coventry",
                                         "odds_home": 1.6, "odds_draw": 4.2, "odds_away": 5.5}]
+
+
+def test_football_data_upcoming_odds_with_a_byte_order_mark():
+    csv = ("﻿Div,Date,Time,HomeTeam,AwayTeam,AvgH,AvgD,AvgA\n"
+           "E0,19/10/2026,20:00,Tottenham,Coventry,1.6,4.2,5.5\n").encode("utf-8")
+    assert list(football_data_uk.parse_upcoming(csv).home_team) == ["Tottenham"]
