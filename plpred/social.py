@@ -21,7 +21,7 @@ log = logging.getLogger("plpred.social")
 BRAND = "Inkwell & Algorithm"
 HANDLE = "@InkwellAlgo"                 # X
 IG_HANDLE = "@inkwellandalgorithm"      # Instagram
-SITE_URL = os.environ.get("SITE_URL", "https://garygunn94.github.io/premier-league-predictions/")
+SITE_URL = os.environ.get("SITE_URL", "https://inkwellandalgorithm.com/")
 # Instagram allows five hashtags a post and X rewards one or two; both treat them as labels, not reach.
 HASHTAGS = "#PremierLeague #FootballAnalytics #xG"
 ROUND_TAGS = "#PremierLeague #PLPredictions #FootballAnalytics #xG #EPL"

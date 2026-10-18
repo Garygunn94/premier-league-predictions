@@ -1,7 +1,7 @@
 # Inkwell & Algorithm
 
 Data-driven Premier League predictions, with the reasons behind each call, published as
-a newspaper-style site on GitHub Pages: https://garygunn94.github.io/premier-league-predictions/
+a newspaper-style site on GitHub Pages: https://inkwellandalgorithm.com/
 
 Follow [@InkwellAlgo on X](https://x.com/InkwellAlgo) and [@inkwellandalgorithm on Instagram](https://www.instagram.com/inkwellandalgorithm/).
 
