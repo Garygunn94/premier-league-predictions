@@ -42,7 +42,7 @@
 {% set g = latest.lead %}
 <div class="homebox">
 <div class="kicker lab">Matchweek {{ latest.matchweek }} · from {{ latest.first_kickoff }}</div>
-<p class="feature-h disp" style="margin-top:10px"><a href="{{ root }}/matchweek/{{ latest.matchweek }}/{{ g.slug }}.html" style="text-decoration:none">{{ g.headline }}</a></p>
+<p class="feature-h disp" style="margin-top:10px"><a href="{{ root }}/{{ latest.week_dir }}{{ g.slug }}.html" style="text-decoration:none">{{ g.headline }}</a></p>
 <p class="body" style="font-size:16px;line-height:1.5">Our match of the week: {{ 'a draw' if g.call == 'D' else g.call_long }}, {{ g.score_text }}.</p>
 {{ split(g, thin=true) }}
 <p class="lab" style="font-size:12px;font-weight:600;margin-top:6px;display:flex;justify-content:space-between"><span>{{ g.home_short }} {{ g.h }}%</span><span>Draw {{ g.d }}%</span><span>{{ g.away_short }} {{ g.a }}%</span></p>
@@ -116,7 +116,7 @@
 <h2 class="sec-title disp" style="margin-bottom:16px">Every matchweek</h2>
 <ul class="archive">
 {% for w in weeks %}
-<li><a href="{{ root }}/matchweek/{{ w.matchweek }}/"><span class="lab aw-num">Matchweek {{ w.matchweek }}</span><span class="aw-head disp">{{ w.lead.headline }}</span><span class="lab muted aw-date">{{ w.season }} · from {{ w.first_kickoff }}{% if w.replay %} · replay{% elif w.late %} · {{ w.late }} called after kick-off{% endif %}</span></a></li>
+<li><a href="{{ root }}/{{ w.week_dir }}"><span class="lab aw-num">Matchweek {{ w.matchweek }}</span><span class="aw-head disp">{{ w.lead.headline }}</span><span class="lab muted aw-date">{{ w.season }} · from {{ w.first_kickoff }}{% if w.replay %} · replay{% elif w.late %} · {{ w.late }} called after kick-off{% endif %}</span></a></li>
 {% endfor %}
 </ul>
 </section>

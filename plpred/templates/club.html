@@ -10,7 +10,7 @@
 <p class="standfirst">Next: <a href="{{ root }}/{{ g.path }}">{{ g.home_team }} v {{ g.away_team }}</a>, {{ g.kickoff_text }}. We call {{ 'a draw' if g.call == 'D' else g.call_long }}, {{ g.score_text }} ({{ g.our_p }}%).</p>
 {% endif %}
 {% if c.deserved %}
-<p class="body" style="font-size:17px;line-height:1.6">On the quality of their chances, {{ c.team }} deserved {{ '%.1f'|format(c.deserved.xpts) }} points so far, against the {{ c.deserved.points }} they have. {% if c.deserved.difference >= 3 %}Results have run well ahead of the performances.{% elif c.deserved.difference <= -3 %}They've been unlucky: the performances deserve more.{% else %}Results are a fair reflection of the performances.{% endif %} That ranks {{ c.deserved.position }}{{ {1: 'st', 2: 'nd', 3: 'rd'}.get(c.deserved.position, 'th') }} in <a href="{{ root }}/matchweek/{{ latest.matchweek }}/#deserved">the table they deserved</a>.</p>
+<p class="body" style="font-size:17px;line-height:1.6">On the quality of their chances, {{ c.team }} deserved {{ '%.1f'|format(c.deserved.xpts) }} points so far, against the {{ c.deserved.points }} they have. {% if c.deserved.difference >= 3 %}Results have run well ahead of the performances.{% elif c.deserved.difference <= -3 %}They've been unlucky: the performances deserve more.{% else %}Results are a fair reflection of the performances.{% endif %} That ranks {{ c.deserved.position }}{{ {1: 'st', 2: 'nd', 3: 'rd'}.get(c.deserved.position, 'th') }} in <a href="{{ root }}/{{ latest.week_dir }}#deserved">the table they deserved</a>.</p>
 {% endif %}
 </article>
 <aside class="side stack">

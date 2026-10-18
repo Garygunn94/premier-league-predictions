@@ -3,7 +3,7 @@
     python -m plpred.site            # writes site/
 
 Pages: the newest matchweek as the front page, an about/ page (what the site is, how it
-works, the data sources, every matchweek), one page per matchweek in matchweek/<n>/ (the calls, our record, charts, last week's
+works, the data sources, every matchweek), one page per matchweek in <season>/matchweek/<n>/ (the calls, our record, charts, last week's
 verdict, the table and the table the chances deserved) with a page per match beside it,
 a record/ page on how often our percentages came true (with the pre-registered luck-gap
 test), the projected final table in table/ (see plpred.simulate), the FPL corner in fpl/
@@ -358,8 +358,9 @@ def week_context(preds: dict, is_replay: bool, data: Path, matches: pd.DataFrame
     season = int(preds["season"][:4])
     matchweek = matchweek_of(preds, matches, season)
     views = [game_view(g) for g in preds["games"]]
+    week_dir = f"{seasons.label(season).replace('/', '-')}/matchweek/{matchweek}/"
     for v in views:
-        v["path"] = f"matchweek/{matchweek}/{v['slug']}.html"
+        v["path"] = f"{week_dir}{v['slug']}.html"
     late = [v for v in views if v.get("after_kickoff")]
     # The features (match of the week, banker, upset) are predictions, so they come from live calls.
     features = pick_features([v for v in views if not v.get("after_kickoff")] or views)
@@ -367,6 +368,7 @@ def week_context(preds: dict, is_replay: bool, data: Path, matches: pd.DataFrame
     before = matches[matches.date < preds["as_of"]]
     return {
         "matchweek": matchweek,
+        "week_dir": week_dir,
         "season": seasons.label(season),
         "as_of": pd.Timestamp(preds["as_of"]),
         "date_text": pd.Timestamp(preds["as_of"]).strftime("%A %d %B %Y"),
@@ -430,7 +432,7 @@ SAME_AS = ["https://x.com/InkwellAlgo", "https://www.instagram.com/inkwellandalg
 
 
 def clean_path(path: str) -> str:
-    """The address we want search engines to use: matchweek/7/ rather than matchweek/7/index.html."""
+    """The address we want search engines to use: 2026-27/matchweek/7/ rather than .../index.html."""
     return path[:-len("index.html")] if path.endswith("index.html") else path
 
 
@@ -500,7 +502,7 @@ def write_extras(out: Path, weeks: list[dict], pages: list[str], site_url: str, 
                                      f'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{urls}</urlset>\n')
     entries = []
     for w in weeks[::-1]:
-        link = f"{site_url}matchweek/{w['matchweek']}/"
+        link = f"{site_url}{w['week_dir']}"
         when = w["as_of"].strftime("%Y-%m-%dT00:00:00Z")
         summary = "; ".join(f"{v['home_team']} v {v['away_team']}: {v['call_long'].lower() if v['call'] != 'D' else 'draw'} "
                             f"{v['score_text']} ({v['our_p']}%)" for v in w["views"])
@@ -515,6 +517,28 @@ def write_extras(out: Path, weeks: list[dict], pages: list[str], site_url: str, 
         f"<id>{escape(site_url)}</id><author><name>Inkwell &amp; Algorithm</name></author><updated>{built.strftime('%Y-%m-%dT%H:%M:%SZ')}</updated>"
         + "".join(entries) + "</feed>\n")
     (out / "robots.txt").write_text(f"User-agent: *\nAllow: /\nSitemap: {site_url}sitemap.xml\n")
+
+
+# Matchweeks of this season were first published at matchweek/<n>/, without the season.
+OLD_ADDRESS_SEASON = "2026/27"
+REDIRECT = ('<!doctype html><html lang="en-GB"><head><meta charset="utf-8"><title>Moved</title>'
+            '<link rel="canonical" href="{url}"><meta http-equiv="refresh" content="0; url={url}">'
+            '<script>location.replace({url_js} + location.hash)</script></head>'
+            '<body><p>This page has moved to <a href="{url}">{url}</a>.</p></body></html>\n')
+
+
+def write_old_addresses(out: Path, weeks: list[dict], site_url: str) -> None:
+    """Redirects from the first, season-less addresses, so links already posted keep working."""
+    for w in weeks:
+        if w["season"] != OLD_ADDRESS_SEASON:
+            continue
+        old_dir = out / "matchweek" / str(w["matchweek"])
+        old_dir.mkdir(parents=True, exist_ok=True)
+        targets = {"index.html": w["week_dir"]} | {f"{v['slug']}.html": v["path"] for v in w["views"]}
+        for name, new in targets.items():
+            # Relative when there is no site address, so a local build still works.
+            url = site_url + new if site_url else "../../" + new
+            (old_dir / name).write_text(REDIRECT.format(url=escape(url, {'"': "&quot;"}), url_js=json.dumps(url)))
 
 
 def build(data: Path, out: Path) -> Path:
@@ -632,12 +656,12 @@ def build(data: Path, out: Path) -> Path:
     for w in weeks:
         ctx = {**w}
         is_latest = w is latest
-        week_path = f"matchweek/{w['matchweek']}/index.html"
+        week_path = f"{w['week_dir']}index.html"
         week_title = f"Matchweek {w['matchweek']}: {w['lead']['headline']}"
         week_search = f"Premier League predictions: Matchweek {w['matchweek']}, {w['season']}"
         week_desc = (f"Predictions for every Premier League match in Matchweek {w['matchweek']} "
                      f"({w['season']}, from {w['first_kickoff']}): our call, the likely score and the reasons behind it.")
-        week_crumbs = [(f"Matchweek {w['matchweek']}", f"matchweek/{w['matchweek']}/")]
+        week_crumbs = [(f"Matchweek {w['matchweek']}", w["week_dir"])]
         # The newest week is also the front page, so search engines are pointed at the front page
         # until the next week replaces it.
         write(week_path, "week.html",
@@ -661,6 +685,7 @@ def build(data: Path, out: Path) -> Path:
     # GitHub Pages serves 404.html at whatever address was missing, so its links can't be relative.
     write("404.html", "missing.html", {**page_meta("404.html", "Page not found", tagline), "noindex": True},
           root=site_url.rstrip("/"))
+    write_old_addresses(out, weeks, site_url)
     social.build_kit({**latest, **common, "fpl": fpl}, latest["views"], env, out / "social")
     write_extras(out, weeks, indexed, site_url, built)
     (out / ".nojekyll").write_text("")
