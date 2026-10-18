@@ -103,7 +103,8 @@ def update_fixtures_free(data: Path) -> None:
     new = fixtures[~fixtures.fixture_id.isin(known.fixture_id)]
     try:
         priced = new.merge(football_data_uk.upcoming_odds(), on=["home_team", "away_team"])
-    except requests.RequestException as exc:
+    except (requests.RequestException, ValueError, KeyError) as exc:
+        # Without odds the calls still go out, just without the bookies' comparison.
         log.warning("No odds from football-data.co.uk: %s", exc)
         priced = new.iloc[:0]
     odds = pd.concat([known, priced[["fixture_id", "odds_home", "odds_draw", "odds_away"]]], ignore_index=True)

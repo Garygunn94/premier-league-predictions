@@ -94,7 +94,10 @@ def odds_columns(df: pd.DataFrame) -> list[str] | None:
 def parse_upcoming(raw: bytes) -> pd.DataFrame:
     """Premier League games from the fixtures file, with the market-average 1X2 odds."""
     df = pd.read_csv(io.BytesIO(raw), encoding="latin-1", on_bad_lines="skip")
-    df = df[df.get("Div", pd.Series(dtype=str)).eq("E0")]
+    df.columns = df.columns.str.replace("\u00ef\u00bb\u00bf", "", regex=False).str.strip()  # a UTF-8 BOM read as Latin-1
+    if "Div" not in df:
+        raise ValueError(f"football-data.co.uk fixtures file has no Div column: {list(df.columns)[:5]}")
+    df = df[df["Div"].eq("E0")]
     cols = odds_columns(df)
     out = pd.DataFrame({"home_team": df["HomeTeam"].map(teams.canonical),
                         "away_team": df["AwayTeam"].map(teams.canonical)})
