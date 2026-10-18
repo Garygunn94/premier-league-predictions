@@ -67,15 +67,15 @@ html,body{margin:0;width:{{ size }}px;height:{{ size }}px;overflow:hidden}
 <div class="top"><span class="brand disp">{{ wordmark() }}</span><span class="tag lab muted">{% if card.kind != "brand" %}Premier League · Matchweek {{ matchweek }}{% else %}Premier League{% endif %}</span></div>
 <div class="main">
 {% if card.kind == "round" %}
-<div class="kicker lab accent">Every game called</div>
+<div class="kicker lab accent">{% if late %}{{ late }} of {{ views|length }} called after kick-off, from pre-round data{% else %}Every game called{% endif %}</div>
 <h1 class="head disp">Matchweek {{ matchweek }}, <span class="accent">called.</span></h1>
 <div class="list">
 {% for v in [lead] + rest %}
-<div class="r"><span class="fx disp">{{ v.home_short }} v {{ v.away_short }}</span><span class="c lab {% if v.call == 'A' %}accent{% elif v.call == 'D' %}muted{% endif %}">{{ 'Draw' if v.call == 'D' else (v.home_short if v.call == 'H' else v.away_short) ~ ' win' }} {{ v.score_text }} · {{ v.our_p }}%</span></div>
+<div class="r"><span class="fx disp">{{ v.home_short }} v {{ v.away_short }}</span><span class="c lab {% if v.call == 'A' %}accent{% elif v.call == 'D' %}muted{% endif %}">{{ 'Draw' if v.call == 'D' else (v.home_short if v.call == 'H' else v.away_short) ~ ' win' }} {{ v.score_text }} · {{ v.our_p }}%{% if v.result_text %} <span class="muted">· FT {{ v.result_text }}{{ ' ✓' if v.result_call == v.call else ' ✗' }}</span>{% elif v.after_kickoff %} <span class="muted">· late</span>{% endif %}</span></div>
 {% endfor %}
 </div>
 {% elif card.kind == "call" %}
-<div class="kicker lab accent">{% if g is sameas features.upset %}The model v the market{% elif g is sameas lead %}Match of the week{% else %}Our call{% endif %} · {{ g.kickoff_text }}</div>
+<div class="kicker lab accent">{% if g.after_kickoff %}Called after kick-off{% if g.result_text %} · Final {{ g.result_text }}{% endif %}{% elif g is sameas features.upset %}The model v the market{% elif g is sameas lead %}Match of the week{% else %}Our call{% endif %} · {{ g.kickoff_text }}</div>
 <div class="teams">
 <span class="team disp">{{ badge(g.home_team, root) }}{{ g.home_short }}</span>
 <span class="score disp">{{ g.score_text }}</span>

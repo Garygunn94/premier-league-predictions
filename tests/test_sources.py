@@ -109,3 +109,28 @@ def test_api_football_frames():
     ]}])
     assert round(odds.iloc[0].odds_home, 2) == 2.1
     assert api_football.odds_frame([]).empty
+
+
+def test_fpl_round_fixtures_follow_the_current_gameweek():
+    raw = {**FPL_RAW, "teams": [{"id": 1, "name": "Arsenal", "code": 3}, {"id": 2, "name": "Man Utd", "code": 1}],
+           "events": [{"id": 7, "is_current": True, "finished": False}, {"id": 8, "is_next": True}]}
+    games = [{"id": 70, "event": 7, "kickoff_time": "2026-10-18T15:30:00Z", "team_h": 1, "team_a": 2,
+              "started": True, "finished": False, "finished_provisional": True, "team_h_score": 2, "team_a_score": 1},
+             {"id": 71, "event": 7, "kickoff_time": "2026-10-19T19:00:00Z", "team_h": 2, "team_a": 1,
+              "started": False, "finished": False},
+             {"id": 80, "event": 8, "kickoff_time": "2026-10-24T14:00:00Z", "team_h": 1, "team_a": 2}]
+    f = fpl.round_fixtures(raw, games)
+    assert list(f.fixture_id) == [70, 71] and list(f.status) == ["FT", "NS"]
+    assert f["round"].iloc[0] == "Regular Season - 7" and f.home_team.iloc[1] == "Man United"
+    assert f.home_logo.iloc[0].endswith("/t3.png")
+    raw["events"][0]["finished"] = True
+    assert list(fpl.round_fixtures(raw, games).fixture_id) == [80]
+
+
+def test_football_data_upcoming_odds():
+    csv = ("Div,Date,Time,HomeTeam,AwayTeam,AvgH,AvgD,AvgA\n"
+           "E0,19/10/2026,20:00,Tottenham,Coventry,1.6,4.2,5.5\n"
+           "E1,18/10/2026,15:00,Hull,Leeds,2.0,3.4,3.6\n").encode()
+    odds = football_data_uk.parse_upcoming(csv)
+    assert odds.to_dict("records") == [{"home_team": "Tottenham", "away_team": "Coventry",
+                                        "odds_home": 1.6, "odds_draw": 4.2, "odds_away": 5.5}]

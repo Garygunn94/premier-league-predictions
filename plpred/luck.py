@@ -176,7 +176,7 @@ def preregistered(data: Path, matches: pd.DataFrame) -> dict:
         preds = json.loads(f.read_text())
         for g in preds["games"]:
             gap = g.get("luck_gap")
-            if gap is None:
+            if gap is None or g.get("after_kickoff"):
                 continue
             day = pd.Timestamp(g["kickoff"])
             if day.tzinfo is not None:

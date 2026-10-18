@@ -4,7 +4,7 @@
 <header>
 <div class="dateline lab"><span>{{ date_text }}</span><span>Matchweek {{ matchweek }}</span><span class="accent">Posting kit</span></div>
 <h1 class="sec-title disp" style="margin:24px 0 8px">{{ brand }}: this week's posts</h1>
-<p class="body" style="font-size:17px;line-height:1.5;max-width:760px">Each day has its images and captions. Tap an image to open it full size and save it, then copy the caption. X posts are already within 280 characters.{% if replay %} This week is a replay of a past round, so don't post it.{% endif %}</p>
+<p class="body" style="font-size:17px;line-height:1.5;max-width:760px">Each day has its images and captions. Tap an image to open it full size and save it, then copy the caption. X posts are already within 280 characters.{% if replay %} This week is a replay of a past round, so don't post it.{% endif %}{% if late %} {{ late }} of this round's games were called after kick-off. Their captions and cards already say so; always post them as what the model would have called, never as predictions.{% endif %}</p>
 </header>
 <style>
 .kit-day{padding:32px 0;border-bottom:1px solid var(--ink)}

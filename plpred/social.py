@@ -92,8 +92,18 @@ def with_link(post: str, link: str, lead: str = "The full breakdown:") -> list[s
     return [post, f"{lead} {link}"]
 
 
+def late_line(v: dict) -> str:
+    """For a game called after kick-off: say so, and how it finished, so it never reads as a prediction."""
+    outcome = (f" It finished {v['result_text']}, so the model was "
+               f"{'right' if v['result_call'] == v['call'] else 'wrong'}.") if v.get("result_text") else ""
+    return (f"Before the round, the model would have called {call_phrase(v).removeprefix('a ')} "
+            f"({v['our_p']}%).{outcome} Run after kick-off, so not part of our record.")
+
+
 def match_post(v: dict) -> str:
     close = ", too close to call" if v["confidence"] == "too close to call" else ""
+    if v.get("after_kickoff"):
+        return fit_x(f"{v['home_team']} v {v['away_team']}\n{late_line(v)}\nWhy: {reason(v)}", match_tag(v))
     return fit_x(f"{v['home_team']} v {v['away_team']}\n"
                  f"Our call: {v['call_long'] if v['call'] != 'D' else 'draw'} {v['score_text']} ({v['our_p']}%{close}).\n"
                  f"Why: {reason(v)}", match_tag(v))
@@ -102,8 +112,10 @@ def match_post(v: dict) -> str:
 def carousel_caption(v: dict) -> str:
     """The Instagram caption for one game's carousel: the call, the main reason, then five tags."""
     close = ", too close to call" if v["confidence"] == "too close to call" else f", {v['confidence']}"
+    call = (late_line(v) if v.get("after_kickoff")
+            else f"Our call: {call_phrase(v).removeprefix('a ')} ({v['our_p']}%{close}).")
     return (f"{v['home_team']} v {v['away_team']}, {v['kickoff_long']}.\n\n"
-            f"Our call: {call_phrase(v).removeprefix('a ')} ({v['our_p']}%{close}).\n\n"
+            f"{call}\n\n"
             f"Why: {reason(v)}\n\nSwipe for how we got there, the numbers behind it and the most likely "
             f"scores. The full breakdown is at the link in bio.\n\n"
             f"#PremierLeague {club_tag(v['home_team'])} {club_tag(v['away_team'])} #FootballAnalytics #xG")
@@ -111,12 +123,21 @@ def carousel_caption(v: dict) -> str:
 
 def captions(ctx: dict, views: list[dict]) -> dict:
     mw, lead, upset, rec = ctx["matchweek"], ctx["lead"], ctx["features"]["upset"], ctx["record"]
-    thread = [fit_x(f"Matchweek {mw}: every Premier League game called, with the data behind each call.\n"
-                    f"The thread is below.", X_TAG)]
+    late = [v for v in views if v.get("after_kickoff")]
+    intro = (f"Matchweek {mw}: every Premier League game called, with the data behind each call.\n"
+             if not late else
+             f"Matchweek {mw}, run late: {len(late)} games had already kicked off, so for those we show what the "
+             f"model would have called from pre-round data, and how it went.\n")
+    thread = [fit_x(intro + "The thread is below.", X_TAG)]
     thread += [match_post(v) for v in views]
     thread.append(f"Every call, chart and reason: {SITE_URL}")
     lines = "\n".join(f"{v['home_team']} v {v['away_team']}: {call_phrase(v).removeprefix('a ')} ({v['our_p']}%)"
+                      + (f", finished {v['result_text']}" if v.get("result_text") else
+                         ", called after kick-off" if v.get("after_kickoff") else "")
                       for v in views)
+    if late:
+        lines += (f"\n\nWe ran this round late, so {len(late)} of these games had already kicked off. Those calls "
+                  f"use only results from before the round and aren't part of our record.")
     out = {
         "thursday_x": thread,
         "thursday_instagram": (f"Matchweek {mw}, called.\n\n{lines}\n\nEvery call comes with the reasons and the "
@@ -194,7 +215,9 @@ def newsletter(ctx: dict, views: list[dict]) -> str:
     lines += ["", f"[Read the full breakdown]({match_url(lead)})", "", "## Every call", ""]
     for v in views:
         lines.append(f"- [{v['home_team']} v {v['away_team']}]({match_url(v)}): "
-                     f"{call_phrase(v).removeprefix('a ')} ({v['our_p']}%, {v['confidence']})")
+                     f"{call_phrase(v).removeprefix('a ')} ({v['our_p']}%, {v['confidence']})"
+                     + (f", called after kick-off, finished {v['result_text']}" if v.get("result_text") else
+                        ", called after kick-off" if v.get("after_kickoff") else ""))
     strong = [v for v in views if v["confidence"] == "strong"]
     if strong:
         lines += ["", "**Our strongest calls:** " + ", ".join(
@@ -272,7 +295,8 @@ def build_kit(ctx: dict, views: list[dict], env: Environment, out: Path) -> Path
          "how": "Post the reasons chart on X, then the link as the first reply. On Instagram, post the match "
                 "card then the chart as a carousel."},
     ]
-    days += [{"day": f"{v['home_team']} v {v['away_team']}", "when": f"Carousel · {v['kickoff_text']}",
+    days += [{"day": f"{v['home_team']} v {v['away_team']}",
+              "when": f"Carousel · {v['kickoff_text']}" + (" · called after kick-off" if v.get("after_kickoff") else ""),
               "x": [match_post(v), f"The full breakdown: {match_url(v)}"], "instagram": carousel_caption(v),
               "cards": carousels[v["slug"]],
               "how": "Post every slide, in order, as one Instagram carousel, any time from Thursday to "

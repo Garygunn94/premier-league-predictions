@@ -3,6 +3,8 @@
 Gives each player's status (a = available, d = doubtful, i = injured, s = suspended,
 u = unavailable, n = not in squad), injury news and chance of playing next round,
 and the season's fixture list by FPL gameweek (for the fixture strip on the FPL page).
+It is also the free fallback for this round's fixtures and club crests when API-Football
+can't serve the current season (its free plan only covers past seasons).
 """
 import pandas as pd
 
@@ -11,6 +13,7 @@ from plpred.http import session
 
 URL = "https://fantasy.premierleague.com/api/bootstrap-static/"
 FIXTURES_URL = "https://fantasy.premierleague.com/api/fixtures/"
+BADGE_URL = "https://resources.premierleague.com/premierleague/badges/100/t{code}.png"
 POSITIONS = {1: "GK", 2: "DEF", 3: "MID", 4: "FWD"}
 
 
@@ -33,6 +36,39 @@ def fixtures(raw: dict, raw_fixtures: list) -> pd.DataFrame:
              "home_team": team_names[f["team_h"]], "away_team": team_names[f["team_a"]],
              "finished": bool(f.get("finished"))} for f in raw_fixtures]
     return pd.DataFrame(rows, columns=["gameweek", "kickoff", "home_team", "away_team", "finished"])
+
+
+def current_gameweek(raw: dict) -> int | None:
+    """The gameweek being played, until all its games are done; then the next one."""
+    events = raw.get("events", [])
+    event = next((e for e in events if e.get("is_current")), None)
+    if event is None or event.get("finished"):
+        event = next((e for e in events if e.get("is_next")), event)
+    return event["id"] if event else None
+
+
+def round_fixtures(raw: dict, raw_fixtures: list) -> pd.DataFrame:
+    """This round's games in the same shape as api_football.fixtures_frame."""
+    gameweek = current_gameweek(raw)
+    clubs = {t["id"]: t for t in raw["teams"]}
+    rows = []
+    for f in raw_fixtures:
+        if f.get("event") != gameweek or gameweek is None:
+            continue
+        home, away = clubs[f["team_h"]], clubs[f["team_a"]]
+        done = f.get("finished") or f.get("finished_provisional")
+        rows.append({
+            "fixture_id": f["id"], "kickoff": pd.Timestamp(f["kickoff_time"]),
+            "round": f"Regular Season - {gameweek}",
+            "status": "FT" if done else "LIVE" if f.get("started") else "NS", "venue": None,
+            "home_team": teams.canonical(home["name"]), "away_team": teams.canonical(away["name"]),
+            "home_goals": f.get("team_h_score"), "away_goals": f.get("team_a_score"),
+            "home_logo": BADGE_URL.format(code=home["code"]) if home.get("code") else None,
+            "away_logo": BADGE_URL.format(code=away["code"]) if away.get("code") else None,
+        })
+    columns = ["fixture_id", "kickoff", "round", "status", "venue", "home_team", "away_team",
+               "home_goals", "away_goals", "home_logo", "away_logo"]
+    return pd.DataFrame(rows, columns=columns)
 
 
 def availability(raw: dict) -> pd.DataFrame:

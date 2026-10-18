@@ -117,7 +117,7 @@
 <h2 class="sec-title disp" style="margin-bottom:16px">Every matchweek</h2>
 <ul class="archive">
 {% for w in weeks %}
-<li><a href="{{ root }}/matchweek/{{ w.matchweek }}/index.html"><span class="lab aw-num">Matchweek {{ w.matchweek }}</span><span class="aw-head disp">{{ w.lead.headline }}</span><span class="lab muted aw-date">{{ w.season }} · from {{ w.first_kickoff }}{% if w.replay %} · replay{% endif %}</span></a></li>
+<li><a href="{{ root }}/matchweek/{{ w.matchweek }}/index.html"><span class="lab aw-num">Matchweek {{ w.matchweek }}</span><span class="aw-head disp">{{ w.lead.headline }}</span><span class="lab muted aw-date">{{ w.season }} · from {{ w.first_kickoff }}{% if w.replay %} · replay{% elif w.late %} · {{ w.late }} called after kick-off{% endif %}</span></a></li>
 {% endfor %}
 </ul>
 </section>

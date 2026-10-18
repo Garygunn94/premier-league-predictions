@@ -20,7 +20,8 @@ so the model weights the current season most heavily. The window is set by
 | [football-data.co.uk](https://www.football-data.co.uk/englandm.php) | Results, shots, corners, cards, bookmaker odds | `data/raw/football-data-uk/`, combined in `data/matches.csv` |
 | [Understat](https://understat.com/league/EPL) | Expected goals (xG) per match | `data/xg/` |
 | [Fantasy Premier League](https://fantasy.premierleague.com/) | Player availability, injuries, suspensions, chance of playing | `data/upcoming/fpl_players.csv`, `key_absences.csv` |
-| [API-Football](https://www.api-football.com/) | This round's fixtures and pre-match odds | `data/upcoming/fixtures.csv`, `odds.csv` |
+| [API-Football](https://www.api-football.com/) | This round's fixtures and pre-match odds, on a paid plan | `data/upcoming/fixtures.csv`, `odds.csv` |
+| FPL and [football-data.co.uk fixtures](https://www.football-data.co.uk/matches.php) | The same, free: this round's fixtures, scores and club crests from FPL, odds from football-data's fixtures file | `data/upcoming/fixtures.csv`, `odds.csv` |
 
 The **Update data** workflow refreshes everything on Thursday and Saturday mornings
 and commits the results, so every week's inputs stay in the history. It can also be
@@ -29,8 +30,9 @@ run by hand from the Actions tab.
 API-Football needs a key saved as the secret `API_FOOTBALL_KEY` in the `prod`
 environment (Settings > Environments > prod). Only the scheduled data job uses that
 environment, and it makes about 12 calls a week: 2 per run for fixtures, plus odds
-once per match. Pull-request checks never use the key. Without it, the other
-sources still update.
+once per match. Pull-request checks never use the key. API-Football's free plan only
+covers past seasons, so when it refuses (or there is no key) the fixtures step uses the
+free FPL fixture list and football-data.co.uk's odds instead, at no API cost.
 
 ## Model
 
@@ -77,6 +79,12 @@ half his share of its goal involvements, and a missing defender or keeper raises
 goals conceded a little. These weights are judgement calls, not fitted, because we
 have no history of who was missing when. Calls with less than 5 points between the
 top two outcomes are labelled "too close to call".
+
+When a round is first run after some of its games have kicked off, run the Update data
+workflow with **after kick-off** ticked. Those games are then called from results before the
+round only, without team news, and saved to `data/predictions/<date>-after-kickoff.json`.
+The site and the posting kit mark them "called after kick-off" with the final score, and
+they never count as live calls.
 
 `python -m plpred.predict --replay 2026-10-05` re-predicts a past week from
 earlier results only (without team news), which is handy for checking the output.
