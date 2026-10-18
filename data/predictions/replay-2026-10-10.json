@@ -14,7 +14,7 @@
       "away_team": "Leeds",
       "call": "H",
       "call_name": "home win",
-      "confidence": "solid",
+      "confidence": "strong",
       "probabilities": {
         "H": 0.595,
         "D": 0.257,

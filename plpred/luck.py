@@ -142,7 +142,9 @@ def calibration(data: Path, matches: pd.DataFrame) -> dict | None:
     fav_p = ours.max(1)
     labels = np.array([explain.confidence(dict(zip("HDA", row))) for row in ours])
     fav_bands = []
-    for key, label in (("too close to call", "Too close to call"), ("solid", "Solid"), ("strong", "Strong")):
+    strong = f"{explain.STRONG:.0%}"
+    for key, label in (("too close to call", "Too close to call"), ("solid", f"Solid (under {strong})"),
+                       ("strong", f"Strong ({strong} or more)")):
         inside = labels == key
         if inside.any():
             fav_bands.append({"label": label, "n": int(inside.sum()), "said": round(fav_p[inside].mean() * 100),
