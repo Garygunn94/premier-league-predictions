@@ -2,8 +2,8 @@
 
     python -m plpred.site            # writes site/
 
-Pages: a home page (what the site is, how it works, the data sources, every matchweek),
-one page per matchweek in matchweek/<n>/ (the calls, our record, charts, last week's
+Pages: the newest matchweek as the front page, an about/ page (what the site is, how it
+works, the data sources, every matchweek), one page per matchweek in matchweek/<n>/ (the calls, our record, charts, last week's
 verdict, the table and the table the chances deserved) with a page per match beside it,
 a record/ page on how often our percentages came true (with the pre-registered luck-gap
 test), the projected final table in table/ (see plpred.simulate), the FPL corner in fpl/
@@ -514,7 +514,7 @@ def build(data: Path, out: Path) -> Path:
         written.append(path)
 
     tagline = "Data-driven Premier League predictions, with the reasons. New every Thursday."
-    write("index.html", "home.html", page_meta("", "Inkwell & Algorithm", tagline),
+    write("about/index.html", "about.html", page_meta("about/index.html", "About Inkwell & Algorithm", tagline),
           record=latest["record"], replay=is_replay)
     write("record/index.html", "calibration.html",
           page_meta("record/index.html", "Are our percentages right?",
@@ -547,6 +547,11 @@ def build(data: Path, out: Path) -> Path:
               page_meta(f"matchweek/{w['matchweek']}/index.html", f"Matchweek {w['matchweek']}: {w['lead']['headline']}",
                         f"Every Premier League match in matchweek {w['matchweek']}, called and explained.",
                         "social/png/round.png" if is_latest else None), **ctx)
+        if is_latest:
+            # The front page is this week's calls, so a link from a social bio lands on them.
+            write("index.html", "week.html",
+                  page_meta("", f"Matchweek {w['matchweek']}: {w['lead']['headline']}", tagline,
+                            "social/png/round.png"), **ctx)
         for v in w["views"]:
             write(v["path"], "match.html",
                   page_meta(v["path"], f"{v['home_team']} v {v['away_team']}: {v['headline']}",

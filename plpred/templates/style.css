@@ -44,6 +44,7 @@ nav.sections a{display:inline-block;padding:12px 0;text-decoration:none}
 .callbox .team{font-size:clamp(22px,3vw,32px);font-weight:800;display:flex;align-items:center;gap:10px}
 .callbox .score{font-size:clamp(40px,5vw,56px);font-weight:900;line-height:1}
 .callbox .verdict{flex:0 1 220px;padding:20px 24px;background:var(--ink);color:var(--paper);display:flex;flex-direction:column;justify-content:center;gap:4px}
+@media (max-width:600px){.callbox .teams{padding:16px;gap:10px}.callbox .team{font-size:19px;gap:6px;min-width:0;overflow-wrap:anywhere}.callbox .score{font-size:34px;white-space:nowrap}.callbox .verdict{flex-basis:100%;padding:14px 16px}}
 .split{display:flex;height:14px;border:1px solid var(--ink)}
 .split.thin{height:8px;border:0;flex:1}
 .split .h{background:var(--ink)}.split .d{background:var(--draw)}.split .a{background:var(--accent)}

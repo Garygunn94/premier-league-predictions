@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% from "macros.html" import badge, split, wordmark with context %}
-{% block title %}Inkwell &amp; Algorithm: data-driven Premier League predictions{% endblock %}
+{% block title %}About Inkwell &amp; Algorithm: data-driven Premier League predictions{% endblock %}
 {% block masthead %}
 <header>
 <div class="dateline lab">
@@ -12,7 +12,7 @@
 <p class="tagline">Data-driven Premier League predictions, with the reasons. New every Thursday.</p>
 <nav class="sections" aria-label="Sections">
 <ul class="lab">
-<li><a href="{{ root }}/matchweek/{{ latest.matchweek }}/index.html" class="accent">This week's calls</a></li>
+<li><a href="{{ root }}/index.html" class="accent">This week's calls</a></li>
 <li><a href="#how">How it works</a></li>
 <li><a href="#data">The data</a></li>
 {% if record %}<li><a href="#record">Our record</a></li>{% endif %}
@@ -47,7 +47,7 @@
 <p class="body" style="font-size:16px;line-height:1.5">Our match of the week: {{ 'a draw' if g.call == 'D' else g.call_long }}, {{ g.score_text }}.</p>
 {{ split(g, thin=true) }}
 <p class="lab" style="font-size:12px;font-weight:600;margin-top:6px;display:flex;justify-content:space-between"><span>{{ g.home_short }} {{ g.h }}%</span><span>Draw {{ g.d }}%</span><span>{{ g.away_short }} {{ g.a }}%</span></p>
-<p style="margin-top:20px"><a class="cta lab" href="{{ root }}/matchweek/{{ latest.matchweek }}/index.html">All {{ latest.views|length }} calls this week</a></p>
+<p style="margin-top:20px"><a class="cta lab" href="{{ root }}/index.html">All {{ latest.views|length }} calls this week</a></p>
 </div>
 </aside>
 </section>
