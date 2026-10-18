@@ -30,19 +30,37 @@ environment, and it makes about 12 calls a week: 2 per run for fixtures, plus od
 once per match. Pull-request checks never use the key. Without it, the other
 sources still update.
 
+## Model
+
+`plpred/model.py` gives every team an attack and a defence rating, fitted to recent
+matches with older games fading out (half-life 180 days, so this season counts most).
+Ratings are fitted to a 50/50 blend of goals and xG, since xG says more about how a
+team is really playing than a few results. The ratings give expected goals for any
+match, which become win/draw/loss chances and a predicted score (Dixon-Coles model).
+
+`python -m plpred.backtest` replays past weeks using only what was known at the time,
+tunes the settings on last season, and checks them on this season. Results are saved
+in `data/backtest/`. As of 18 Oct 2026:
+
+| Season | Model accuracy | Bookmakers' favourite | Always home | Exact score |
+|---|---|---|---|---|
+| 2025/26 (tuning) | 49.2% | 49.5% | 42.6% | 9.7% |
+| 2026/27 so far (unseen, 60 games) | 50.0% | 45.0% | 38.3% | 8.3% |
+
 ## Running locally
 
 ```sh
 pip install -r requirements.txt
 python -m plpred.update            # all sources
 python -m plpred.update history    # or just some: xg, history, fpl, fixtures
+python -m plpred.backtest         # replay past weeks and score the model
 python -m pytest
 ```
 
 ## Roadmap
 
-1. Data pipeline (this step)
-2. Team-strength model (Dixon-Coles) with a back-test on the last 3 seasons
+1. Data pipeline
+2. Team-strength model (Dixon-Coles) with a back-test
 3. Ranked reasons for each call
 4. The backpage site on GitHub Pages
 5. Weekly automation and a season scorecard
