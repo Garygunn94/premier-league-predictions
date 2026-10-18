@@ -39,6 +39,22 @@ jobs:
           pip install playwright==1.64.0
           python -m playwright install --with-deps chromium
           python -m plpred.social --png site/social
+      # The posting kit (captions, newsletter, every card) is private: it is attached to this
+      # run as a download and taken off the public site. Only the images the site uses as link
+      # previews stay public.
+      - name: Keep the posting kit private
+        uses: actions/upload-artifact@v4
+        with:
+          name: posting-kit
+          path: site/social
+          retention-days: 30
+      - name: Remove the posting kit from the public site
+        run: |
+          mkdir previews
+          cp site/social/png/brand.png site/social/png/round.png site/social/png/call-*.png previews/
+          rm -rf site/social
+          mkdir -p site/social
+          mv previews site/social/png
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site
