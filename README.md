@@ -23,13 +23,16 @@ so the model weights the current season most heavily. The window is set by
 | [API-Football](https://www.api-football.com/) | This round's fixtures and pre-match odds, on a paid plan | `data/upcoming/fixtures.csv`, `odds.csv` |
 | FPL and [football-data.co.uk fixtures](https://www.football-data.co.uk/matches.php) | The same, free: this round's fixtures, scores and club crests from FPL, odds from football-data's fixtures file | `data/upcoming/fixtures.csv`, `odds.csv` |
 
-The **Update data** workflow refreshes everything on Thursday and Saturday mornings
-and commits the results, so every week's inputs stay in the history. It can also be
-run by hand from the Actions tab.
+The **Update data** workflow refreshes the data every morning at 06:00 UTC and commits it,
+so every week's inputs stay in the history, and the Publish site workflow rebuilds the site
+straight after. Results, the record, the tables and the projections are therefore never more
+than a day old. The calls are different: they are made only by the Thursday run and then
+stay as published. A run by hand from the Actions tab refreshes the data only, unless
+**predict** is ticked (needed only if Thursday's run failed, or for a midweek round).
 
 API-Football needs a key saved as the secret `API_FOOTBALL_KEY` in the `prod`
 environment (Settings > Environments > prod). Only the scheduled data job uses that
-environment, and it makes about 12 calls a week: 2 per run for fixtures, plus odds
+environment, and it makes about 25 calls a week (on a paid plan; the free plan's refusal costs 1 a day): 2 per run for fixtures, plus odds
 once per match. Pull-request checks never use the key. API-Football's free plan only
 covers past seasons, so when it refuses (or there is no key) the fixtures step uses the
 free FPL fixture list and football-data.co.uk's odds instead, at no API cost.

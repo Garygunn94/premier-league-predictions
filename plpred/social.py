@@ -309,8 +309,8 @@ def build_kit(ctx: dict, views: list[dict], env: Environment, out: Path) -> Path
     if "monday_x" in cap:
         days.append({"day": "Monday", "when": "The scorecard", "x": cap["monday_x"],
                      "instagram": cap["monday_instagram"], "cards": [c for c in cards if c["kind"] == "scorecard"],
-                     "how": "The record covers the newest results the site has. Rebuild after the weekend's "
-                            "results are in, so the scorecard includes them."})
+                     "how": "The site picks up results every morning, so use the kit from Monday's "
+                            "Publish site run to get the weekend's results in the scorecard."})
     if "miss_x" in cap:
         days.append({"day": "Monday, later", "when": "What we got wrong", "x": cap["miss_x"],
                      "instagram": cap["miss_instagram"], "cards": [c for c in cards if c["kind"] == "miss"],
@@ -320,8 +320,8 @@ def build_kit(ctx: dict, views: list[dict], env: Environment, out: Path) -> Path
         days.append({"day": "Wednesday", "when": "The season so far", "x": cap["projection_x"],
                      "instagram": cap["projection_instagram"],
                      "cards": [c for c in cards if c["kind"] == "projection"],
-                     "how": "Run the Update data workflow (history step) after the weekend first, so the "
-                            "projection includes the latest results."})
+                     "how": "Use the kit from the newest Publish site run: the data updates every morning, "
+                            "so the projection includes the latest results."})
     letter = newsletter(ctx, views)
     (out / "newsletter.md").write_text(letter)
     (out / "index.html").write_text(env.get_template("social_kit.html").render(

@@ -2,14 +2,18 @@ name: Update data
 
 on:
   schedule:
-    - cron: "0 6 * * 4"   # Thursday 06:00 UTC: the week's first look
-    - cron: "0 7 * * 6"   # Saturday 07:00 UTC: late team news before kick-off
+    - cron: "0 6 * * 4"           # Thursday 06:00 UTC: fresh data, then the week's calls
+    - cron: "0 6 * * 0,1,2,3,5,6"  # every other morning: results, tables and record only
   workflow_dispatch:
     inputs:
       steps:
         description: "Steps to run (blank = all): xg history fpl fixtures"
         required: false
         default: ""
+      predict:
+        description: "Make this round's calls too (only needed if Thursday's run failed, or for a midweek round)"
+        type: boolean
+        default: false
       after_kickoff:
         description: "Also call this round's games that have already kicked off (a round first run late)"
         type: boolean
@@ -37,10 +41,13 @@ jobs:
         env:
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
         run: python -m plpred.update ${{ inputs.steps }}
+      # Calls are published once a week, on Thursday, and then stay as they are. The other
+      # daily runs only bring in results, so the record, tables and projections stay current.
       - name: Call the games already under way
         if: inputs.after_kickoff
         run: python -m plpred.predict --after-kickoff
       - name: Predict the coming round
+        if: github.event.schedule == '0 6 * * 4' || inputs.predict
         run: python -m plpred.predict
       - name: Refresh our record
         run: python -m plpred.backtest
