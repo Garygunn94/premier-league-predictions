@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 {% from "macros.html" import badge, club, split, wordmark with context %}
-{% block title %}Inkwell &amp; Algorithm, Matchweek {{ matchweek }}{% endblock %}
 {% block masthead %}
 <header>
 <div class="dateline lab">
@@ -8,23 +7,23 @@
 <span>Premier League {{ season }} · Matchweek {{ matchweek }}</span>
 <span class="accent">{% if replay %}Replay of a past week{% elif next %}An earlier week{% else %}This week's calls{% endif %}</span>
 </div>
-<h1 class="masthead disp"><a href="{{ root }}/index.html">{{ wordmark() }}</a></h1>
+<h1 class="masthead disp"><a href="{{ root }}/">{{ wordmark() }}</a></h1>
 <p class="tagline">Data-driven Premier League predictions, with the reasons. New every Thursday.</p>
 <nav class="sections" aria-label="Sections">
 <ul class="lab">
-<li><a href="{{ root }}/about/index.html">About</a></li>
+<li><a href="{{ root }}/about/">About</a></li>
 <li><a href="#this-week" class="accent">The calls</a></li>
 {% if record %}<li><a href="#verdict">Last week's verdict</a></li>
 {% if miss %}<li><a href="#miss">What we got wrong</a></li>{% endif %}
 <li><a href="#record">Our record</a></li>{% endif %}
 <li><a href="#table">Table</a></li>
 {% if deserved %}<li><a href="#deserved">The table they deserved</a></li>{% endif %}
-{% if not next %}<li><a href="{{ root }}/table/index.html">How the season ends</a></li>
-<li><a href="{{ root }}/fpl/index.html">FPL corner</a></li>{% endif %}
+{% if not next %}<li><a href="{{ root }}/table/">How the season ends</a></li>
+<li><a href="{{ root }}/fpl/">FPL corner</a></li>{% endif %}
 <li><a href="#method">How we call it</a></li>
 </ul>
 </nav>
-{% if prev or next %}<nav class="weeknav lab" aria-label="Other matchweeks">{% if prev %}<a href="{{ root }}/matchweek/{{ prev.matchweek }}/index.html">← Matchweek {{ prev.matchweek }}</a>{% else %}<span></span>{% endif %}<a href="{{ root }}/about/index.html#archive">Every matchweek</a>{% if next %}<a href="{{ root }}/matchweek/{{ next.matchweek }}/index.html">Matchweek {{ next.matchweek }} →</a>{% else %}<span></span>{% endif %}</nav>{% endif %}
+{% if prev or next %}<nav class="weeknav lab" aria-label="Other matchweeks">{% if prev %}<a href="{{ root }}/matchweek/{{ prev.matchweek }}/">← Matchweek {{ prev.matchweek }}</a>{% else %}<span></span>{% endif %}<a href="{{ root }}/about/#archive">Every matchweek</a>{% if next %}<a href="{{ root }}/matchweek/{{ next.matchweek }}/">Matchweek {{ next.matchweek }} →</a>{% else %}<span></span>{% endif %}</nav>{% endif %}
 {% if replay %}<p class="banner">No fixtures have been fetched yet, so this page replays a past week to show how it will look. Live calls start after the next weekly update.</p>{% endif %}
 {% if late %}<p class="banner">We first ran this round after {{ late }} of its {{ views|length }} games had kicked off. Those are marked "After kick-off": they show what the model would have called before the round, from earlier results only and without team news. They are a test, not predictions, and they don't count towards our live record.{% if late < views|length %} The rest are live calls, published before kick-off.{% endif %}</p>{% endif %}
 </header>

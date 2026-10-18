@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% from "macros.html" import page_head with context %}
+{% block masthead %}{{ page_head("Page not found", root, latest, built) }}{% endblock %}
+{% block content %}
+<section class="sec">
+<h2 class="sec-title disp" style="margin-bottom:16px">We can't find that page</h2>
+<p class="body" style="font-size:17px;line-height:1.6">It may be from an old matchweek or a mistyped address. <a href="{{ root }}/">This week's calls</a> are on the front page, and <a href="{{ root }}/about/#archive">every matchweek</a> is listed on the about page.</p>
+</section>
+{% endblock %}

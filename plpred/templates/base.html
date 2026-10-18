@@ -1,17 +1,21 @@
 <!doctype html>
-<html lang="en">
+<html lang="en-GB">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{% block title %}Inkwell &amp; Algorithm{% endblock %}</title>
-{% set m = meta or {"path": "", "title": "Inkwell & Algorithm", "description": "Data-driven Premier League predictions, with the reasons. New every Thursday.", "image": "social/png/brand.png"} %}
+{% set m = meta or {"path": "", "url": "", "title": "Inkwell & Algorithm", "search_title": "Inkwell & Algorithm", "description": "Data-driven Premier League predictions, with the reasons. New every Thursday.", "image": "social/png/brand.png"} %}
+<title>{% block title %}{{ m.search_title }}{% endblock %}</title>
 <meta name="description" content="{{ m.description }}">
+{% if m.noindex %}<meta name="robots" content="noindex">
+{% endif %}
 <meta property="og:site_name" content="Inkwell &amp; Algorithm">
 <meta property="og:type" content="website">
+<meta property="og:locale" content="en_GB">
 <meta property="og:title" content="{{ m.title }}">
 <meta property="og:description" content="{{ m.description }}">
-{% if site_url %}<meta property="og:url" content="{{ site_url }}{{ m.path }}">
-<link rel="canonical" href="{{ site_url }}{{ m.path }}">
+{% if site_url %}{% if not m.noindex %}<meta property="og:url" content="{{ site_url }}{{ m.url }}">
+<link rel="canonical" href="{{ site_url }}{{ m.url }}">
+{% endif %}
 <meta property="og:image" content="{{ site_url }}{{ m.image }}">
 <meta property="og:image:width" content="1080">
 <meta property="og:image:height" content="1080">
@@ -26,6 +30,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700;1,800;1,900&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&display=swap">
 <link rel="stylesheet" href="{{ root }}/style.css">
+{% for d in m.jsonld or [] %}<script type="application/ld+json">{{ d|tojson }}</script>
+{% endfor %}
 <script>
 try { var t = localStorage.getItem('theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
 </script>
@@ -45,7 +51,7 @@ try { var t = localStorage.getItem('theme'); if (t) document.documentElement.dat
 <p class="lab muted" style="font-size:12px;font-weight:600;line-height:1.7">Data: football-data.co.uk, API-Football, Understat, FPL.<br>Odds are a benchmark, not betting advice.<br>Club crests belong to their clubs.<br>Data updated daily, calls every Thursday. Built {{ built }}.</p>
 <p class="lab" style="font-size:13px;font-weight:700;margin-top:12px">Follow us on <a href="https://x.com/InkwellAlgo">X <span class="accent">@InkwellAlgo</span></a> and <a href="https://www.instagram.com/inkwellandalgorithm/">Instagram <span class="accent">@inkwellandalgorithm</span></a></p>
 {% if newsletter_url %}<p class="lab" style="font-size:13px;font-weight:700;margin-top:12px">Every call in your inbox on Thursdays: <a href="{{ newsletter_url }}">get the newsletter</a></p>{% endif %}
-<p class="lab muted" style="font-size:12px;font-weight:600;margin-top:12px"><a href="{{ root }}/about/index.html">About</a> · <a href="{{ root }}/table/index.html">Season projection</a> · <a href="{{ root }}/fpl/index.html">FPL corner</a> · <a href="{{ root }}/club/index.html">Clubs</a> · <a href="{{ root }}/pundits/index.html">V the pundits</a> · <a href="{{ root }}/feed.xml">Feed</a></p>
+<p class="lab muted" style="font-size:12px;font-weight:600;margin-top:12px"><a href="{{ root }}/about/">About</a> · <a href="{{ root }}/table/">Season projection</a> · <a href="{{ root }}/fpl/">FPL corner</a> · <a href="{{ root }}/club/">Clubs</a> · <a href="{{ root }}/pundits/">V the pundits</a> · <a href="{{ root }}/feed.xml">Feed</a></p>
 <p style="margin-top:12px"><button type="button" class="theme-toggle lab" onclick="toggleTheme()">Light / dark</button></p>
 </div>
 </footer>

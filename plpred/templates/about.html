@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 {% from "macros.html" import badge, split, wordmark with context %}
-{% block title %}About Inkwell &amp; Algorithm: data-driven Premier League predictions{% endblock %}
 {% block masthead %}
 <header>
 <div class="dateline lab">
@@ -8,19 +7,19 @@
 <span>Premier League {{ latest.season }}</span>
 <span class="accent">Latest: Matchweek {{ latest.matchweek }}</span>
 </div>
-<h1 class="masthead disp"><a href="{{ root }}/index.html">{{ wordmark() }}</a></h1>
+<h1 class="masthead disp"><a href="{{ root }}/">{{ wordmark() }}</a></h1>
 <p class="tagline">Data-driven Premier League predictions, with the reasons. New every Thursday.</p>
 <nav class="sections" aria-label="Sections">
 <ul class="lab">
-<li><a href="{{ root }}/index.html" class="accent">This week's calls</a></li>
+<li><a href="{{ root }}/" class="accent">This week's calls</a></li>
 <li><a href="#how">How it works</a></li>
 <li><a href="#data">The data</a></li>
 {% if record %}<li><a href="#record">Our record</a></li>{% endif %}
-<li><a href="{{ root }}/record/index.html">Are our percentages right?</a></li>
-{% if latest.sim %}<li><a href="{{ root }}/table/index.html">How the season ends</a></li>{% endif %}
-<li><a href="{{ root }}/fpl/index.html">FPL corner</a></li>
-<li><a href="{{ root }}/club/index.html">Clubs</a></li>
-<li><a href="{{ root }}/pundits/index.html">V the pundits</a></li>
+<li><a href="{{ root }}/record/">Are our percentages right?</a></li>
+{% if latest.sim %}<li><a href="{{ root }}/table/">How the season ends</a></li>{% endif %}
+<li><a href="{{ root }}/fpl/">FPL corner</a></li>
+<li><a href="{{ root }}/club/">Clubs</a></li>
+<li><a href="{{ root }}/pundits/">V the pundits</a></li>
 <li><a href="#archive">Every matchweek</a></li>
 </ul>
 </nav>
@@ -47,7 +46,7 @@
 <p class="body" style="font-size:16px;line-height:1.5">Our match of the week: {{ 'a draw' if g.call == 'D' else g.call_long }}, {{ g.score_text }}.</p>
 {{ split(g, thin=true) }}
 <p class="lab" style="font-size:12px;font-weight:600;margin-top:6px;display:flex;justify-content:space-between"><span>{{ g.home_short }} {{ g.h }}%</span><span>Draw {{ g.d }}%</span><span>{{ g.away_short }} {{ g.a }}%</span></p>
-<p style="margin-top:20px"><a class="cta lab" href="{{ root }}/index.html">All {{ latest.views|length }} calls this week</a></p>
+<p style="margin-top:20px"><a class="cta lab" href="{{ root }}/">All {{ latest.views|length }} calls this week</a></p>
 </div>
 </aside>
 </section>
@@ -58,13 +57,13 @@
 <div class="kicker lab">{{ "{:,}".format(latest.sim.runs) }} simulations of the rest of the season</div>
 <h2 class="sec-title disp" style="margin:8px 0 12px">How the season ends</h2>
 <p class="body" style="font-size:17px;line-height:1.6">{{ t.team }} win the title in {{ (t.title * 100)|round|int }}% of our simulations, and {{ d.team }} go down in {{ (d.relegation * 100)|round|int }}%. Every club's chances of the title, the top four and relegation, updated each week.</p>
-<p style="margin-top:16px"><a class="cta lab" href="{{ root }}/table/index.html">See every club</a></p>
+<p style="margin-top:16px"><a class="cta lab" href="{{ root }}/table/">See every club</a></p>
 </div>
 <div class="side">
 <div class="homebox">
 <div class="kicker lab">For FPL managers</div>
 <p class="body" style="font-size:16px;line-height:1.5;margin-top:8px">Clean-sheet and scoring chances for every club this gameweek, and how kind the next six fixtures are.</p>
-<p style="margin-top:12px"><a class="cta lab" href="{{ root }}/fpl/index.html">FPL corner</a></p>
+<p style="margin-top:12px"><a class="cta lab" href="{{ root }}/fpl/">FPL corner</a></p>
 </div>
 </div>
 </section>
@@ -104,7 +103,7 @@
 <p class="body" style="font-size:17px;line-height:1.6">{{ record.right }} of {{ record.n }} results right{% if record.fav_rate is not none %}, against {{ record.fav_rate }}% for simply backing the bookmakers' favourite{% endif %}.{% if record.disagree.n %} When we disagreed with the bookmakers ({{ record.disagree.n }} {{ 'game' if record.disagree.n == 1 else 'games' }}), we were right {{ record.disagree.us }} {{ 'time' if record.disagree.us == 1 else 'times' }} and they were right {{ record.disagree.fav }}.{% endif %}</p>
 {% if record.strong and record.strong.n %}<p class="body" style="margin-top:8px;font-size:17px;line-height:1.6"><strong>Strong calls</strong> (55% or more): {{ record.strong.right }} of {{ record.strong.n }} right, {{ record.strong.rate }}%.{% if record.strong.fav_rate is not none %} The bookmakers' favourite won {{ record.strong.fav_rate }}% of the same games.{% endif %}</p>{% endif %}
 <p class="muted" style="font-size:14px;margin-top:8px">The record replays the model week by week using only results known before each game, without team news.</p>
-<p style="margin-top:16px"><a class="cta lab" href="{{ root }}/record/index.html">When we say 60%, does it happen?</a></p>
+<p style="margin-top:16px"><a class="cta lab" href="{{ root }}/record/">When we say 60%, does it happen?</a></p>
 </div>
 <div class="side" style="display:flex;gap:32px">
 <div><div class="big-num disp">{{ record.rate }}%</div><div class="muted" style="font-size:15px;margin-top:4px">results right</div></div>
@@ -117,7 +116,7 @@
 <h2 class="sec-title disp" style="margin-bottom:16px">Every matchweek</h2>
 <ul class="archive">
 {% for w in weeks %}
-<li><a href="{{ root }}/matchweek/{{ w.matchweek }}/index.html"><span class="lab aw-num">Matchweek {{ w.matchweek }}</span><span class="aw-head disp">{{ w.lead.headline }}</span><span class="lab muted aw-date">{{ w.season }} · from {{ w.first_kickoff }}{% if w.replay %} · replay{% elif w.late %} · {{ w.late }} called after kick-off{% endif %}</span></a></li>
+<li><a href="{{ root }}/matchweek/{{ w.matchweek }}/"><span class="lab aw-num">Matchweek {{ w.matchweek }}</span><span class="aw-head disp">{{ w.lead.headline }}</span><span class="lab muted aw-date">{{ w.season }} · from {{ w.first_kickoff }}{% if w.replay %} · replay{% elif w.late %} · {{ w.late }} called after kick-off{% endif %}</span></a></li>
 {% endfor %}
 </ul>
 </section>

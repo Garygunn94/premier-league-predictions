@@ -185,7 +185,7 @@ def extra_captions(ctx: dict) -> dict:
         body = (f"We played out the rest of the season {sim['runs']:,} times.\n"
                 f"{top['team']} win the title in {round(top['title'] * 100)}% of them. "
                 f"{down['team']} go down in {round(down['relegation'] * 100)}%.{move}")
-        out["projection_x"] = with_link(fit_x(body, X_TAG), f"{SITE_URL}table/index.html", "Every club:")
+        out["projection_x"] = with_link(fit_x(body, X_TAG), f"{SITE_URL}table/", "Every club:")
         out["projection_instagram"] = f"{body}\n\nEvery club's chances at the link in bio.\n\n{HASHTAGS}"
     if fpl and fpl.get("clean_sheets"):
         cs = fpl["clean_sheets"][:3]
@@ -193,7 +193,7 @@ def extra_captions(ctx: dict) -> dict:
         goals = fpl["scoring"][0]
         body = (f"FPL Gameweek {ctx['matchweek']}: best clean-sheet chances, from our model: {lines}.\n"
                 f"Most expected goals: {goals['team']} ({goals['xg_for']:.1f}).")
-        out["fpl_x"] = with_link(fit_x(body, "#FPL"), f"{SITE_URL}fpl/index.html",
+        out["fpl_x"] = with_link(fit_x(body, "#FPL"), f"{SITE_URL}fpl/",
                                  "Every club and the next six weeks:")
         out["fpl_instagram"] = f"{body}\n\nThe full fixture strip is at the link in bio.\n\n{FPL_TAGS}"
     if miss:
@@ -239,7 +239,7 @@ def newsletter(ctx: dict, views: list[dict]) -> str:
     if sim:
         top = sim["teams"][0]
         lines += ["", f"**The season in {sim['runs']:,} simulations:** {top['team']} win the title in "
-                      f"{round(top['title'] * 100)}% of them. [Every club's chances]({SITE_URL}table/index.html)"]
+                      f"{round(top['title'] * 100)}% of them. [Every club's chances]({SITE_URL}table/)"]
     lines += ["", "---", "", f"Analysis, not betting advice. Follow {HANDLE} on X and {IG_HANDLE} on Instagram. "
                              f"Every call, chart and reason: {SITE_URL}"]
     return "\n".join(lines) + "\n"
