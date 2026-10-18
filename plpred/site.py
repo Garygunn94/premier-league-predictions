@@ -254,7 +254,12 @@ def record(data: Path, season: int, before=None) -> dict | None:
                              "wrong": verdict == "Wrong"})
     fav_rate = np.nanmean(p.fav_right)
     split = p[p.fav_call.notna() & (p.call != p.fav_call)]
+    strong = p[p[["p_home", "p_draw", "p_away"]].max(axis=1) >= explain.STRONG]
+    strong_fav = np.nanmean(strong.fav_right) if len(strong) else np.nan
     return {
+        "strong": {"n": len(strong), "right": int(strong.right.sum()),
+                   "rate": round(strong.right.mean() * 100) if len(strong) else None,
+                   "fav_rate": None if np.isnan(strong_fav) else round(strong_fav * 100)},
         "disagree": {"n": len(split), "us": int(split.right.sum()), "fav": int(np.nansum(split.fav_right))},
         "n": len(p), "right": int(p.right.sum()), "exact": int(p.exact.sum()),
         "rate": round(p.right.mean() * 100), "fav_rate": round(fav_rate * 100) if not np.isnan(fav_rate) else None,

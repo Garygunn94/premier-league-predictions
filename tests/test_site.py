@@ -62,3 +62,14 @@ def test_replay_files_are_used_only_when_nothing_else_exists(tmp_path):
     assert not is_replay
     (data / "predictions" / "2026-10-24.json").unlink()
     assert site.latest_predictions(data)[1]
+
+
+def test_record_counts_strong_calls_against_the_bookies(tmp_path):
+    (tmp_path / "backtest").mkdir()
+    rows = ["season,gameweek,date,home_team,away_team,result,home_goals,away_goals,p_home,p_draw,p_away,call,score,mkt_home,mkt_draw,mkt_away",
+            "2026,1,2026-08-15,A,B,H,2,0,0.60,0.25,0.15,H,2-0,0.65,0.20,0.15",
+            "2026,1,2026-08-15,C,D,A,0,1,0.56,0.24,0.20,H,1-0,0.30,0.30,0.40",
+            "2026,1,2026-08-15,E,F,H,1,0,0.40,0.30,0.30,H,1-0,0.45,0.30,0.25"]
+    (tmp_path / "backtest" / "predictions_2026.csv").write_text("\n".join(rows))
+    r = site.record(tmp_path, 2026)
+    assert r["strong"] == {"n": 2, "right": 1, "rate": 50, "fav_rate": 100}

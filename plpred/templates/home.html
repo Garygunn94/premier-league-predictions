@@ -79,6 +79,7 @@
 <div class="grow">
 <h2 class="sec-title disp" style="margin-bottom:12px">Our record this season</h2>
 <p class="body" style="font-size:17px;line-height:1.6">{{ record.right }} of {{ record.n }} results right{% if record.fav_rate is not none %}, against {{ record.fav_rate }}% for simply backing the bookmakers' favourite{% endif %}.{% if record.disagree.n %} When we disagreed with the bookmakers ({{ record.disagree.n }} {{ 'game' if record.disagree.n == 1 else 'games' }}), we were right {{ record.disagree.us }} {{ 'time' if record.disagree.us == 1 else 'times' }} and they were right {{ record.disagree.fav }}.{% endif %}</p>
+{% if record.strong and record.strong.n %}<p class="body" style="margin-top:8px;font-size:17px;line-height:1.6"><strong>Strong calls</strong> (55% or more): {{ record.strong.right }} of {{ record.strong.n }} right, {{ record.strong.rate }}%.{% if record.strong.fav_rate is not none %} The bookmakers' favourite won {{ record.strong.fav_rate }}% of the same games.{% endif %}</p>{% endif %}
 <p class="muted" style="font-size:14px;margin-top:8px">The record replays the model week by week using only results known before each game, without team news.</p>
 </div>
 <div class="side" style="display:flex;gap:32px">
