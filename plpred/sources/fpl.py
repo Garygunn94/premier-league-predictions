@@ -30,11 +30,15 @@ def fetch_fixtures_raw() -> list:
 
 
 def fixtures(raw: dict, raw_fixtures: list) -> pd.DataFrame:
-    """Every fixture this season: FPL gameweek (blank if not scheduled yet), kick-off and the two clubs."""
+    """Every fixture this season: FPL gameweek (blank if not scheduled yet), kick-off and the two clubs.
+
+    A game counts as finished at the final whistle (finished_provisional). FPL only sets
+    finished once the bonus points are confirmed, which can take days.
+    """
     team_names = {t["id"]: teams.canonical(t["name"]) for t in raw["teams"]}
     rows = [{"gameweek": f.get("event"), "kickoff": f.get("kickoff_time"),
              "home_team": team_names[f["team_h"]], "away_team": team_names[f["team_a"]],
-             "finished": bool(f.get("finished"))} for f in raw_fixtures]
+             "finished": bool(f.get("finished") or f.get("finished_provisional"))} for f in raw_fixtures]
     return pd.DataFrame(rows, columns=["gameweek", "kickoff", "home_team", "away_team", "finished"])
 
 
