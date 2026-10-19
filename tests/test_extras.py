@@ -45,6 +45,10 @@ def test_fpl_fixtures_and_strip():
            {"event": None, "kickoff_time": None, "team_h": 2, "team_a": 1, "finished": False}]
     f = fpl.fixtures(FPL_RAW, raw)
     assert list(f.home_team) == ["Arsenal", "Man United"]
+    # Played but bonus points not confirmed yet: still finished as far as we're concerned.
+    played = [{"event": 7, "kickoff_time": "2026-10-17T11:30:00Z", "team_h": 1, "team_a": 2,
+               "finished": False, "finished_provisional": True}]
+    assert fpl.fixtures(FPL_RAW, played).finished.tolist() == [True]
     m = synthetic_matches()
     ratings = model.fit(m)
     fixtures = pd.DataFrame([{"gameweek": 9, "home_team": "Strong", "away_team": "Weak", "finished": False},
