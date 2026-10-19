@@ -2,18 +2,18 @@ team,player,position,status,chance_next_round,news,minutes,starts,goals,assists,
 Arsenal,Raya,GK,a,,,630,7,0,0,0.01
 Arsenal,Arrizabalaga,GK,a,,,0,0,0,0,0.0
 Arsenal,Meslier,GK,a,,,0,0,0,0,0.0
-Arsenal,Gabriel,DEF,a,,,630,7,0,0,1.1
-Arsenal,J.Timber,DEF,a,100.0,,155,1,0,0,0.17
+Arsenal,Gabriel,DEF,a,,,630,7,0,0,1.16
+Arsenal,J.Timber,DEF,a,100.0,,155,1,0,0,0.15
 Arsenal,Saliba,DEF,i,0.0,Back injury - Unknown return date,0,0,0,0,0.0
 Arsenal,Lewis-Skelly,MID,a,,,333,5,0,0,0.76
-Arsenal,Calafiori,DEF,a,,,587,7,1,2,2.02
+Arsenal,Calafiori,DEF,a,,,587,7,1,2,2.2
 Arsenal,Hincapie,DEF,i,0.0,Ankle injury - Expected back 24 Oct,40,0,0,0,0.0
 Arsenal,White,DEF,a,100.0,,442,6,0,2,0.65
 Arsenal,Mosquera,DEF,a,100.0,,168,2,0,0,0.01
-Arsenal,Saka,MID,a,,,596,7,3,0,4.82
-Arsenal,Rice,MID,a,100.0,,591,7,0,4,1.47
+Arsenal,Saka,MID,a,,,596,7,3,0,4.83
+Arsenal,Rice,MID,a,100.0,,591,7,0,4,1.44
 Arsenal,Eze,MID,a,,,130,1,0,0,0.14
-Arsenal,Ødegaard,MID,a,,,556,7,2,0,3.46
+Arsenal,Ødegaard,MID,a,,,556,7,2,0,3.5
 Arsenal,Madueke,MID,a,,,158,1,1,0,0.89
 Arsenal,Merino,MID,a,,,106,0,0,0,0.39
 Arsenal,Martinelli,MID,u,0.0,Has joined Al Hilal permanently,0,0,0,0,0.0
@@ -22,8 +22,8 @@ Arsenal,Dowman,MID,a,100.0,,9,0,0,0,0.08
 Arsenal,Nwaneri,MID,u,0.0,Has joined Borussia Dortmund on loan for the rest of the season,0,0,0,0,0.0
 Arsenal,Fábio Vieira,MID,u,0.0,Has joined Hamburger SV permanently,0,0,0,0,0.0
 Arsenal,Nelson,MID,u,0.0,has departed the club as a free agent.,0,0,0,0,0.0
-Arsenal,Gyökeres,FWD,a,,,80,0,0,0,0.51
-Arsenal,Havertz,FWD,a,100.0,,564,7,2,0,2.51
+Arsenal,Gyökeres,FWD,a,,,80,0,0,0,0.5
+Arsenal,Havertz,FWD,a,100.0,,564,7,2,0,2.56
 Arsenal,G.Jesus,FWD,u,0.0,Has joined FC Barcelona permanently,0,0,0,0,0.0
 Arsenal,Konsa,DEF,a,100.0,,461,5,0,0,0.26
 Arsenal,Bruno G.,MID,a,100.0,,215,2,2,0,0.44
@@ -407,7 +407,7 @@ Leeds,Gudmundsson,DEF,a,100.0,,432,5,0,1,0.32
 Leeds,Justin,DEF,a,,,618,7,1,0,0.92
 Leeds,Bornauw,DEF,u,0.0,Has joined Hamburg SV on loan for the rest of the season,0,0,0,0,0.0
 Leeds,Muharemović,DEF,a,,,630,7,0,2,0.76
-Leeds,Stach,MID,a,,,627,7,1,0,1.92
+Leeds,Stach,MID,a,,,627,7,1,0,1.89
 Leeds,Okafor,MID,a,,,442,6,1,0,0.54
 Leeds,Aaronson,MID,a,,,213,2,0,0,0.03
 Leeds,Ampadu,MID,a,,,630,7,0,1,0.45
@@ -509,19 +509,19 @@ Man United,Dorgu,MID,i,0.0,Hamstring injury - Expected back 25 Oct,171,2,0,1,0.8
 Man United,De Ligt,DEF,a,100.0,,0,0,0,0,0.0
 Man United,Dalot,DEF,a,,,467,5,0,0,0.56
 Man United,Maguire,DEF,a,,,630,7,0,1,0.79
-Man United,Martinez,DEF,d,75.0,Thigh injury - 75% chance of playing,495,6,0,0,0.42
+Man United,Martinez,DEF,d,75.0,Thigh injury - 75% chance of playing,495,6,0,0,0.4
 Man United,Yoro,DEF,a,,,170,2,0,0,0.05
 Man United,Heaven,DEF,a,,,91,1,0,0,0.16
 Man United,Mazraoui,DEF,a,100.0,,142,1,0,0,0.28
 Man United,Shaw,DEF,d,75.0,Unspecified injury - 75% chance of playing,425,5,0,1,0.62
 Man United,Amass,DEF,a,,,0,0,0,0,0.0
 Man United,Fredricson,DEF,u,0.0,Has joined Lausanne-Sport permanently,0,0,0,0,0.0
-Man United,B.Fernandes,MID,a,,,630,7,3,1,4.15
-Man United,Mbeumo,MID,a,,,630,7,4,1,4.84
-Man United,Cunha,MID,a,,,503,6,1,3,1.76
+Man United,B.Fernandes,MID,a,,,630,7,3,1,4.16
+Man United,Mbeumo,MID,a,,,630,7,4,1,4.86
+Man United,Cunha,MID,a,,,503,6,1,3,1.77
 Man United,Rashford,MID,a,100.0,,352,4,0,0,1.21
-Man United,Mount,MID,a,100.0,,26,0,0,0,0.19
-Man United,Amad,MID,a,100.0,,148,2,0,0,0.18
+Man United,Mount,MID,a,100.0,,26,0,0,0,0.18
+Man United,Amad,MID,a,100.0,,148,2,0,0,0.19
 Man United,Mainoo,MID,d,75.0,Unspecified injury - 75% chance of playing,444,5,0,1,0.85
 Man United,Ugarte,MID,i,0.0,Knee injury - Unknown return date,0,0,0,0,0.0
 Man United,J.Fletcher,MID,a,,,0,0,0,0,0.0
@@ -566,14 +566,14 @@ Newcastle,Pivas,DEF,a,,,0,0,0,0,0.0
 Newcastle,Salia,FWD,a,,,0,0,0,0,0.0
 Newcastle,Mills,MID,a,,,0,0,0,0,0.0
 Newcastle,Thompson,MID,a,,,0,0,0,0,0.0
-Nott'm Forest,Delap,FWD,a,,,438,5,1,0,2.54
+Nott'm Forest,Delap,FWD,a,,,438,5,1,0,2.65
 Nott'm Forest,Muñoz,DEF,a,,,437,5,0,0,1.44
 Nott'm Forest,Sels,GK,a,,,630,7,0,0,0.02
 Nott'm Forest,John,GK,a,,,0,0,0,0,0.0
 Nott'm Forest,N.Williams,DEF,a,100.0,,630,7,0,1,1.56
 Nott'm Forest,Morato,DEF,u,0.0,Has joined West Ham on loan for the rest of the season,0,0,0,0,0.0
 Nott'm Forest,Milenković,DEF,a,100.0,,270,3,0,0,0.14
-Nott'm Forest,Murillo,DEF,a,100.0,,629,7,0,1,1.32
+Nott'm Forest,Murillo,DEF,a,100.0,,629,7,0,1,1.48
 Nott'm Forest,Aina,DEF,a,,,388,5,0,0,0.6
 Nott'm Forest,Jair Cunha,DEF,a,100.0,,444,5,0,0,0.08
 Nott'm Forest,Savona,DEF,i,0.0,Knee injury - Unknown return date,0,0,0,0,0.0
@@ -583,17 +583,17 @@ Nott'm Forest,Netz,DEF,a,,,27,0,0,0,0.02
 Nott'm Forest,Bindon,DEF,u,0.0,Has joined Charlton Athletic on loan for the rest of the season,0,0,0,0,0.0
 Nott'm Forest,Gibbs-White,MID,d,75.0,Muscular injury - 75% chance of playing,540,6,1,2,3.52
 Nott'm Forest,Hudson-Odoi,MID,a,100.0,,24,0,0,0,0.08
-Nott'm Forest,Ndoye,MID,a,,,459,7,2,0,2.99
+Nott'm Forest,Ndoye,MID,a,,,459,7,2,0,3.04
 Nott'm Forest,Hutchinson,MID,u,0.0,Has joined AC Milan on loan for the rest of the season,0,0,0,0,0.0
 Nott'm Forest,Bakwa,MID,u,0.0,Has joined Lille on loan for the rest of the season,0,0,0,0,0.0
-Nott'm Forest,McAtee,MID,a,,,590,7,0,0,1.63
+Nott'm Forest,McAtee,MID,a,,,590,7,0,0,1.62
 Nott'm Forest,Dominguez,MID,a,,,74,1,0,0,0.01
 Nott'm Forest,I.Sangaré,MID,a,100.0,,145,1,0,0,0.13
 Nott'm Forest,Yates,MID,a,100.0,,0,0,0,0,0.0
 Nott'm Forest,Wood,FWD,a,,,85,0,0,0,0.64
 Nott'm Forest,Igor Jesus,FWD,i,0.0,Calf injury - Unknown return date,257,2,1,0,1.33
 Nott'm Forest,Kalimuendo,FWD,a,,,25,0,0,0,0.0
-Nott'm Forest,Schlager,MID,a,,,531,6,0,0,0.58
+Nott'm Forest,Schlager,MID,a,,,531,6,0,0,0.57
 Nott'm Forest,Diomande,DEF,a,,,343,4,0,0,0.25
 Nott'm Forest,Benda,GK,a,,,0,0,0,0,0.0
 Tottenham,Van Hecke,DEF,a,100.0,,540,6,1,0,1.14
@@ -625,7 +625,7 @@ Tottenham,Bentancur,MID,s,0.0,Suspended until 7 Nov,381,4,0,0,0.14
 Tottenham,Odobert,MID,i,0.0,Knee injury - Unknown return date,0,0,0,0,0.0
 Tottenham,P.M.Sarr,MID,u,0.0,Has joined Juventus on loan for the rest of the season,0,0,0,0,0.0
 Tottenham,Gallagher,MID,a,,,207,3,1,0,0.99
-Tottenham,Bergvall,MID,i,0.0,Knee injury - Expected back 7 Nov,143,2,0,0,0.41
+Tottenham,Bergvall,MID,i,0.0,Knee injury - Expected back 31 Oct,143,2,0,0,0.41
 Tottenham,Kulusevski,MID,d,75.0,Knee injury - 75% chance of playing,0,0,0,0,0.0
 Tottenham,Gray,MID,a,,,397,4,0,0,0.32
 Tottenham,Moore,MID,u,0.0,Has joined FC Köln on loan for the rest of the season,89,1,0,0,0.42
@@ -660,7 +660,7 @@ Sunderland,Rigg,MID,a,,,81,1,0,0,0.0
 Sunderland,Talbi,MID,a,,,31,0,0,0,0.0
 Sunderland,Jocelin.T,MID,a,,,17,0,0,0,0.03
 Sunderland,N.Angulo,MID,a,,,385,6,1,1,0.73
-Sunderland,Brobbey,FWD,a,100.0,,399,5,3,0,3.05
+Sunderland,Brobbey,FWD,d,50.0,Hamstring injury - 50% chance of playing,399,5,3,0,3.05
 Sunderland,Isidor,FWD,d,50.0,Knock - 50% chance of playing,207,1,1,1,1.68
 Sunderland,Methalie,DEF,a,100.0,,107,1,0,0,0.04
 Sunderland,Ahoka,MID,a,,,25,0,0,0,0.0
