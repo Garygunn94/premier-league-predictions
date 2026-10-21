@@ -1,11 +1,11 @@
 fixture_id,kickoff,round,status,venue,home_team,away_team,home_goals,away_goals,home_logo,away_logo
-64,2026-10-17 11:30:00+00:00,Regular Season - 7,FT,,Everton,Chelsea,0,2,https://resources.premierleague.com/premierleague/badges/100/t11.png,https://resources.premierleague.com/premierleague/badges/100/t8.png
-62,2026-10-17 14:00:00+00:00,Regular Season - 7,FT,,Brentford,Liverpool,1,2,https://resources.premierleague.com/premierleague/badges/100/t94.png,https://resources.premierleague.com/premierleague/badges/100/t14.png
-65,2026-10-17 14:00:00+00:00,Regular Season - 7,FT,,Fulham,Hull,1,0,https://resources.premierleague.com/premierleague/badges/100/t54.png,https://resources.premierleague.com/premierleague/badges/100/t88.png
-67,2026-10-17 14:00:00+00:00,Regular Season - 7,FT,,Man City,Ipswich,3,2,https://resources.premierleague.com/premierleague/badges/100/t43.png,https://resources.premierleague.com/premierleague/badges/100/t40.png
-68,2026-10-17 16:30:00+00:00,Regular Season - 7,FT,,Newcastle,Aston Villa,0,1,https://resources.premierleague.com/premierleague/badges/100/t4.png,https://resources.premierleague.com/premierleague/badges/100/t7.png
-61,2026-10-18 13:00:00+00:00,Regular Season - 7,FT,,Bournemouth,Sunderland,2,0,https://resources.premierleague.com/premierleague/badges/100/t91.png,https://resources.premierleague.com/premierleague/badges/100/t56.png
-63,2026-10-18 13:00:00+00:00,Regular Season - 7,FT,,Brighton,Crystal Palace,5,0,https://resources.premierleague.com/premierleague/badges/100/t36.png,https://resources.premierleague.com/premierleague/badges/100/t31.png
-66,2026-10-18 13:00:00+00:00,Regular Season - 7,FT,,Leeds,Man United,1,1,https://resources.premierleague.com/premierleague/badges/100/t2.png,https://resources.premierleague.com/premierleague/badges/100/t1.png
-69,2026-10-18 15:30:00+00:00,Regular Season - 7,FT,,Nott'm Forest,Arsenal,0,1,https://resources.premierleague.com/premierleague/badges/100/t17.png,https://resources.premierleague.com/premierleague/badges/100/t3.png
-70,2026-10-19 19:00:00+00:00,Regular Season - 7,FT,,Tottenham,Coventry,3,1,https://resources.premierleague.com/premierleague/badges/100/t6.png,https://resources.premierleague.com/premierleague/badges/100/t9.png
+77,2026-10-23 19:00:00+00:00,Regular Season - 8,NS,,Ipswich,Nott'm Forest,,,https://resources.premierleague.com/premierleague/badges/100/t40.png,https://resources.premierleague.com/premierleague/badges/100/t17.png
+72,2026-10-24 11:30:00+00:00,Regular Season - 8,NS,,Aston Villa,Man City,,,https://resources.premierleague.com/premierleague/badges/100/t7.png,https://resources.premierleague.com/premierleague/badges/100/t43.png
+71,2026-10-24 14:00:00+00:00,Regular Season - 8,NS,,Arsenal,Everton,,,https://resources.premierleague.com/premierleague/badges/100/t3.png,https://resources.premierleague.com/premierleague/badges/100/t11.png
+74,2026-10-24 14:00:00+00:00,Regular Season - 8,NS,,Coventry,Fulham,,,https://resources.premierleague.com/premierleague/badges/100/t9.png,https://resources.premierleague.com/premierleague/badges/100/t54.png
+73,2026-10-24 16:30:00+00:00,Regular Season - 8,NS,,Chelsea,Tottenham,,,https://resources.premierleague.com/premierleague/badges/100/t8.png,https://resources.premierleague.com/premierleague/badges/100/t6.png
+75,2026-10-25 14:00:00+00:00,Regular Season - 8,NS,,Crystal Palace,Newcastle,,,https://resources.premierleague.com/premierleague/badges/100/t31.png,https://resources.premierleague.com/premierleague/badges/100/t4.png
+76,2026-10-25 14:00:00+00:00,Regular Season - 8,NS,,Hull,Brentford,,,https://resources.premierleague.com/premierleague/badges/100/t88.png,https://resources.premierleague.com/premierleague/badges/100/t94.png
+78,2026-10-25 14:00:00+00:00,Regular Season - 8,NS,,Liverpool,Brighton,,,https://resources.premierleague.com/premierleague/badges/100/t14.png,https://resources.premierleague.com/premierleague/badges/100/t36.png
+79,2026-10-25 14:00:00+00:00,Regular Season - 8,NS,,Man United,Bournemouth,,,https://resources.premierleague.com/premierleague/badges/100/t1.png,https://resources.premierleague.com/premierleague/badges/100/t91.png
+80,2026-10-25 16:30:00+00:00,Regular Season - 8,NS,,Sunderland,Leeds,,,https://resources.premierleague.com/premierleague/badges/100/t56.png,https://resources.premierleague.com/premierleague/badges/100/t2.png

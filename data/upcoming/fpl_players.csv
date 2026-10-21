@@ -7,7 +7,7 @@ Arsenal,J.Timber,DEF,a,100.0,,155,1,0,0,0.15
 Arsenal,Saliba,DEF,i,0.0,Back injury - Unknown return date,0,0,0,0,0.0
 Arsenal,Lewis-Skelly,MID,a,,,333,5,0,0,0.76
 Arsenal,Calafiori,DEF,a,,,587,7,1,2,2.2
-Arsenal,Hincapie,DEF,i,0.0,Ankle injury - Expected back 24 Oct,40,0,0,0,0.0
+Arsenal,Hincapie,DEF,d,75.0,Ankle injury - 75% chance of playing,40,0,0,0,0.0
 Arsenal,White,DEF,a,100.0,,442,6,0,2,0.65
 Arsenal,Mosquera,DEF,a,100.0,,168,2,0,0,0.01
 Arsenal,Saka,MID,a,,,596,7,3,0,4.83
@@ -34,7 +34,7 @@ Aston Villa,Cash,DEF,a,100.0,,476,5,0,0,0.27
 Aston Villa,Mings,DEF,a,,,441,4,0,0,0.23
 Aston Villa,Pau,DEF,a,100.0,,200,3,0,0,0.01
 Aston Villa,Bogarde,MID,a,,,16,0,0,0,0.0
-Aston Villa,Maatsen,DEF,i,0.0,Ankle injury - Unknown return date,335,4,0,0,0.73
+Aston Villa,Maatsen,DEF,d,75.0,Ankle injury - 75% chance of playing,335,4,0,0,0.73
 Aston Villa,Lindelöf,DEF,a,,,630,7,0,0,0.61
 Aston Villa,A.García,DEF,a,,,0,0,0,0,0.0
 Aston Villa,Nedeljkovic,DEF,u,0.0,Has joined Rangers on loan for the rest of the season,0,0,0,0,0.0
@@ -55,11 +55,11 @@ Aston Villa,Abraham,FWD,a,100.0,,71,0,0,0,0.0
 Aston Villa,Garnacho,MID,a,,,31,0,0,0,0.0
 Aston Villa,N.Jackson,FWD,a,,,466,6,2,0,2.31
 Aston Villa,Madjo,FWD,a,100.0,,0,0,0,0,0.0
-Aston Villa,Ruggeri,DEF,i,0.0,Hamstring injury - Unknown return date,158,2,0,0,0.05
+Aston Villa,Ruggeri,DEF,i,0.0,Hamstring injury - Expected back 2 Jan,158,2,0,0,0.05
 Aston Villa,Suzuki,GK,a,,,540,6,0,0,0.01
 Aston Villa,Rowe,DEF,a,,,0,0,0,0,0.0
 Aston Villa,Lynch,MID,u,0.0,Has joined Oxford United on loan until January,0,0,0,0,0.0
-Aston Villa,Wan-Bissaka,DEF,d,75.0,Hamstring injury - 75% chance of playing,273,3,0,0,0.1
+Aston Villa,Wan-Bissaka,DEF,i,0.0,Hamstring injury - Expected back 21 Nov,273,3,0,0,0.1
 Aston Villa,Goretzka,MID,a,100.0,,18,0,0,0,0.08
 Aston Villa,Harwood-Bellis,DEF,a,,,0,0,0,0,0.0
 Aston Villa,Mbaye,MID,a,,,77,0,0,0,0.59
@@ -355,10 +355,10 @@ Hull,Hjertø-Dahl,MID,a,,,8,0,0,0,0.0
 Hull,Stroud,MID,a,,,275,4,0,1,0.17
 Hull,Herrington,DEF,a,,,242,2,0,0,0.06
 Hull,Mendy,DEF,i,0.0,Groin injury - Expected back 31 Oct,339,5,1,0,0.62
-Hull,Gourna-Douath,MID,i,0.0,Calf injury - Expected back 25 Oct,138,1,0,0,0.06
-Hull,Cho,MID,i,0.0,Unspecified injury - Expected back 25 Oct,72,0,1,0,1.15
+Hull,Gourna-Douath,MID,d,50.0,Calf injury - 50% chance of playing,138,1,0,0,0.06
+Hull,Cho,MID,d,50.0,Unspecified injury - 50% chance of playing,72,0,1,0,1.15
 Hull,Ansah,FWD,i,0.0,Back injury - Unknown return date,0,0,0,0,0.0
-Hull,Vaz,FWD,d,50.0,Achilles injury - 50% chance of playing,46,0,0,0,0.01
+Hull,Vaz,FWD,d,75.0,Achilles injury - 75% chance of playing,46,0,0,0,0.01
 Hull,Norton-Cuffy,DEF,a,100.0,,101,1,0,0,0.05
 Hull,Thomas,MID,a,,,271,3,0,1,0.86
 Hull,Mouzakitis,MID,a,,,0,0,0,0,0.0
@@ -456,7 +456,7 @@ Liverpool,C.Jones,MID,u,0.0,Has joined Internazionale permanently,0,0,0,0,0.0
 Liverpool,Endo,MID,a,100.0,,0,0,0,0,0.0
 Liverpool,Nyoni,MID,a,,,120,0,0,0,0.16
 Liverpool,Bajcetic,MID,u,0.0,Has joined Celta Vigo permanently,0,0,0,0,0.0
-Liverpool,Munoz,MID,a,,,425,5,2,1,1.1
+Liverpool,Munoz,MID,d,75.0,Knee injury - 75% chance of playing,425,5,2,1,1.1
 Liverpool,McConnell,MID,a,,,0,0,0,0,0.0
 Liverpool,Isak,FWD,a,100.0,,491,6,5,0,3.97
 Liverpool,Ekitiké,FWD,i,0.0,Achilles injury - Unknown return date,0,0,0,0,0.0
@@ -490,7 +490,7 @@ Man City,Echeverri,MID,u,0.0,Has joined Benfica on loan for the rest of the seas
 Man City,Phillips,MID,u,0.0,Has joined Sheffield United on loan for the rest of the season,0,0,0,0,0.0
 Man City,Mukasa,MID,u,0.0,has joined West Ham on loan for the rest of the seaon.,0,0,0,0,0.0
 Man City,Monga,MID,u,0.0,Has joined Swansea City on loan for the rest of the season,0,0,0,0,0.0
-Man City,Haaland,FWD,d,75.0,Unspecified injury - 75% chance of playing,619,7,8,0,6.46
+Man City,Haaland,FWD,a,100.0,,619,7,8,0,6.46
 Man City,Anderson,MID,a,100.0,,516,6,0,1,0.95
 Man City,Rulli,GK,a,,,0,0,0,0,0.0
 Man City,Bouaddi,MID,a,,,122,1,0,0,0.19
@@ -511,18 +511,18 @@ Man United,Dalot,DEF,a,,,467,5,0,0,0.56
 Man United,Maguire,DEF,a,,,630,7,0,1,0.79
 Man United,Martinez,DEF,d,75.0,Thigh injury - 75% chance of playing,495,6,0,0,0.4
 Man United,Yoro,DEF,a,,,170,2,0,0,0.05
-Man United,Heaven,DEF,a,,,91,1,0,0,0.16
+Man United,Heaven,DEF,d,75.0,Illness - 75% chance of playing,91,1,0,0,0.16
 Man United,Mazraoui,DEF,a,100.0,,142,1,0,0,0.28
-Man United,Shaw,DEF,d,75.0,Unspecified injury - 75% chance of playing,425,5,0,1,0.62
+Man United,Shaw,DEF,i,0.0,Unspecified injury - Unknown return date,425,5,0,1,0.62
 Man United,Amass,DEF,a,,,0,0,0,0,0.0
 Man United,Fredricson,DEF,u,0.0,Has joined Lausanne-Sport permanently,0,0,0,0,0.0
 Man United,B.Fernandes,MID,a,,,630,7,3,1,4.16
 Man United,Mbeumo,MID,a,,,630,7,4,1,4.86
 Man United,Cunha,MID,a,,,503,6,1,3,1.77
-Man United,Rashford,MID,a,100.0,,352,4,0,0,1.21
+Man United,Rashford,MID,d,75.0,Hip injury - 75% chance of playing,352,4,0,0,1.21
 Man United,Mount,MID,a,100.0,,26,0,0,0,0.18
 Man United,Amad,MID,a,100.0,,148,2,0,0,0.19
-Man United,Mainoo,MID,d,75.0,Unspecified injury - 75% chance of playing,444,5,0,1,0.85
+Man United,Mainoo,MID,i,0.0,Unspecified injury - Expected back 8 Nov,444,5,0,1,0.85
 Man United,Ugarte,MID,i,0.0,Knee injury - Unknown return date,0,0,0,0,0.0
 Man United,J.Fletcher,MID,a,,,0,0,0,0,0.0
 Man United,Lacey,MID,a,,,10,0,0,0,0.0
