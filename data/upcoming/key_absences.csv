@@ -1,11 +1,12 @@
 team,player,position,status,chance_next_round,news,minutes,starts,goals,assists,expected_goal_involvements
+Arsenal,Saka,MID,d,50.0,Thigh injury - 50% chance of playing,596,7,3,0,4.83
 Arsenal,Tzolis,MID,i,0.0,Hamstring injury - Expected back 1 Nov,362,5,0,2,0.74
-Aston Villa,Maatsen,DEF,d,75.0,Ankle injury - 75% chance of playing,335,4,0,0,0.73
-Bournemouth,Scott,MID,i,0.0,Thigh injury - Unknown return date,446,5,1,2,1.06
+Bournemouth,Scott,MID,i,0.0,Thigh injury - Expected back 8 Nov,446,5,1,2,1.06
 Brentford,Janelt,MID,s,0.0,Suspended until 31 Oct,630,7,2,0,1.14
 Brentford,Yarmoliuk,MID,s,0.0,Suspended until 8 Nov,334,4,1,1,0.51
 Chelsea,Martinez,GK,i,0.0,Head injury - Unknown return date,524,6,0,0,0.01
 Coventry,Amenda,DEF,i,0.0,Calf injury - Unknown return date,360,4,0,0,0.41
+Crystal Palace,Timber,MID,d,75.0,Hamstring injury - 75% chance of playing,388,5,0,1,0.52
 Hull,Mendy,DEF,i,0.0,Groin injury - Expected back 31 Oct,339,5,1,0,0.62
 Ipswich,Lukić,MID,d,75.0,Groin injury - 75% chance of playing,490,6,0,1,0.48
 Liverpool,Szoboszlai,MID,i,0.0,Hamstring injury - Unknown return date,471,6,1,0,2.58
@@ -16,7 +17,6 @@ Man United,Rashford,MID,d,75.0,Hip injury - 75% chance of playing,352,4,0,0,1.21
 Man United,Mainoo,MID,i,0.0,Unspecified injury - Expected back 8 Nov,444,5,0,1,0.85
 Man United,Shaw,DEF,i,0.0,Unspecified injury - Unknown return date,425,5,0,1,0.62
 Man United,Martinez,DEF,d,75.0,Thigh injury - 75% chance of playing,495,6,0,0,0.4
-Nott'm Forest,Gibbs-White,MID,d,75.0,Muscular injury - 75% chance of playing,540,6,1,2,3.52
 Sunderland,Brobbey,FWD,d,75.0,Hamstring injury - 75% chance of playing,399,5,3,0,3.05
 Sunderland,Meunier,DEF,d,75.0,Groin injury - 75% chance of playing,429,6,0,1,1.07
 Sunderland,Danso,DEF,s,0.0,Suspended until 31 Oct,376,5,0,0,0.5
