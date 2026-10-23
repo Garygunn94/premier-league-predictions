@@ -316,7 +316,7 @@ Fulham,Palacios,MID,a,,,231,3,1,0,1.01
 Fulham,Charles,MID,a,,,463,5,0,0,0.6
 Fulham,De Fougerolles,DEF,u,0.0,has joined  Real Salt Lake on loan for the rest of the seaon.,0,0,0,0,0.0
 Fulham,Zepa,MID,a,,,0,0,0,0,0.0
-Fulham,Larsson,MID,d,25.0,Groin injury - 25% chance of playing,40,0,0,0,0.42
+Fulham,Larsson,MID,d,75.0,Groin injury - 75% chance of playing,40,0,0,0,0.42
 Fulham,Ángel,MID,a,,,19,0,0,0,0.0
 Fulham,Affengruber,DEF,a,,,360,4,0,0,0.12
 Hull,Iroegbunam,MID,a,100.0,,140,0,0,0,0.15
@@ -363,7 +363,7 @@ Hull,Norton-Cuffy,DEF,a,100.0,,101,1,0,0,0.05
 Hull,Thomas,MID,a,,,271,3,0,1,0.86
 Hull,Mouzakitis,MID,a,,,0,0,0,0,0.0
 Ipswich,Diop,DEF,a,,,630,7,0,0,0.27
-Ipswich,Lukić,MID,d,75.0,Groin injury - 75% chance of playing,490,6,0,1,0.48
+Ipswich,Lukić,MID,i,0.0,Groin injury - Expected back 23 Oct,490,6,0,1,0.48
 Ipswich,Walton,GK,a,,,270,3,0,0,0.02
 Ipswich,Palmer,GK,a,,,0,0,0,0,0.0
 Ipswich,Button,GK,a,,,0,0,0,0,0.0
