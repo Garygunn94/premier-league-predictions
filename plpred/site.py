@@ -407,7 +407,8 @@ def round_results(weeks: list[dict], matches: pd.DataFrame, data: Path) -> dict 
                 "live_n": len(live), "live_right": sum(r["right"] for r in live),
                 "late_n": len(late), "late_right": sum(r["right"] for r in late),
                 "pending": [v for v in w["views"] if v["slug"] not in done], "complete": len(rows) == len(w["views"]),
-                "post_day": (last + pd.Timedelta(days=1)).strftime("%A")}
+                "post_day": (last + pd.Timedelta(days=1)).strftime("%A"),
+                "post_date": str((last + pd.Timedelta(days=1)).date())}
     return None
 
 

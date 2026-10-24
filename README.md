@@ -26,9 +26,11 @@ so the model weights the current season most heavily. The window is set by
 The **Update data** workflow refreshes the data every morning at 06:00 UTC and commits it,
 so every week's inputs stay in the history, and the Publish site workflow rebuilds the site
 straight after. Results, the record, the tables and the projections are therefore never more
-than a day old. The calls are different: they are made only by the Thursday run and then
-stay as published. A run by hand from the Actions tab refreshes the data only, unless
-**predict** is ticked (needed only if Thursday's run failed, or for a midweek round).
+than a day old. The calls are different: they are made by the Thursday run and then
+stay as published. The one exception is a round that starts before the next Thursday (a
+midweek round, or one after a failed Thursday run): if none of its games has a call, the
+morning run the day before its first game calls it. A run by hand from the Actions tab
+refreshes the data only, unless **predict** is ticked.
 
 API-Football needs a key saved as the secret `API_FOOTBALL_KEY` in the `prod`
 environment (Settings > Environments > prod). Only the scheduled data job uses that
@@ -150,10 +152,17 @@ the kit out in `social/ready/` as one numbered folder per post: its images in sl
 order, `instagram.txt`, `x.txt` (posts and first replies labelled) and `how.txt`.
 
 The kit can also arrive by email, one message per post with both captions in the body and
-the images attached, so a post can be saved and posted from a phone. It is sent after the
-scheduled Thursday update that makes the week's calls (not after the other daily
-refreshes), or on a manual Publish site run with **Email the posting kit** ticked, for
-example after a manual Update data run with **predict** ticked. It needs two repository secrets: `KIT_EMAIL`, a Gmail address that sends the kit
+the images attached, so a post can be saved and posted from a phone. It comes in two
+editions, each on its own day (UK time):
+
+- **Predictions**, the day before the round's first game: the Superbru picks, the round
+  thread, the FPL post, the bold call and every game's carousel.
+- **Results**, the day after the round's last game: the results carousel and scorecard,
+  what we got wrong, each game's verdict and the season projection.
+
+After each scheduled morning update, Publish site sends whichever edition is due that day,
+if any. On a manual Publish site run, pick an edition (or both) under **Email the posting
+kit**, for example after a manual Update data run with **predict** ticked. It needs two repository secrets: `KIT_EMAIL`, a Gmail address that sends the kit
 to itself, and `KIT_EMAIL_PASSWORD`, an [app password](https://myaccount.google.com/apppasswords)
 for it (Google asks for 2-Step Verification first). Set the `KIT_EMAIL_TO` variable to send
 it somewhere else. Without the secrets nothing is emailed.

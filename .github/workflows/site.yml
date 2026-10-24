@@ -10,8 +10,9 @@ on:
     inputs:
       email_kit:
         description: "Email the posting kit to KIT_EMAIL, one message per post"
-        type: boolean
-        default: false
+        type: choice
+        options: ["no", predictions, results, both]
+        default: "no"
 
 permissions:
   contents: read
@@ -46,24 +47,20 @@ jobs:
           python -m playwright install --with-deps chromium
           python -m plpred.social --png site/social
       # The posting kit also goes by email, one message per post, from and to the KIT_EMAIL Gmail
-      # account (KIT_EMAIL_PASSWORD is a Gmail app password). It is sent only after the scheduled
-      # Thursday update, the one that makes the week's calls, not after the other daily refreshes,
-      # or on a manual run with "Email the posting kit" ticked (after a manual predict run, say).
-      # Never on a push to main.
+      # account (KIT_EMAIL_PASSWORD is a Gmail app password), in two editions: the predictions the
+      # day before a round's first game and the results the day after its last. After each
+      # scheduled daily update the edition due that day (if any) is sent; a manual run sends the
+      # edition picked under "Email the posting kit". Never on a push to main.
       - name: Email the posting kit
         if: >-
           (github.event_name == 'workflow_run' && github.event.workflow_run.event == 'schedule')
-          || (github.event_name == 'workflow_dispatch' && inputs.email_kit)
+          || (github.event_name == 'workflow_dispatch' && inputs.email_kit != 'no')
         env:
           KIT_EMAIL: ${{ secrets.KIT_EMAIL }}
           KIT_EMAIL_PASSWORD: ${{ secrets.KIT_EMAIL_PASSWORD }}
           KIT_EMAIL_TO: ${{ vars.KIT_EMAIL_TO }}
-        run: |
-          if [ "${{ github.event_name }}" = workflow_run ] && [ "$(date -u +%u)" != 4 ]; then
-            echo "Not the Thursday calls run, so the kit is not emailed."
-          else
-            python -m plpred.social --email site/social
-          fi
+          EDITION: ${{ github.event_name == 'workflow_dispatch' && inputs.email_kit || 'due' }}
+        run: python -m plpred.social --email site/social --edition "$EDITION"
       # The posting kit (captions, newsletter, every card) is private. Artifacts on a public
       # repository can be downloaded by anyone signed in to GitHub, so the kit is attached to this
       # run as a zip locked with the KIT_PASSWORD repository secret, and only when that secret is
