@@ -3,11 +3,17 @@
     python -m plpred.predict                       # uses data/upcoming/fixtures.csv
     python -m plpred.predict --replay 2026-10-04   # re-predict a past week, for checking
     python -m plpred.predict --after-kickoff       # this round's games that have already started
+    python -m plpred.predict --if-due              # only if a round starts tomorrow and has no calls yet
 
 Writes data/predictions/<date of first game>.json, one entry per match. --after-kickoff is for a
 round first run late: it calls the games that have already kicked off from results before the
 round began (no team news, which would be from after them) and writes
 <date>-after-kickoff.json, with every game marked so the site never shows them as predictions.
+
+The Thursday run calls the coming round. --if-due is for the other mornings: a round that starts
+before the next Thursday (a midweek round, or one after a failed Thursday run) is called the
+morning before its first game, in time for its predictions kit. A round with any calls already
+is left alone, so frozen calls are never redone.
 """
 import argparse
 import json
@@ -16,7 +22,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from plpred import explain, model, seasons
+from plpred import explain, health, model, seasons
 
 log = logging.getLogger("plpred.predict")
 DATA = Path(__file__).resolve().parent.parent / "data"
@@ -42,6 +48,24 @@ def upcoming(data: Path, started: bool = False) -> pd.DataFrame:
     if odds_path.exists():
         fixtures = fixtures.merge(pd.read_csv(odds_path), on="fixture_id", how="left")
     return fixtures
+
+
+def due(data: Path, today) -> bool:
+    """Whether this round starts tomorrow (UK time) with no calls yet, and is the one in fixtures.csv."""
+    games = health.round_starting(health.fixture_list(data), today + pd.Timedelta(days=1))
+    if games.empty:
+        log.info("No round starts tomorrow")
+        return False
+    gameweek = int(games.gameweek.iloc[0])
+    if len(health.uncalled(games, data)) < len(games):
+        log.info("Matchweek %d already has calls, so they stay as they are", gameweek)
+        return False
+    path = data / "upcoming" / "fixtures.csv"
+    current = pd.read_csv(path)["round"] if path.exists() else pd.Series(dtype=str)
+    if not (current == f"Regular Season - {gameweek}").any():
+        log.warning("Matchweek %d starts tomorrow, but the fixtures fetched are for another round", gameweek)
+        return False
+    return True
 
 
 def replay(matches: pd.DataFrame, week_start: str) -> pd.DataFrame:
@@ -85,7 +109,11 @@ def main(argv=None) -> None:
                         help="predict the 7 days from this date using only earlier results (no team news)")
     parser.add_argument("--after-kickoff", action="store_true",
                         help="call this round's games that have already started, from results before the round")
+    parser.add_argument("--if-due", action="store_true",
+                        help="only if a round starts tomorrow and none of its games has a call yet")
     args = parser.parse_args(argv)
+    if args.if_due and not due(args.data, health.uk_date(pd.Timestamp.now(tz="UTC"))):
+        return
 
     matches = pd.read_csv(args.data / "matches.csv", parse_dates=["date"])
     if args.replay:

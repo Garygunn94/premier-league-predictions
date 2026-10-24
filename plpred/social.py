@@ -10,6 +10,12 @@ it is a separate step that the Publish site workflow runs after the build.
 
     python -m plpred.social --email site/social # email the rendered kit, one message per post
 
+The kit comes in two editions, each emailed on its own day: predictions (the round's calls,
+carousels, the bold call, FPL and the Superbru picks) the day before the round's first game, and
+results (the results carousel and scorecard, the verdicts, what we got wrong and the projection)
+the day after its last game. posts.json tags every post with its edition and gives each
+edition's date, and --edition due sends whichever is due today (UK time).
+
 After rendering, ready/ holds one numbered folder per post with its images in slide order and its
 captions as text files. The email sends the same posts from and to the KIT_EMAIL Gmail account
 (KIT_EMAIL_PASSWORD is its app password), so each post can be saved and posted from a phone.
@@ -24,6 +30,7 @@ import smtplib
 from email.message import EmailMessage
 from pathlib import Path
 
+import pandas as pd
 from jinja2 import Environment
 
 log = logging.getLogger("plpred.social")
@@ -53,6 +60,7 @@ CLUB_TAGS = {"Arsenal": "#Arsenal", "Aston Villa": "#AVFC", "Bournemouth": "#AFC
 SIZE = 1080
 X_LIMIT = 280
 X_URL_LENGTH = 23  # X counts every link as 23 characters
+EDITIONS = ("predictions", "results")
 
 
 # ---------------------------------------------------------------- captions
@@ -299,7 +307,7 @@ def superbru(ctx: dict, views: list[dict]) -> str:
             + "\n".join(lines) + "\n")
 
 
-def carousel(v: dict) -> list[dict]:
+def carousel(v: dict, day: str | None = None) -> list[dict]:
     """One game's slides: the call, how we got there, the numbers, the likely scores, us v the bookies."""
     teams = f"{v['home_team']} v {v['away_team']}"
     slides = [("call", teams), ("reasons", f"How we got to {v['our_p']}%: {teams}"),
@@ -307,11 +315,21 @@ def carousel(v: dict) -> list[dict]:
     if v["mkt"]:
         slides.append(("market", f"Us v the bookies: {teams}"))
     return [{"name": f"{kind}-{v['slug']}", "kind": kind, "g": v, "title": title,
-             "day": "Thursday" if kind == "call" else None} for kind, title in slides]
+             "day": day if kind == "call" else None} for kind, title in slides]
+
+
+def uk_time(kickoff: str) -> pd.Timestamp:
+    ko = pd.Timestamp(kickoff)
+    return ko.tz_convert("Europe/London").tz_localize(None) if ko.tzinfo else ko
 
 
 def build_kit(ctx: dict, views: list[dict], env: Environment, out: Path) -> Path:
     """Write the cards and the kit page into out (normally site/social)."""
+    # The predictions edition goes out the day before the round's first game, the results edition
+    # the day after its last.
+    start = min(uk_time(v["kickoff"]) for v in views)
+    eve = start.normalize() - pd.Timedelta(days=1)
+    calls_day, match_day = eve.strftime("%A"), start.strftime("%A")
     cards_dir = out / "cards"
     cards_dir.mkdir(parents=True, exist_ok=True)
     card = env.get_template("social_card.html")
@@ -321,35 +339,37 @@ def build_kit(ctx: dict, views: list[dict], env: Environment, out: Path) -> Path
     if res:
         cap.update(results_captions(res))
     feature = next(v for v in views if v["slug"] == cap["friday_slug"])
-    cards = [{"name": "round", "kind": "round", "title": f"Matchweek {ctx['matchweek']}: all the calls", "day": "Thursday"}]
-    carousels = {v["slug"]: carousel(v) for v in views}
+    cards = [{"name": "round", "kind": "round", "title": f"Matchweek {ctx['matchweek']}: all the calls", "day": calls_day}]
+    carousels = {v["slug"]: carousel(v, calls_day) for v in views}
     for v in views:
         cards += carousels[v["slug"]]
     if ctx["record"]:
-        cards.append({"name": "scorecard", "kind": "scorecard", "day": "Monday", "title": "Last week's scorecard"})
+        cards.append({"name": "scorecard", "kind": "scorecard", "day": res["post_day"] if res else "Monday",
+                      "title": "Last week's scorecard"})
     if res:
         cards += [{"name": "results", "kind": "results", "day": res["post_day"], "title": f"Matchweek {res['matchweek']}: the results"},
                   {"name": "results-list", "kind": "results-list", "day": res["post_day"], "title": "Every call against the result"}]
         cards += [{"name": f"verdict-{r['g']['slug']}", "kind": "verdict", "g": r["g"], "r": r, "day": res["post_day"],
                    "title": f"The verdict: {r['g']['home_team']} v {r['g']['away_team']}"} for r in res["rows"]]
     if "miss_x" in cap:
-        cards.append({"name": "miss", "kind": "miss", "day": "Monday", "title": "What we got wrong"})
+        cards.append({"name": "miss", "kind": "miss", "day": res["post_day"] if res else "Monday",
+                      "title": "What we got wrong"})
     if "projection_x" in cap:
         cards.append({"name": "projection", "kind": "projection", "day": "Wednesday", "title": "How the season ends"})
     if "fpl_x" in cap:
-        cards.append({"name": "fpl", "kind": "fpl", "day": "Thursday", "title": "FPL: clean-sheet chances"})
+        cards.append({"name": "fpl", "kind": "fpl", "day": calls_day, "title": "FPL: clean-sheet chances"})
     # Not posted: the default preview image for links to the site.
     cards.append({"name": "brand", "kind": "brand", "day": None, "title": BRAND})
     for c in cards:
         (cards_dir / f"{c['name']}.html").write_text(card.render(**base, card=c, g=c.get("g")))
     (out / "cards.json").write_text(json.dumps([{"name": c["name"]} for c in cards]))
     days = [
-        {"day": "Thursday", "when": "When the calls go live",
+        {"day": calls_day, "when": "The day before the round",
          "x": cap["thursday_x"], "instagram": cap["thursday_instagram"],
          "cards": [c for c in cards if c["kind"] in ("round", "call")],
          "how": "Post the X thread with the round card on the first post and each match card on its game's "
                 "post. On Instagram, post the round card on its own; each game's carousel follows below."},
-        {"day": "Friday", "when": "The bold call",
+        {"day": match_day, "when": "The bold call, on the morning of the first game",
          "x": cap["friday_x"], "instagram": cap["friday_instagram"],
          "cards": [c for c in carousels[feature["slug"]] if c["kind"] in ("call", "reasons")],
          "how": "Post the reasons chart on X, then the link as the first reply. On Instagram, post the match "
@@ -359,11 +379,11 @@ def build_kit(ctx: dict, views: list[dict], env: Environment, out: Path) -> Path
               "when": f"Carousel · {v['kickoff_text']}" + (" · called after kick-off" if v.get("after_kickoff") else ""),
               "x": [match_post(v), f"The full breakdown: {match_url(v)}"], "instagram": carousel_caption(v),
               "cards": carousels[v["slug"]],
-              "how": "Post every slide, in order, as one Instagram carousel, any time from Thursday to "
+              "how": f"Post every slide, in order, as one Instagram carousel, any time from {calls_day} to "
                      "matchday. On X, attach the first four slides to the post and put the link in the "
                      "first reply."} for v in views]
     if "fpl_x" in cap:
-        days.insert(1, {"day": "Thursday, later", "when": "Before the FPL deadline", "x": cap["fpl_x"],
+        days.insert(1, {"day": f"{calls_day}, later", "when": "Before the FPL deadline", "x": cap["fpl_x"],
                         "instagram": cap["fpl_instagram"], "cards": [c for c in cards if c["kind"] == "fpl"],
                         "how": "For Fantasy Premier League players. Post it a few hours after the main thread."})
     if res:
@@ -371,37 +391,42 @@ def build_kit(ctx: dict, views: list[dict], env: Environment, out: Path) -> Path
         wait = ("" if res["complete"] else
                 f" The round isn't finished yet ({', '.join(v['home_team'] + ' v ' + v['away_team'] for v in res['pending'])}"
                 f" still to play), so wait for {post_day}'s Publish site run and the carousel will cover every game.")
-        days.append({"day": post_day, "when": f"Matchweek {res['matchweek']}: the results", "x": cap["results_x"],
+        days.append({"day": post_day, "when": f"Matchweek {res['matchweek']}: the results", "edition": "results", "x": cap["results_x"],
                      "instagram": cap["results_instagram"],
                      "cards": [c for c in cards if c["kind"] in ("results", "results-list", "scorecard")],
                      "how": "Post all three slides as one Instagram carousel, the day after the round's last game. "
                             "On X, attach the first two and put the link in the first reply. The game-by-game "
                             "verdicts follow below." + wait})
-        days += [{"day": f"Result: {r['g']['home_team']} v {r['g']['away_team']}",
+        days += [{"day": f"Result: {r['g']['home_team']} v {r['g']['away_team']}", "edition": "results",
                   "when": f"From {r['after_day']}, after the result",
                   "x": cap["verdicts"][r["g"]["slug"]]["x"], "instagram": cap["verdicts"][r["g"]["slug"]]["instagram"],
                   "cards": [c for c in cards if c["name"] == f"verdict-{r['g']['slug']}"],
                   "how": "One game's verdict. It's ready the morning after the game, so space these out over the "
                          "days after the round rather than posting them all at once."} for r in res["rows"]]
     elif "monday_x" in cap:
-        days.append({"day": "Monday", "when": "The scorecard", "x": cap["monday_x"],
+        days.append({"day": "Monday", "when": "The scorecard", "edition": "results", "x": cap["monday_x"],
                      "instagram": cap["monday_instagram"], "cards": [c for c in cards if c["kind"] == "scorecard"],
                      "how": "The site picks up results every morning, so use the kit from Monday's "
                             "Publish site run to get the weekend's results in the scorecard."})
     if "miss_x" in cap:
-        days.append({"day": f"{res['post_day'] if res else 'Monday'}, later", "when": "What we got wrong", "x": cap["miss_x"],
+        days.append({"day": f"{res['post_day'] if res else 'Monday'}, later", "when": "What we got wrong",
+                     "edition": "results", "x": cap["miss_x"],
                      "instagram": cap["miss_instagram"], "cards": [c for c in cards if c["kind"] == "miss"],
                      "how": "Our most confident wrong call of the round, and whether the chances backed us. "
                             "Owning the misses is what makes the hits believable."})
     if "projection_x" in cap:
-        days.append({"day": "Wednesday", "when": "The season so far", "x": cap["projection_x"],
+        after = (pd.Timestamp(res["post_date"]) + pd.Timedelta(days=1)).strftime("%A") if res else "Wednesday"
+        days.append({"day": after, "edition": "results", "when": "The season so far", "x": cap["projection_x"],
                      "instagram": cap["projection_instagram"],
                      "cards": [c for c in cards if c["kind"] == "projection"],
                      "how": "Use the kit from the newest Publish site run: the data updates every morning, "
                             "so the projection includes the latest results."})
-    (out / "posts.json").write_text(json.dumps({"matchweek": ctx["matchweek"], "posts": [
+    editions = {"predictions": {"matchweek": ctx["matchweek"], "date": str(eve.date())}}
+    if res:
+        editions["results"] = {"matchweek": res["matchweek"], "date": res["post_date"]}
+    (out / "posts.json").write_text(json.dumps({"matchweek": ctx["matchweek"], "editions": editions, "posts": [
         {"day": d["day"], "when": d["when"], "how": d["how"], "x": d["x"], "instagram": d["instagram"],
-         "images": [c["name"] for c in d["cards"]]} for d in days]}))
+         "edition": d.get("edition", "predictions"), "images": [c["name"] for c in d["cards"]]} for d in days]}))
     (out / "superbru.txt").write_text(superbru(ctx, views))
     letter = newsletter(ctx, views)
     (out / "newsletter.md").write_text(letter)
@@ -469,44 +494,67 @@ def ready_to_post(kit: Path) -> list[Path]:
     return folders
 
 
-def kit_emails(kit: Path, sender: str, to: str) -> list[EmailMessage]:
-    """The Superbru picks, then one email per post: what it is, both captions to copy, and its images in slide order."""
+def due_editions(kit: Path, today) -> list[str]:
+    """The editions whose day is today (a UK date)."""
+    editions = json.loads((kit / "posts.json").read_text()).get("editions", {})
+    return [e for e in EDITIONS if e in editions and editions[e]["date"] == str(today)]
+
+
+def kit_emails(kit: Path, sender: str, to: str, editions=EDITIONS) -> list[EmailMessage]:
+    """For each edition asked for, one email per post. The predictions edition starts with the Superbru picks."""
     data = json.loads((kit / "posts.json").read_text())
     folders = sorted(p for p in (kit / "ready").iterdir() if p.is_dir())
     out = []
-    picks = kit / "superbru.txt"
-    if picks.exists():
-        msg = EmailMessage()
-        msg["Subject"] = f"Matchweek {data['matchweek']} · Superbru picks"
-        msg["From"], msg["To"] = sender, to
-        msg.set_content(picks.read_text())
-        out.append(msg)
-    for i, (post, folder) in enumerate(zip(data["posts"], folders), 1):
-        how = (folder / "how.txt").read_text().strip()
-        msg = EmailMessage()
-        msg["Subject"] = f"Matchweek {data['matchweek']} · {i} of {len(folders)} · {post['day']}"
-        msg["From"], msg["To"] = sender, to
-        msg.set_content(f"{how}\n\n"
-                        f"---- INSTAGRAM ----\n\n{(folder / 'instagram.txt').read_text().strip()}\n\n"
-                        f"---- X ----\n\n{(folder / 'x.txt').read_text().strip()}\n")
-        for img in sorted(folder.glob("*.png")):
-            msg.add_attachment(img.read_bytes(), maintype="image", subtype="png", filename=img.name)
-        out.append(msg)
+    for edition in editions:
+        mw = data.get("editions", {}).get(edition, {}).get("matchweek", data["matchweek"])
+        picks = kit / "superbru.txt"
+        if edition == "predictions" and picks.exists():
+            msg = EmailMessage()
+            msg["Subject"] = f"Matchweek {mw} · Superbru picks"
+            msg["From"], msg["To"] = sender, to
+            msg.set_content(picks.read_text())
+            out.append(msg)
+        posts = [(post, folder) for post, folder in zip(data["posts"], folders)
+                 if post.get("edition", "predictions") == edition]
+        out += [post_email(post, folder, f"Matchweek {mw} · {edition.title()} · {i} of {len(posts)}", sender, to)
+                for i, (post, folder) in enumerate(posts, 1)]
     return out
 
 
-def email_kit(kit: Path) -> int:
-    """Send the ready-to-post kit to KIT_EMAIL (or KIT_EMAIL_TO). Skips with a warning when unset."""
+def post_email(post: dict, folder: Path, subject: str, sender: str, to: str) -> EmailMessage:
+    """One post's email: what it is, both captions to copy, and its images in slide order."""
+    how = (folder / "how.txt").read_text().strip()
+    msg = EmailMessage()
+    msg["Subject"] = f"{subject} · {post['day']}"
+    msg["From"], msg["To"] = sender, to
+    msg.set_content(f"{how}\n\n"
+                    f"---- INSTAGRAM ----\n\n{(folder / 'instagram.txt').read_text().strip()}\n\n"
+                    f"---- X ----\n\n{(folder / 'x.txt').read_text().strip()}\n")
+    for img in sorted(folder.glob("*.png")):
+        msg.add_attachment(img.read_bytes(), maintype="image", subtype="png", filename=img.name)
+    return msg
+
+
+def email_kit(kit: Path, edition: str = "both") -> int:
+    """Send the ready-to-post kit to KIT_EMAIL (or KIT_EMAIL_TO): one edition, both, or whichever is
+    due today. Skips with a warning when the secrets are unset."""
+    if edition == "due":
+        editions = due_editions(kit, pd.Timestamp.now(tz="Europe/London").date())
+        if not editions:
+            log.info("No edition of the kit is due today, so nothing was emailed.")
+            return 0
+    else:
+        editions = EDITIONS if edition == "both" else (edition,)
     sender, password = os.environ.get("KIT_EMAIL"), os.environ.get("KIT_EMAIL_PASSWORD")
     if not sender or not password:
         log.warning("KIT_EMAIL and KIT_EMAIL_PASSWORD are not both set, so the kit was not emailed.")
         return 0
-    msgs = kit_emails(kit, sender, os.environ.get("KIT_EMAIL_TO") or sender)
+    msgs = kit_emails(kit, sender, os.environ.get("KIT_EMAIL_TO") or sender, editions)
     with smtplib.SMTP_SSL(os.environ.get("KIT_SMTP_HOST", "smtp.gmail.com"), 465) as smtp:
         smtp.login(sender, password)
         for m in msgs:
             smtp.send_message(m)
-    log.info("Emailed %d posts", len(msgs))
+    log.info("Emailed %d posts (%s)", len(msgs), ", ".join(editions))
     return len(msgs)
 
 
@@ -517,12 +565,14 @@ def main(argv=None) -> None:
     group.add_argument("--png", type=Path, metavar="KIT",
                        help="render the kit folder written by plpred.site (normally site/social) and lay it out")
     group.add_argument("--email", type=Path, metavar="KIT", help="email a rendered kit, one message per post")
+    parser.add_argument("--edition", choices=["both", "due", *EDITIONS], default="both",
+                        help="with --email: which edition to send; 'due' sends the one due today, if any")
     args = parser.parse_args(argv)
     if args.png:
         render_pngs(args.png)
         ready_to_post(args.png)
     else:
-        email_kit(args.email)
+        email_kit(args.email, args.edition)
 
 
 if __name__ == "__main__":

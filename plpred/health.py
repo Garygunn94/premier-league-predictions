@@ -4,6 +4,9 @@
     python -m plpred.health --calls            # also require calls for the next round, if it starts within 8 days (Thursday)
     python -m plpred.health --report health.md # and write the problems to a file, for the alert issue
 
+Every run also checks that a round starting today or tomorrow has its calls, since the
+predictions kit is emailed the day before a round's first game.
+
 The Update data workflow runs this after every refresh. A run that crashes is caught by the
 workflow itself; this catches the runs that succeed but bring in nothing new, which is what
 happens when a source changes its format or stops updating.
@@ -46,6 +49,22 @@ def called_games(data: Path) -> set[tuple[str, str, str]]:
     return games
 
 
+def uk_date(kickoff: pd.Timestamp):
+    return kickoff.tz_convert("Europe/London").date()
+
+
+def round_starting(fixtures: pd.DataFrame, day) -> pd.DataFrame:
+    """The games of the round whose first game is on this (UK) day, or none."""
+    first = fixtures.dropna(subset=["kickoff"]).groupby("gameweek").kickoff.min()
+    gameweeks = [gw for gw, ko in first.items() if uk_date(ko) == day]
+    return fixtures[fixtures.gameweek.isin(gameweeks)]
+
+
+def uncalled(games: pd.DataFrame, data: Path) -> list:
+    done = called_games(data)
+    return [r for r in games.itertuples() if (r.home_team, r.away_team, str(r.kickoff.date())) not in done]
+
+
 def problems(data: Path, now: pd.Timestamp, calls: bool = False) -> list[str]:
     out = []
     fixtures = fixture_list(data)
@@ -67,16 +86,21 @@ def problems(data: Path, now: pd.Timestamp, calls: bool = False) -> list[str]:
                    f"{missing[0].home_team} v {missing[0].away_team} on {missing[0].kickoff:%d %B}. "
                    "Results, expected goals and our record will be out of date until it catches up.")
 
+    ahead = pd.DataFrame()
     if calls:
-        # The next round only: a midweek round after it is called by hand, nearer the time.
+        # The next round only: a round after it is called nearer the time.
         ahead = fixtures[(fixtures.kickoff > now) & (fixtures.kickoff < now + CALLS_AHEAD)]
         ahead = ahead[ahead.gameweek == ahead.gameweek.min()]
-        done = called_games(data)
-        uncalled = [r for r in ahead.itertuples() if (r.home_team, r.away_team, str(r.kickoff.date())) not in done]
-        if uncalled:
-            out.append(f"{len(uncalled)} of the {len(ahead)} games in the next round have no call, starting with "
-                       f"{uncalled[0].home_team} v {uncalled[0].away_team} on {uncalled[0].kickoff:%d %B}. "
-                       "Run Update data by hand with 'predict' ticked once the cause is fixed.")
+    # A round starting today or tomorrow must be called by now: its predictions kit goes out the day before.
+    today = uk_date(now)
+    soon = pd.concat([round_starting(fixtures, today), round_starting(fixtures, today + pd.Timedelta(days=1))])
+    if len(soon) and (ahead.empty or soon.gameweek.min() < ahead.gameweek.min()):
+        ahead = soon[soon.gameweek == soon.gameweek.min()]
+    missing = uncalled(ahead, data) if len(ahead) else []
+    if missing:
+        out.append(f"{len(missing)} of the {len(ahead)} games in the next round have no call, starting with "
+                   f"{missing[0].home_team} v {missing[0].away_team} on {missing[0].kickoff:%d %B}. "
+                   "Run Update data by hand with 'predict' ticked once the cause is fixed.")
     return out
 
 

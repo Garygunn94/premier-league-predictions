@@ -52,6 +52,16 @@ def test_health_flags_stuck_sources_and_missing_calls(tmp_path):
     assert len(health.problems(data, now)) == 2
 
 
+def test_a_round_starting_tomorrow_must_be_called(tmp_path):
+    data = make_data(tmp_path)
+    fixtures(data, [(9, "2026-10-24T14:00:00Z", "Strong", "Weak", True),
+                    (10, "2026-10-28T19:00Z", "Weak", "Good", False)])
+    assert health.problems(data, pd.Timestamp("2026-10-23T06:00Z")) == []  # round 9 is called
+    found = health.problems(data, pd.Timestamp("2026-10-27T06:00Z"))  # round 10 starts tomorrow, no calls
+    assert len(found) == 1 and "1 of the 1 games" in found[0]
+    assert health.problems(data, pd.Timestamp("2026-10-26T06:00Z")) == []  # two days ahead: not yet
+
+
 def test_embed_cards_per_club_with_code_page(tmp_path):
     out = site.build(make_data(tmp_path), tmp_path / "site")
     card = (out / "embed" / "strong" / "index.html").read_text()
