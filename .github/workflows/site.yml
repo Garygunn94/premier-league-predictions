@@ -69,9 +69,12 @@ jobs:
         with:
           path: ~/.cache/kokoro
           key: kokoro-v1.0
+      # A failed video never holds up the site or the rest of the kit: the posts go out without it.
       - name: Make the narrated videos
         if: steps.videos.outputs.make == 'true'
+        continue-on-error: true
         run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg > /dev/null
           pip install kokoro-onnx==0.6.1 soundfile==0.14.0
           python -m plpred.video site/social
       - name: Render the social media cards
