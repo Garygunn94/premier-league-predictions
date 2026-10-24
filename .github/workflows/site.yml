@@ -13,6 +13,10 @@ on:
         type: choice
         options: ["no", predictions, results, both]
         default: "no"
+      videos:
+        description: "Make the narrated videos for the posting kit (about 15 minutes)"
+        type: boolean
+        default: true
 
 permissions:
   contents: read
@@ -41,11 +45,37 @@ jobs:
           GOATCOUNTER: ${{ vars.GOATCOUNTER || 'garygunn94' }}
           NEWSLETTER_URL: ${{ vars.NEWSLETTER_URL }}
           CONTACT_EMAIL: ${{ vars.CONTACT_EMAIL || 'hello@inkwellandalgorithm.com' }}
-      - name: Render the social media cards
+      - name: Install Playwright
         run: |
           pip install playwright==1.64.0
           python -m playwright install --with-deps chromium
-          python -m plpred.social --png site/social
+      # Narrated videos (plpred.video) take about a minute and a half each, so they are made only
+      # on the day the predictions edition is emailed and on manual runs with "Make the narrated
+      # videos" ticked, not after the other daily refreshes. The Kokoro voice model (~350 MB) is
+      # cached between runs.
+      - name: Check whether to make the videos
+        id: videos
+        run: |
+          if [ "${{ github.event_name }}" = workflow_dispatch ] && [ "${{ inputs.videos }}" = true ]; then
+            echo "make=true" >> "$GITHUB_OUTPUT"
+          elif [ "${{ github.event_name }}" = workflow_run ] && [ "${{ github.event.workflow_run.event }}" = schedule ] \
+               && python -m plpred.video site/social --due; then
+            echo "make=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "make=false" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/cache@v4
+        if: steps.videos.outputs.make == 'true'
+        with:
+          path: ~/.cache/kokoro
+          key: kokoro-v1.0
+      - name: Make the narrated videos
+        if: steps.videos.outputs.make == 'true'
+        run: |
+          pip install kokoro-onnx==0.6.1 soundfile==0.14.0
+          python -m plpred.video site/social
+      - name: Render the social media cards
+        run: python -m plpred.social --png site/social
       # The posting kit also goes by email, one message per post, from and to the KIT_EMAIL Gmail
       # account (KIT_EMAIL_PASSWORD is a Gmail app password), in two editions: the predictions the
       # day before a round's first game and the results the day after its last. After each

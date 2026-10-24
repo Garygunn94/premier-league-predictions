@@ -151,6 +151,19 @@ newsletter as Markdown (`social/newsletter.md`) to paste into the newsletter ser
 the kit out in `social/ready/` as one numbered folder per post: its images in slide
 order, `instagram.txt`, `x.txt` (posts and first replies labelled) and `how.txt`.
 
+The kit also has narrated 9:16 videos for Reels and X, about 30 seconds each: one for the
+round and one for every game still to come. Each is a short script read by a free text-to-speech
+voice ([Kokoro](https://github.com/thewh1teagle/kokoro-onnx)), with charts that grow as the
+narrator reaches them and the words captioned on screen. Each video gets one of two British
+voices, George or Emma, picked at random (but the same on every rebuild that week), and `how.txt`
+names it, so we can see which one people prefer. The videos are made by
+`python -m plpred.video site/social`, before the PNG step so they land in the post folders and
+emails. It needs `pip install kokoro-onnx soundfile`, Playwright and ffmpeg, and downloads the
+voice model (~350 MB) on first use. Each video takes about a minute and a half, so the workflow
+makes them only on the day the predictions edition is emailed, or on a manual Publish site run with
+**Make the narrated videos** ticked. Add music from Instagram's own library when posting, never a
+commercial track baked into the file.
+
 The kit can also arrive by email, one message per post with both captions in the body and
 the images attached, so a post can be saved and posted from a phone. It comes in two
 editions, each on its own day (UK time):
