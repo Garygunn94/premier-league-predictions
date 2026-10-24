@@ -1,0 +1,163 @@
+{% from "macros.html" import badge, wordmark with context %}
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<title>{{ video.title }}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700;1,800;1,900&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&display=block">
+<link rel="stylesheet" href="{{ root }}/style.css">
+{#- A 1080 x 1920 video, one frame at a time: plpred.video sets window.TIMELINE (when each scene
+    and line is spoken) and calls render(t) for every frame. Anything marked data-in, data-bar or
+    data-count animates from "line:offset", seconds after that line of its scene starts. -#}
+<style>
+html,body{margin:0;width:{{ width }}px;height:{{ height }}px;overflow:hidden;background:var(--paper)}
+.top{position:absolute;left:72px;right:72px;top:150px;display:flex;justify-content:space-between;align-items:baseline;border-bottom:3px solid var(--ink);padding-bottom:26px}
+.top .brand{font-size:60px;font-weight:900;letter-spacing:-.01em}
+.top .tag{font-size:26px;font-weight:600}
+.scene{position:absolute;left:72px;right:72px;top:320px;height:1040px;display:flex;flex-direction:column;justify-content:center;opacity:0}
+.kicker{font-size:30px;font-weight:600;margin-bottom:18px}
+.head{font-size:100px;font-weight:800;font-style:italic;line-height:1.02;letter-spacing:-.01em;margin:0 0 44px}
+.teams{display:flex;align-items:center;justify-content:space-between;gap:24px;margin:30px 0 40px}
+.team{font-size:64px;white-space:nowrap;font-weight:800;display:flex;align-items:center;gap:20px;line-height:1.05}
+.score{font-size:140px;font-weight:900;line-height:1;white-space:nowrap}
+.verdict{display:flex;justify-content:space-between;align-items:center;background:var(--ink);color:var(--paper);padding:30px 36px;margin-bottom:34px}
+.verdict .big{font-size:56px;font-weight:700;letter-spacing:.04em}
+.verdict .small{font-size:30px;font-weight:600}
+.bars{display:flex;height:44px;width:100%}
+.bars div{height:100%;width:0}
+.key{display:flex;justify-content:space-between;margin-top:16px;font-size:30px;font-weight:600}
+.r{display:grid;grid-template-columns:400px 1fr 120px;align-items:center;gap:20px;padding:20px 0;border-bottom:1px solid var(--rule)}
+.r .l{font-size:34px;line-height:1.2}
+.r .v{font-size:38px;font-weight:700;text-align:right}
+.trk{position:relative;height:42px}
+.trk.bg{background:var(--rule)}
+.bar{position:absolute;top:0;bottom:0;left:0;width:0}
+.start{background:var(--draw)}.up{background:var(--ink)}.down{background:var(--accent)}.total{background:var(--accent)}
+.sub{font-size:28px;font-weight:600;margin:0 0 8px}
+.fr{display:flex;justify-content:space-between;align-items:center;padding:18px 0;border-bottom:1px solid var(--rule)}
+.fr .who{font-size:54px;font-weight:800}
+.fr .pos{font-size:26px;font-weight:600;margin-left:14px}
+.chips{display:flex;gap:12px}
+.chip{width:74px;height:74px;font-size:32px}
+.mk{display:grid;grid-template-columns:290px 1fr;gap:20px;align-items:center;padding:24px 0;border-bottom:1px solid var(--rule)}
+.mk .n{font-size:52px;font-weight:800;line-height:1.1}
+.mk .row{display:grid;grid-template-columns:190px 1fr 110px;align-items:center;gap:16px;font-size:26px;font-weight:600;margin:8px 0}
+.mk .num{font-size:38px;font-weight:700;text-align:right}
+.list .g{display:flex;justify-content:space-between;align-items:baseline;gap:20px;padding:10px 0;border-bottom:1px solid var(--rule)}
+.list .fx{font-size:42px;font-weight:800}
+.list .c{font-size:30px;font-weight:700;white-space:nowrap}
+.outro{text-align:center;align-items:center}
+.round .head{margin-bottom:24px}
+.outro .brand{font-size:96px;font-weight:900;line-height:1.1}
+.outro .url{font-size:62px;font-weight:800;font-style:italic;margin-top:40px}
+.outro .tagline{font-size:40px;margin-top:40px;max-width:820px;line-height:1.35}
+.cap{position:absolute;left:72px;right:72px;top:1400px;display:flex;justify-content:center;text-align:center}
+.cap span{font-weight:600;font-size:54px;line-height:1.25;color:#fff}
+.cap .hot{color:var(--accent)}
+.foot{position:absolute;left:72px;right:72px;bottom:110px;border-top:1px solid var(--rule);padding-top:24px;display:flex;justify-content:space-between;font-size:22px;font-weight:600;white-space:nowrap}
+.prog{position:absolute;left:0;bottom:0;height:10px;background:var(--accent);width:0}
+</style>
+</head>
+<body>
+<div class="top"><span class="brand disp">{{ wordmark() }}</span><span class="tag lab muted">Matchweek {{ matchweek }}</span></div>
+
+{% for s in video.scenes %}
+<section class="scene {{ s.kind }}" data-scene="{{ loop.index0 }}">
+{% if s.kind == "call" %}
+<div class="kicker lab accent" data-in="0:0">{% if g is sameas features.upset %}The model v the market{% elif g is sameas lead %}Match of the week{% else %}Our call{% endif %} · {{ g.kickoff_text }}</div>
+<div class="teams">
+<span class="team disp" data-in="0:0">{{ badge(g.home_team, root) }}{{ g.home_short }}</span>
+<span class="score disp" data-in="1:0.6">{{ g.score_text }}</span>
+<span class="team disp muted" data-in="0:0.5">{{ g.away_short }}{{ badge(g.away_team, root) }}</span>
+</div>
+<div class="verdict" data-in="1:0"><span class="lab big">{{ g.call_label }}</span><span class="lab small"><span data-count="2:0" data-to="{{ g.our_p }}">0</span>% · {{ g.confidence }}</span></div>
+<div class="bars">
+<div style="background:var(--ink)" data-bar="2:0" data-w="{{ g.h }}"></div>
+<div style="background:var(--draw)" data-bar="2:0.5" data-w="{{ g.d }}"></div>
+<div style="background:var(--accent)" data-bar="2:1" data-w="{{ g.a }}"></div>
+</div>
+<div class="key lab"><span data-in="2:0">{{ g.home_short }} {{ g.h }}%</span><span class="muted" data-in="2:0.5">Draw {{ g.d }}%</span><span class="accent" data-in="2:1">{{ g.away_short }} {{ g.a }}%</span></div>
+{% elif s.kind == "reasons" %}
+<div class="kicker lab accent" data-in="0:0">{{ g.home_team }} v {{ g.away_team }} · the reasons</div>
+<h1 class="head disp" data-in="0:0">How we got to <span class="accent">{{ g.our_p }}%</span></h1>
+{% for r in s.rows %}
+<div class="r" data-in="{{ r.at }}"><span class="l"{% if r.bold %} style="font-weight:700"{% endif %}>{{ r.label }}</span>
+<span class="trk"><span class="bar {{ r.fill }}" style="left:{{ r.left }}%" data-bar="{{ r.at }}" data-w="{{ r.width }}"></span></span>
+<span class="v lab muted">{{ r.val }}</span></div>
+{% endfor %}
+{% elif s.kind == "numbers" %}
+<div class="kicker lab accent" data-in="0:0">{{ g.home_team }} v {{ g.away_team }} · the numbers</div>
+<h1 class="head disp" data-in="0:0">What the <span class="accent">data</span> says.</h1>
+<div class="sub lab muted" data-in="0:0.2">Expected goals a game, this season</div>
+{% for x in s.xg %}
+<div class="r" style="grid-template-columns:440px 1fr 100px"><span class="l">{{ x.label }}</span><span class="trk bg"><span class="bar" style="background:{{ 'var(--ink)' if x.side == 'home' and x.kind == 'for' else 'var(--draw)' if x.side == 'home' else 'var(--accent)' if x.kind == 'for' else 'var(--accent-deep)' }}" data-bar="{{ x.at }}" data-w="{{ x.w }}"></span></span><span class="v lab muted"><span data-count="{{ x.at }}" data-to="{{ x.v }}" data-dp="1">0.0</span></span></div>
+{% endfor %}
+<div class="sub lab muted" style="margin-top:40px" data-in="1:0">Last five games, oldest first</div>
+{% for t, side, at in ((g.home_short, 'home', 0.2), (g.away_short, 'away', 0.6)) %}
+{% set st = g.standings[side] %}
+<div class="fr"><span><span class="who disp">{{ t }}</span>{% if st %}<span class="pos lab muted">{{ st.position }}{{ {1:'st',2:'nd',3:'rd'}.get(st.position, 'th') }} · {{ st.points }} pts</span>{% endif %}</span>
+<span class="chips">{% for x in g.form[side] %}<span class="chip lab {{ x.result }}" data-in="1:{{ at + loop.index0 * 0.15 }}">{{ x.result }}</span>{% endfor %}</span></div>
+{% endfor %}
+{% elif s.kind == "market" %}
+<div class="kicker lab accent" data-in="0:0">{{ g.home_team }} v {{ g.away_team }} · us v the bookies</div>
+<h1 class="head disp" data-in="0:0">{% if s.agree %}The market <span class="accent">agrees.</span>{% else %}We part company <span class="accent">with the market.</span>{% endif %}</h1>
+{% for code, name in (('H', g.home_short ~ ' win'), ('D', 'Draw'), ('A', g.away_short ~ ' win')) %}
+{% set us = {'H': g.h, 'D': g.d, 'A': g.a}[code] %}
+<div class="mk"><span class="n disp">{{ name }}</span><div>
+<div class="row lab accent"><span>Our model</span><div class="trk bg"><div class="bar" style="background:var(--accent)" data-bar="0:{{ 0.3 + loop.index0 * 0.2 }}" data-w="{{ us }}"></div></div><span class="num">{{ us }}%</span></div>
+<div class="row lab"><span>Bookmakers</span><div class="trk bg"><div class="bar" style="background:var(--ink)" data-bar="1:{{ 0.3 + loop.index0 * 0.2 }}" data-w="{{ g.mkt[code] }}"></div></div><span class="num"><span data-count="1:{{ 0.3 + loop.index0 * 0.2 }}" data-to="{{ g.mkt[code] }}">0</span>%</span></div>
+</div></div>
+{% endfor %}
+{% elif s.kind == "round" %}
+<div class="kicker lab accent" data-in="0:0">Every game called</div>
+<h1 class="head disp" data-in="0:0">Matchweek {{ matchweek }}, <span class="accent">called.</span></h1>
+<div class="list">
+{% for v in s.games %}
+<div class="g" data-in="{{ loop.index }}:0"><span class="fx disp">{{ v.home_short }} v {{ v.away_short }}</span><span class="c lab {% if v.call == 'A' %}accent{% elif v.call == 'D' %}muted{% endif %}">{{ 'Draw' if v.call == 'D' else (v.home_short if v.call == 'H' else v.away_short) ~ ' win' }} {{ v.score_text }} · {{ v.our_p }}%</span></div>
+{% endfor %}
+</div>
+{% elif s.kind == "outro" %}
+<div class="brand disp" data-in="0:0">{{ wordmark() }}</div>
+<div class="url disp" data-in="0:0.4">inkwellandalgorithm<span class="accent">.com</span></div>
+<div class="tagline muted" data-in="0:0.8">Data-driven Premier League predictions, with the reasons. New every Thursday.</div>
+{% endif %}
+</section>
+{% endfor %}
+
+<div class="cap"><span id="cap"></span></div>
+<div class="foot lab muted"><span>X @InkwellAlgo · IG @inkwellandalgorithm</span><span>Analysis, not betting advice</span></div>
+<div class="prog" id="prog"></div>
+
+<script>
+const TL = window.TIMELINE || {duration: 1, scenes: []};
+const clamp = x => Math.max(0, Math.min(1, x));
+const ease = x => 1 - Math.pow(1 - clamp(x), 3);
+const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+const hot = s => esc(s).replace(/\d+(?:\.\d+)?(?: percent)?/g, '<span class="hot">$&</span>');
+window.render = function (t) {
+  document.querySelectorAll('[data-scene]').forEach(el => {
+    const sc = TL.scenes[+el.dataset.scene];
+    if (!sc) return;
+    const at = spec => { const [l, off] = spec.split(':'); return sc.timed[+l].start + (+off || 0); };
+    const last = +el.dataset.scene === TL.scenes.length - 1;
+    el.style.opacity = Math.min(ease((t - sc.start) / 0.35), last ? 1 : 1 - clamp((t - sc.end + 0.3) / 0.3));
+    el.querySelectorAll('[data-in]').forEach(n => {
+      const p = ease((t - at(n.dataset.in)) / 0.45);
+      n.style.opacity = p; n.style.transform = `translateY(${(1 - p) * 30}px)`;
+    });
+    el.querySelectorAll('[data-bar]').forEach(n => { n.style.width = ease((t - at(n.dataset.bar)) / 0.9) * n.dataset.w + '%'; });
+    el.querySelectorAll('[data-count]').forEach(n => {
+      const p = ease((t - at(n.dataset.count)) / 0.9);
+      n.textContent = (p * n.dataset.to).toFixed(+n.dataset.dp || 0);
+    });
+  });
+  let line = '';
+  TL.scenes.forEach(sc => sc.timed.forEach(l => { if (t >= l.start - 0.05 && t < l.end + 0.2) line = l.text; }));
+  document.getElementById('cap').innerHTML = hot(line);
+  document.getElementById('prog').style.width = (t / TL.duration * 100) + '%';
+};
+</script>
+</body>
+</html>

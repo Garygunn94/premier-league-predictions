@@ -33,6 +33,8 @@ from pathlib import Path
 import pandas as pd
 from jinja2 import Environment
 
+from plpred import video
+
 log = logging.getLogger("plpred.social")
 BRAND = "Inkwell & Algorithm"
 HANDLE = "@InkwellAlgo"                 # X
@@ -364,7 +366,7 @@ def build_kit(ctx: dict, views: list[dict], env: Environment, out: Path) -> Path
         (cards_dir / f"{c['name']}.html").write_text(card.render(**base, card=c, g=c.get("g")))
     (out / "cards.json").write_text(json.dumps([{"name": c["name"]} for c in cards]))
     days = [
-        {"day": calls_day, "when": "The day before the round",
+        {"day": calls_day, "when": "The day before the round", "slug": "round",
          "x": cap["thursday_x"], "instagram": cap["thursday_instagram"],
          "cards": [c for c in cards if c["kind"] in ("round", "call")],
          "how": "Post the X thread with the round card on the first post and each match card on its game's "
@@ -375,7 +377,7 @@ def build_kit(ctx: dict, views: list[dict], env: Environment, out: Path) -> Path
          "how": "Post the reasons chart on X, then the link as the first reply. On Instagram, post the match "
                 "card then the chart as a carousel."},
     ]
-    days += [{"day": f"{v['home_team']} v {v['away_team']}",
+    days += [{"day": f"{v['home_team']} v {v['away_team']}", "slug": v["slug"],
               "when": f"Carousel · {v['kickoff_text']}" + (" · called after kick-off" if v.get("after_kickoff") else ""),
               "x": [match_post(v), f"The full breakdown: {match_url(v)}"], "instagram": carousel_caption(v),
               "cards": carousels[v["slug"]],
@@ -421,12 +423,19 @@ def build_kit(ctx: dict, views: list[dict], env: Environment, out: Path) -> Path
                      "cards": [c for c in cards if c["kind"] == "projection"],
                      "how": "Use the kit from the newest Publish site run: the data updates every morning, "
                             "so the projection includes the latest results."})
+    # A narrated video for the round and for each game still to come (rendered by plpred.video).
+    videos = {v.get("slug", "round"): v for v in video.build_videos(ctx, views, env, out)}
+    for d in days:
+        vid = videos.get(d.get("slug"))
+        if vid:
+            d["video"], d["voice"] = vid["name"], video.VOICES[vid["voice"]]
     editions = {"predictions": {"matchweek": ctx["matchweek"], "date": str(eve.date())}}
     if res:
         editions["results"] = {"matchweek": res["matchweek"], "date": res["post_date"]}
     (out / "posts.json").write_text(json.dumps({"matchweek": ctx["matchweek"], "editions": editions, "posts": [
         {"day": d["day"], "when": d["when"], "how": d["how"], "x": d["x"], "instagram": d["instagram"],
-         "edition": d.get("edition", "predictions"), "images": [c["name"] for c in d["cards"]]} for d in days]}))
+         "edition": d.get("edition", "predictions"), "images": [c["name"] for c in d["cards"]],
+         "video": d.get("video"), "voice": d.get("voice")} for d in days]}))
     (out / "superbru.txt").write_text(superbru(ctx, views))
     letter = newsletter(ctx, views)
     (out / "newsletter.md").write_text(letter)
@@ -488,7 +497,13 @@ def ready_to_post(kit: Path) -> list[Path]:
             shutil.copy(kit / "png" / f"{name}.png", folder / f"{n:02d}-{name}.png")
         (folder / "instagram.txt").write_text(post["instagram"] + "\n")
         (folder / "x.txt").write_text(x_text(post["x"]) + "\n")
-        (folder / "how.txt").write_text(f"{post['when']}\n\n{post['how']}\n")
+        how = f"{post['when']}\n\n{post['how']}\n"
+        clip = kit / "video" / f"{post.get('video')}.mp4"
+        if post.get("video") and clip.exists():
+            shutil.copy(clip, folder / f"video-{post['voice'].lower()}.mp4")
+            how += (f"\nThere's also a narrated video, read by {post['voice']}. Post it as a Reel and on X "
+                    f"(same captions), as well as the images. Note the voice, to see which one people prefer.\n")
+        (folder / "how.txt").write_text(how)
         folders.append(folder)
     log.info("Laid out %d posts in %s", len(folders), ready)
     return folders
@@ -532,6 +547,8 @@ def post_email(post: dict, folder: Path, subject: str, sender: str, to: str) -> 
                     f"---- X ----\n\n{(folder / 'x.txt').read_text().strip()}\n")
     for img in sorted(folder.glob("*.png")):
         msg.add_attachment(img.read_bytes(), maintype="image", subtype="png", filename=img.name)
+    for clip in sorted(folder.glob("*.mp4")):
+        msg.add_attachment(clip.read_bytes(), maintype="video", subtype="mp4", filename=clip.name)
     return msg
 
 
