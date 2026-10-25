@@ -1,0 +1,196 @@
+{% from "macros.html" import wordmark %}
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<title>{{ video.title }}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700;1,800;1,900&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Sans+Condensed:wght@500;600;700&display=block">
+<link rel="stylesheet" href="{{ root }}/style.css">
+{#- A 1080 x 1920 video, one frame at a time: plpred.video sets window.TIMELINE (when each scene
+    and line is spoken) and calls render(t) for every frame. Anything marked data-in, data-bar or
+    data-count animates from "line:offset", seconds after that line of its scene starts. -#}
+<style>
+html,body{margin:0;width:{{ width }}px;height:{{ height }}px;overflow:hidden;background:var(--paper)}
+.top{position:absolute;left:72px;right:72px;top:150px;display:flex;justify-content:space-between;align-items:baseline;border-bottom:3px solid var(--ink);padding-bottom:26px}
+.top .brand{font-size:60px;font-weight:900;letter-spacing:-.01em}
+.top .tag{font-size:26px;font-weight:600}
+.scene{position:absolute;left:72px;right:72px;top:320px;height:1040px;display:flex;flex-direction:column;justify-content:center;opacity:0}
+.kicker{font-size:30px;font-weight:600;margin-bottom:18px}
+.head{font-size:92px;font-weight:800;font-style:italic;line-height:1.02;letter-spacing:-.01em;margin:0 0 44px}
+.sub{font-size:28px;font-weight:600;margin:0 0 14px}
+.trk{position:relative;height:42px}
+.trk.bg{background:var(--rule)}
+.bar{position:absolute;top:0;bottom:0;left:0;width:0}
+.start{background:var(--draw)}.up{background:var(--ink)}.down{background:var(--accent)}.total{background:var(--accent)}
+.r{display:grid;grid-template-columns:400px 1fr 120px;align-items:center;gap:20px;padding:20px 0;border-bottom:1px solid var(--rule)}
+.r .l{font-size:34px;line-height:1.2}
+.r .v{font-size:38px;font-weight:700;text-align:right}
+.hook .head{font-size:112px}
+.steps{display:flex;flex-wrap:wrap;gap:16px;margin-top:10px}
+.steps span{font-size:32px;font-weight:700;border:2px solid var(--accent);color:var(--accent);padding:10px 20px}
+.sources{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:28px}
+.sources span{font-size:28px;font-weight:600;background:var(--chip);padding:10px 18px}
+.sr{padding:14px 0;border-bottom:1px solid var(--rule)}
+.sr .s{font-size:40px;font-weight:800;margin-bottom:6px}
+.sr .row{display:grid;grid-template-columns:200px 1fr 110px;gap:16px;align-items:center;font-size:26px;font-weight:600;margin:8px 0}
+.sr .num{font-size:36px;font-weight:700;text-align:right}
+.duo{display:grid;grid-template-columns:1fr 80px 1fr;align-items:center;margin-top:20px}
+.duo .arrow{font-size:80px;text-align:center}
+.duo .s{font-size:32px;font-weight:600}
+.duo .v{font-size:150px;font-weight:900;line-height:1.05}
+.tb{display:grid;grid-template-columns:60px 1fr 90px 90px 150px;align-items:center;gap:10px;height:40px;font-size:28px}
+.tb.hd{color:var(--muted);font-size:20px;height:44px}
+.tb span:nth-child(n+3){text-align:right}
+.tb.me{color:var(--accent);font-weight:700}
+.tb:not(.me):not(.hd){color:var(--muted)}
+.lad{display:grid;grid-template-columns:50px 230px 1fr 110px;align-items:center;gap:14px;height:62px;font-size:32px}
+.lad .k{color:var(--muted)}
+.lad .tr{position:relative;height:34px}
+.lad .bar{background:var(--draw)}
+.lad .vv{text-align:right;font-weight:700}
+.lad:first-of-type .bar{background:var(--accent)}
+.scale{position:relative;height:90px;display:flex;margin:30px 0 16px}
+.scale div{height:100%;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700}
+.ticks{position:relative;height:40px;font-size:26px;font-weight:600}
+.ticks span{position:absolute;transform:translateX(-50%)}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-top:60px}
+.stat{border-top:3px solid var(--ink);padding-top:16px}
+.stat .n{font-size:130px;font-weight:900;line-height:1.05}
+.stat .l{font-size:30px;line-height:1.3}
+.outro{text-align:center;align-items:center}
+.outro .brand{font-size:96px;font-weight:900;line-height:1.1}
+.outro .url{font-size:62px;font-weight:800;font-style:italic;margin-top:40px}
+.outro .follow{font-size:76px;font-weight:800;font-style:italic;line-height:1.08;margin-top:56px;max-width:900px}
+.outro .follow::before{content:"";display:block;width:120px;height:6px;background:var(--accent);margin:0 auto 48px}
+.cap{position:absolute;left:72px;right:72px;top:1400px;display:flex;justify-content:center;text-align:center}
+.cap span{font-weight:600;font-size:50px;line-height:1.25;color:#fff}
+.cap .hot{color:var(--accent)}
+.foot{position:absolute;left:72px;right:72px;bottom:110px;border-top:1px solid var(--rule);padding-top:24px;display:flex;justify-content:space-between;font-size:22px;font-weight:600;white-space:nowrap}
+.prog{position:absolute;left:0;bottom:0;height:10px;background:var(--accent);width:0}
+</style>
+</head>
+<body>
+<div class="top"><span class="brand disp">{{ wordmark() }}</span><span class="tag lab muted">How it works · {{ facts.label }}</span></div>
+
+{% for s in video.scenes %}
+<section class="scene {{ s.kind }}" data-scene="{{ loop.index0 }}"{% if s.kind == "hook" %} data-nocap{% endif %}>
+{% if s.kind == "hook" %}
+<div class="kicker lab accent" data-in="0:0">How it works</div>
+<h1 class="head disp" data-in="0:0">{{ s.lines[0] }}</h1>
+<div class="steps lab" data-in="0:0.6"><span>Data</span><span>Model</span><span>Call</span><span>Record</span></div>
+{% elif s.kind == "data" %}
+<div class="kicker lab accent" data-in="0:0">Step one · the data</div>
+<h1 class="head disp" data-in="0:0" style="font-size:80px;margin-bottom:30px">Three seasons. <span class="accent">{{ "{:,}".format(s.seasons|sum(attribute="games")) }} games.</span></h1>
+<div class="sources lab" data-in="0:0.6"><span>Fantasy Premier League</span><span>football-data.co.uk</span><span>Understat xG</span></div>
+{% for w in s.seasons %}
+<div class="sr"><div class="s disp{% if loop.last %} accent{% endif %}" data-in="0:{{ 1.3 + loop.index0 * 0.3 }}">{{ w.label }}{% if loop.last %} so far{% endif %}</div>
+<div class="row lab muted"><span>Games</span><div class="trk bg"><div class="bar" style="background:var(--draw)" data-bar="0:{{ 1.3 + loop.index0 * 0.3 }}" data-w="{{ w.games_pct }}"></div></div><span class="num">{{ w.games_pct }}%</span></div>
+<div class="row lab accent"><span>Weight</span><div class="trk bg"><div class="bar" style="background:var(--accent)" data-bar="1:{{ loop.index0 * 0.3 }}" data-w="{{ w.weight_pct }}"></div></div><span class="num"><span data-count="1:{{ loop.index0 * 0.3 }}" data-to="{{ w.weight_pct }}">0</span>%</span></div>
+</div>
+{% endfor %}
+{% elif s.kind == "trend" %}
+{% set n = s.lines|length - 1 %}
+<div class="kicker lab accent" data-in="0:0">Step two · what's changing</div>
+<h1 class="head disp" data-in="0:0">{{ s.t.label }}: <span class="accent">{{ 'up.' if s.t.up else 'down.' }}</span></h1>
+<div class="duo">
+<div data-in="{{ n }}:0"><div class="s lab muted">Last two seasons</div><div class="v disp muted">{{ s.t.then }}{% if s.t.pct %}<span style="font-size:70px">%</span>{% endif %}</div></div>
+<div class="arrow disp accent" data-in="{{ n }}:1">→</div>
+<div data-in="{{ n }}:1.6"><div class="s lab accent">{{ facts.label }} so far</div><div class="v disp accent">{{ s.t.now }}{% if s.t.pct %}<span style="font-size:70px">%</span>{% endif %}</div></div>
+</div>
+{% elif s.kind == "luck" %}
+<div class="kicker lab accent" data-in="0:0">Step two · results v performance</div>
+<h1 class="head disp" data-in="0:0" style="font-size:80px;margin-bottom:28px">The table v <span class="accent">the chances.</span></h1>
+<div class="tb hd lab" data-in="0:0.3"><span>Pos</span><span>Club</span><span>Pts</span><span>xPts</span><span>On chances</span></div>
+{% for r in s.r.rows %}
+<div class="tb lab{% if r.me %} me{% endif %}" data-in="{{ '1:0' if r.me else '0:' ~ (0.3 + loop.index0 * 0.04) }}"><span>{{ r.actual }}</span><span>{{ r.team }}</span><span>{{ r.points }}</span><span>{{ r.xpts }}</span><span>{{ r.deserved }}{{ {1:'st',2:'nd',3:'rd'}.get(r.deserved, 'th') }}</span></div>
+{% endfor %}
+{% elif s.kind == "model" %}
+<div class="kicker lab accent" data-in="0:0">Step three · the model</div>
+<h1 class="head disp" data-in="0:0" style="font-size:84px">Attack and defence, <span class="accent">for every club.</span></h1>
+<div class="sub lab muted" data-in="0:0.5">Model rating now: goals scored per goal conceded against an average side</div>
+{% for r in s.rows %}
+<div class="lad lab" data-in="0:{{ 1 + loop.index0 * 0.08 }}"><span class="k">{{ loop.index }}</span><span>{{ r.team }}</span>
+<span class="tr"><span class="bar" data-bar="0:{{ 1.2 + loop.index0 * 0.08 }}" data-w="{{ r.w }}"></span></span><span class="vv">{{ r.v }}</span></div>
+{% endfor %}
+{% elif s.kind == "example" %}
+<div class="kicker lab accent" data-in="0:0">Worked example · {{ s.ex.g.home_team }} v {{ s.ex.g.away_team }}</div>
+<h1 class="head disp" data-in="0:0">How we got to <span class="accent">{{ s.ex.top }}%</span></h1>
+{% for r in s.ex.rows %}
+<div class="r" data-in="{{ r.at }}"><span class="l"{% if r.bold %} style="font-weight:700"{% endif %}>{{ r.label }}</span>
+<span class="trk"><span class="bar {{ r.fill }}" style="left:{{ r.left }}%" data-bar="{{ r.at }}" data-w="{{ r.width }}"></span></span>
+<span class="v lab muted">{{ r.val }}</span></div>
+{% endfor %}
+{% elif s.kind == "calls" %}
+<div class="kicker lab accent" data-in="0:0">Step four · the call</div>
+<h1 class="head disp" data-in="0:0">From a percentage <span class="accent">to a call.</span></h1>
+<div class="sub lab muted" data-in="0:0.3">Chance of the likeliest result</div>
+<div class="scale lab">
+<div style="width:45%;background:var(--draw);color:var(--paper)" data-in="1:0">Too close</div>
+<div style="width:10%;background:var(--ink);color:var(--paper)" data-in="0:2.5">Solid</div>
+<div style="width:45%;background:var(--accent);color:var(--on-accent)" data-in="0:2">Strong</div>
+</div>
+<div class="ticks lab muted" data-in="0:0.5"><span style="left:0;transform:none">0%</span><span style="left:45%">45%</span><span style="left:55%">55%</span><span style="left:100%;transform:translateX(-100%)">100%</span></div>
+{% if s.rates %}
+<div class="stats">
+<div class="stat" data-in="2:0"><div class="n disp accent"><span data-count="2:0" data-to="{{ s.rates.strong }}">0</span>%</div><div class="l muted">of strong calls came true in {{ s.rates.label }}</div></div>
+<div class="stat" data-in="2:1.5"><div class="n disp muted"><span data-count="2:1.5" data-to="{{ s.rates.close }}">0</span>%</div><div class="l muted">of too-close calls did</div></div>
+</div>
+{% endif %}
+{% elif s.kind == "record" %}
+<div class="kicker lab accent" data-in="0:0">The honest bit</div>
+<h1 class="head disp" data-in="0:0">{{ s.head[0] }} <span class="accent">{{ s.head[1] }}</span></h1>
+{% for r in s.rows %}
+<div class="sr"><div class="s disp" data-in="{{ loop.index }}:0">{{ r.label }}{% if r.now %} so far{% else %}, replayed{% endif %} <span class="lab muted" style="font-size:26px">· {{ r.n }} games</span></div>
+<div class="row lab accent" data-in="{{ loop.index }}:0"><span>Our calls</span><div class="trk bg"><div class="bar" style="background:var(--accent)" data-bar="{{ loop.index }}:0.2" data-w="{{ r.us }}"></div></div><span class="num"><span data-count="{{ loop.index }}:0.2" data-to="{{ r.us }}">0</span>%</span></div>
+<div class="row lab" data-in="{{ loop.index }}:0"><span>Bookies' fav.</span><div class="trk bg"><div class="bar" style="background:var(--ink)" data-bar="{{ loop.index }}:1.2" data-w="{{ r.fav }}"></div></div><span class="num"><span data-count="{{ loop.index }}:1.2" data-to="{{ r.fav }}">0</span>%</span></div>
+</div>
+{% endfor %}
+{% elif s.kind == "outro" %}
+<div class="brand disp" data-in="0:0">{{ wordmark() }}</div>
+<div class="follow disp" data-in="1:0">{{ s.lines[-1] }}</div>
+<div class="url disp" data-in="1:0.4">inkwellandalgorithm<span class="accent">.com</span></div>
+{% endif %}
+</section>
+{% endfor %}
+
+<div class="cap"><span id="cap"></span></div>
+<div class="foot lab muted"><span>X @InkwellAlgo · IG @inkwellandalgorithm</span><span>Analysis, not betting advice</span></div>
+<div class="prog" id="prog"></div>
+
+<script>
+const TL = window.TIMELINE || {duration: 1, scenes: []};
+const clamp = x => Math.max(0, Math.min(1, x));
+const ease = x => 1 - Math.pow(1 - clamp(x), 3);
+const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+const hot = s => esc(s).replace(/\d+(?:\.\d+)?(?: percent)?/g, '<span class="hot">$&</span>');
+window.render = function (t) {
+  document.querySelectorAll('[data-scene]').forEach(el => {
+    const sc = TL.scenes[+el.dataset.scene];
+    if (!sc) return;
+    // The first frame is the hook (and the cover): what the first scene shows as its first line is
+    // spoken is already on screen at 0s, not faded in.
+    const first = +el.dataset.scene === 0;
+    const at = spec => { const [l, off] = spec.split(':'); return first && +l === 0 ? (+off || 0) - 0.45 : sc.timed[+l].start + (+off || 0); };
+    const last = +el.dataset.scene === TL.scenes.length - 1;
+    el.style.opacity = Math.min(first ? 1 : ease((t - sc.start) / 0.35), last ? 1 : 1 - clamp((t - sc.end + 0.3) / 0.3));
+    el.querySelectorAll('[data-in]').forEach(n => {
+      const p = ease((t - at(n.dataset.in)) / 0.45);
+      n.style.opacity = p; n.style.transform = `translateY(${(1 - p) * 30}px)`;
+    });
+    el.querySelectorAll('[data-bar]').forEach(n => { n.style.width = ease((t - at(n.dataset.bar)) / 0.9) * n.dataset.w + '%'; });
+    el.querySelectorAll('[data-count]').forEach(n => {
+      const p = ease((t - at(n.dataset.count)) / 0.9);
+      n.textContent = (p * n.dataset.to).toFixed(+n.dataset.dp || 0);
+    });
+  });
+  let line = '';
+  const quiet = [...document.querySelectorAll('[data-nocap]')].map(el => +el.dataset.scene);
+  TL.scenes.forEach((sc, i) => quiet.includes(i) || sc.timed.forEach(l => { if (t >= l.start - 0.05 && t < l.end + 0.2) line = l.text; }));
+  document.getElementById('cap').innerHTML = hot(line);
+  document.getElementById('prog').style.width = (t / TL.duration * 100) + '%';
+};
+</script>
+</body>
+</html>
