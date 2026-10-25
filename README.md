@@ -190,6 +190,16 @@ captions, from and to `KIT_EMAIL` like the weekly kit.
 Remake them each summer; a mid-season run refreshes the "this season" scene. Locally:
 `python -m plpred.dna out/club-dna --only Arsenal` (add `--scripts` to skip rendering).
 
+The **How it works** reel (`plpred/howitworks.py`) explains the whole process in about a minute
+and a half: the data (three seasons, and this season's share of the games against its share of the
+model's weight), the league stats that have moved furthest from the last two seasons (at least 1.5
+standard errors, so a blip isn't picked), the sides furthest above and below their expected
+points, the model's ratings, the latest round's most confident call worked through step by step,
+the strong and too-close thresholds with how often each came true last season, and our record
+against the bookies' favourite. Run **How it works video** from the Actions tab every few months
+and the numbers tell the season's latest story; the video and captions arrive as one email.
+Locally: `python -m plpred.howitworks out/how-it-works` (add `--scripts` to skip rendering).
+
 The kit can also arrive by email, one message per post with both captions in the body and
 the images attached, so a post can be saved and posted from a phone. It comes in two
 editions, each on its own day (UK time):
