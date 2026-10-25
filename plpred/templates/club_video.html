@@ -109,7 +109,7 @@ html,body{margin:0;width:{{ width }}px;height:{{ height }}px;overflow:hidden;bac
 <h1 class="head disp" data-in="0:0">They {{ s.t.words }}.</h1>
 <div class="sub lab muted" data-in="0:0.3">{{ s.t.unit|capitalize }}, {{ p.seasons[-1].label }}{% if p.seasons[-1].now %} so far{% endif %}</div>
 {% for r in s.rows %}
-<div class="lad lab{% if r.me %} me{% endif %}" data-in="0:{{ 0.3 + loop.index0 * 0.05 }}"><span class="k">{{ loop.index }}</span><span class="tm">{{ r.team }}</span>
+<div class="lad lab{% if r.me %} me{% endif %}" data-in="0:{{ 0.3 + loop.index0 * 0.05 }}"><span class="k">{{ r.rank }}</span><span class="tm">{{ r.team }}</span>
 <span class="tr"><span class="bar" style="left:{{ r.left }}%" data-bar="{{ '1:0' if r.me else '0:' ~ (0.4 + loop.index0 * 0.05) }}" data-w="{{ r.w }}"></span></span><span class="vv">{{ r.v }}</span></div>
 {% endfor %}
 <div class="ranks lab" data-in="1:0.4">{% for r in s.t.ranks %}<span>{{ r }}{{ {1:'st',2:'nd',3:'rd'}.get(r, 'th') }} in {{ p.seasons[loop.index0].label }}</span>{% endfor %}</div>
@@ -140,7 +140,7 @@ html,body{margin:0;width:{{ width }}px;height:{{ height }}px;overflow:hidden;bac
 {% endfor %}
 
 <div class="cap"><span id="cap"></span></div>
-<div class="foot lab muted"><span>X @InkwellAlgo · IG @inkwellandalgorithm</span><span>Two seasons of data</span></div>
+<div class="foot lab muted"><span>X @InkwellAlgo · IG @inkwellandalgorithm</span><span>{{ 'Two seasons of data' if p.seasons|length > 1 else 'This season so far' }}</span></div>
 <div class="prog" id="prog"></div>
 
 <script>

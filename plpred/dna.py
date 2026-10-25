@@ -287,7 +287,9 @@ def ladder(t: dict, team: str) -> list[dict]:
     vals = [v for _, v in t["ladder"]]
     lo, hi = min(0, min(vals)), max(0, max(vals))
     span = (hi - lo) or 1
+    better = (lambda x, y: x > y) if HIGHER[t["key"]] else (lambda x, y: x < y)
     return [{"team": SHORT.get(name, name), "me": name == team, "v": fmt(t["key"], v),
+             "rank": 1 + sum(better(o, v) for o in vals),  # ties share a rank, as in the narration
              "left": round((min(v, 0) - lo) / span * 100, 1), "w": max(round(abs(v) / span * 100, 1), 0.6)}
             for name, v in t["ladder"]]
 
