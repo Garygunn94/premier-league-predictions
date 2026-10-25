@@ -102,3 +102,74 @@ def test_narration_times_every_line(tmp_path):
     assert [l["text"] for l in lines] == ["One.", "Two.", "Three."]
     assert all(b["start"] > a["end"] for a, b in zip(lines, lines[1:]))
     assert tl["duration"] > lines[-1]["end"] and (tmp_path / "v.wav").exists()
+
+
+def played_round(tmp_path, both=True):
+    """The test round with Strong 2-0 Weak played and, if both, Average 1-1 Good too."""
+    import pandas as pd
+    data = make_data(tmp_path)
+    (data / "upcoming").mkdir()
+    rows = {"fixture_id": [1, 2], "status": ["FT", "FT"], "home_team": ["Strong", "Average"],
+            "away_team": ["Weak", "Good"], "home_goals": [2, 1], "away_goals": [0, 1]}
+    pd.DataFrame({k: v if both else v[:1] for k, v in rows.items()}).to_csv(
+        data / "upcoming" / "fixtures.csv", index=False)
+    return site.build(data, tmp_path / "site") / "social"
+
+
+def test_every_video_ends_asking_for_a_comment_and_a_follow(tmp_path):
+    kit = site.build(make_data(tmp_path), tmp_path / "site") / "social"
+    for v in json.loads((kit / "videos.json").read_text()):
+        ask, follow = v["scenes"][-1]["lines"]
+        assert "?" in ask and follow in video.FOLLOW
+        assert follow in (kit / "videos" / f"{v['name']}.html").read_text()
+
+
+def test_the_first_frame_shows_the_hook(tmp_path):
+    kit = site.build(make_data(tmp_path), tmp_path / "site") / "social"
+    page = (kit / "videos" / "video-round.html").read_text()
+    assert "first && +l === 0" in page and "Matchweek 9, <span" in page
+
+
+def test_a_finished_round_gets_a_results_video(tmp_path):
+    kit = played_round(tmp_path)
+    videos = {v["name"]: v for v in json.loads((kit / "videos.json").read_text())}
+    res = videos["video-results"]
+    assert res["edition"] == "results" and videos["video-round"]["edition"] == "predictions"
+    lines = res["scenes"][0]["lines"]
+    assert lines[0].startswith("Matchweek 9: we got") and "of two right" in lines[0]
+    assert any(l.startswith("Best call: Strong against Weak") for l in lines)
+    page = (kit / "videos" / "video-results.html").read_text()
+    assert "Strong 2–0 Weak" in page.replace("\n", " ") or "2–0" in page
+    posts = {p["day"]: p for p in json.loads((kit / "posts.json").read_text())["posts"]}
+    results = next(p for p in posts.values() if p["when"].endswith("the results"))
+    assert results["video"] == "video-results"
+    fake_render(kit)
+    (kit / "video").mkdir()
+    (kit / "video" / "video-results.mp4").write_bytes(b"fake mp4")
+    folders = social.ready_to_post(kit)
+    assert any(p.name.startswith("matchweek-9-results-") for f in folders for p in f.glob("*.mp4"))
+
+
+def test_an_unfinished_round_has_no_results_video(tmp_path):
+    kit = played_round(tmp_path, both=False)
+    assert "video-results" not in {v["name"] for v in json.loads((kit / "videos.json").read_text())}
+
+
+def test_render_can_keep_to_one_edition(tmp_path):
+    kit = tmp_path / "kit"
+    kit.mkdir()
+    (kit / "videos.json").write_text(json.dumps([{"name": "a", "edition": "predictions"},
+                                                 {"name": "b", "edition": "results"}]))
+    assert video.render(kit, editions=[]) == []  # nothing due: nothing rendered, no browser started
+
+
+def test_instagram_captions_open_on_the_hook_and_ask_a_question(tmp_path):
+    kit = site.build(make_data(tmp_path), tmp_path / "site") / "social"
+    posts = json.loads((kit / "posts.json").read_text())["posts"]
+    game = next(p for p in posts if p.get("video") == "video-strong-v-weak")
+    hook = next(v for v in json.loads((kit / "videos.json").read_text()) if v["name"] == "video-strong-v-weak")
+    first = hook["scenes"][0]
+    if first["kind"] == "hook":
+        assert game["instagram"].startswith(first["lines"][0])
+    assert "👇" in game["instagram"] and social.FOLLOW in game["instagram"]
+    assert "👇" in posts[0]["instagram"]

@@ -1,6 +1,8 @@
-"""Short narrated videos for the posting kit: one per game and one for the round, 1080 x 1920 for Reels and X.
+"""Short narrated videos for the posting kit: one per game, one for the round and one for the round's
+results, 1080 x 1920 for Reels and X.
 
-    python -m plpred.video site/social   # voice and render the videos written by plpred.site
+    python -m plpred.video site/social           # voice and render the videos written by plpred.site
+    python -m plpred.video site/social --today   # just those of the kit editions emailed today
 
 `plpred.site` calls `build_videos` (through `plpred.social.build_kit`) to write each video's script and
 an animated HTML page into social/videos/. Rendering is a separate step because it needs a voice,
@@ -44,6 +46,9 @@ LEAD, GAP, SCENE_GAP, TAIL = 0.4, 0.25, 0.45, 1.2  # seconds of silence around t
 MODEL_URL = "https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/"
 MODEL_FILES = ("kokoro-v1.0.onnx", "voices-v1.0.bin")
 SPOKEN = {"Nott'm Forest": "Forest"}  # names as a commentator would say them
+# The last line of every video: why it's worth following.
+FOLLOW = ["Follow, and we'll tell you if we got it right.", "Follow for the verdict after the game.",
+          "Follow to see if the model gets it right."]
 WORDS = ["nil", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"]
 
 
@@ -352,11 +357,15 @@ def match_scenes(v: dict, matchweek=None, index: int = 0, hook=None) -> list[dic
         disagree = next((s for k, s in angles if k == "market" and not s["agree"]), None)
         scenes.append(disagree or say.choice(f"angle{len(angles)}", angles)[1])
 
-    scenes.append({"kind": "outro", "lines": [
-        say("outro", ["Agree? Tell us your score in the comments.", "Every call, with the reasons, at Inkwell and Algorithm dot com.",
-                      "Think we've got it wrong? Tell us below.", "Follow for every call, every Thursday.",
-                      "The full breakdown is at Inkwell and Algorithm dot com.", "What's your call? Comments are open."])]})
+    scenes.append(outro(say, ["Agree? Tell us your score in the comments.", "Think we've got it wrong? Tell us below.",
+                              "What's your score? Comments are open."]))
     return scenes
+
+
+def outro(say: Phrasing, asks: list[str]) -> dict:
+    """The sign-off: ask for a comment, then give a reason to follow. Comments push a reel's reach;
+    the follow line is the promise that brings people back."""
+    return {"kind": "outro", "lines": [say("ask", asks), say("follow", FOLLOW)]}
 
 
 def round_line(v: dict, say: Phrasing) -> str:
@@ -383,9 +392,44 @@ def round_scenes(ctx: dict, views: list[dict]) -> list[dict]:
                            "Every call for matchweek {mw}."], mw=ctx["matchweek"], n=n.capitalize())
     lines = [round_line(v, Phrasing(ctx["matchweek"], i)) for i, v in enumerate(games)]
     return [{"kind": "round", "games": games, "lines": [first] + lines},
-            {"kind": "outro", "lines": [say("r.ask", ["Which one have we got wrong? Tell us below.",
-                                                      "Agree? Tell us in the comments."]),
-                                        "Every call, with the reasons, at Inkwell and Algorithm dot com."]}]
+            outro(say, ["Which one have we got wrong? Tell us below.", "Agree? Tell us in the comments."])]
+
+
+def results_scenes(res: dict, ctx: dict) -> list[dict]:
+    """The round's verdict: how many we got right, against the bookies, the best call and the miss."""
+    say = Phrasing(res["matchweek"], 7)
+    live = [r for r in res["rows"] if not r["g"].get("after_kickoff")]
+    right, n = sum(r["right"] for r in live), len(live)
+    exact = sum(r["exact"] for r in live)
+    lines = [f"Matchweek {res['matchweek']}: we got {COUNTS[right] if right < len(COUNTS) else right} "
+             f"of {COUNTS[n] if n < len(COUNTS) else n} right."
+             + (f" {'One' if exact == 1 else COUNTS[exact].capitalize() if exact < len(COUNTS) else exact} "
+                f"exact {'score' if exact == 1 else 'scores'}, too." if exact else "")]
+    priced = [r for r in live if r["fav_right"] is not None]
+    if priced:
+        fav = sum(r["fav_right"] for r in priced)
+        lines.append(f"The bookies' favourite got {COUNTS[fav] if fav < len(COUNTS) else fav}.")
+    hits = [r for r in live if r["right"]]
+    if hits:
+        r = max(hits, key=lambda r: (r["exact"], r["g"]["our_p"]))
+        g = r["g"]
+        score = say_score({"score_text": r["result_text"]})
+        lines.append(f"Best call: {spoken(g['home_team'])} against {spoken(g['away_team'])}. "
+                     + (f"We said {score}, and it finished {score}." if r["exact"] else
+                        f"We had {call_words(g)} at {g['our_p']} percent, and it finished {score}."))
+    misses = [r for r in live if not r["right"]]
+    if misses:
+        r = max(misses, key=lambda r: r["g"]["our_p"])
+        g = r["g"]
+        verdict = {"Unlucky": " The chances backed us, though.",
+                   "Our mistake": " The chances say we misread it."}.get(r.get("kind"), "")
+        lines.append(f"The miss: {spoken(g['home_team'])} against {spoken(g['away_team'])}. We had {call_words(g)} "
+                     f"at {g['our_p']} percent. It finished {say_score({'score_text': r['result_text']})}.{verdict}")
+    rec = ctx.get("record")
+    if rec and rec.get("rate") is not None:
+        lines.append(f"Season so far: {rec['rate']} percent right.")
+    return [{"kind": "results", "rows": res["rows"], "right": right, "n": n, "lines": lines},
+            outro(say, ["How did your predictions do? Tell us below.", "Did you call it better? Tell us below."])]
 
 
 def build_videos(ctx: dict, views: list[dict], env: Environment, out: Path) -> list[dict]:
@@ -400,13 +444,20 @@ def build_videos(ctx: dict, views: list[dict], env: Environment, out: Path) -> l
     videos += [{"name": f"video-{v['slug']}", "slug": v["slug"], "title": f"{v['home_team']} v {v['away_team']}",
                 "g": v, "scenes": match_scenes(v, ctx["matchweek"], i, hook)}
                for i, (v, hook) in enumerate(zip(games, pick_hooks(games)))]
+    res = ctx.get("results")
+    if res and res["complete"] and any(not r["g"].get("after_kickoff") for r in res["rows"]):
+        videos.append({"name": "video-results", "slug": "results", "edition": "results",
+                       "matchweek": res["matchweek"], "title": f"Matchweek {res['matchweek']}: the verdict",
+                       "scenes": results_scenes(res, ctx)})
     page = env.get_template("social_video.html")
     for vid in videos:
-        vid["voice"] = pick_voice(ctx["matchweek"], vid["name"])
+        vid["voice"] = pick_voice(vid.get("matchweek", ctx["matchweek"]), vid["name"])
         (folder / f"{vid['name']}.html").write_text(page.render(
-            **ctx, video=vid, g=vid.get("g"), width=WIDTH, height=HEIGHT, root="../.."))
+            **{**ctx, "matchweek": vid.get("matchweek", ctx["matchweek"])},
+            video=vid, g=vid.get("g"), width=WIDTH, height=HEIGHT, root="../.."))
     (out / "videos.json").write_text(json.dumps([
-        {"name": v["name"], "title": v["title"], "voice": v["voice"], "voice_name": VOICES[v["voice"]]["name"],
+        {"name": v["name"], "title": v["title"], "edition": v.get("edition", "predictions"),
+         "voice": v["voice"], "voice_name": VOICES[v["voice"]]["name"],
          "scenes": [{"kind": s["kind"], "lines": s["lines"]} for s in v["scenes"]]} for v in videos], indent=1))
     log.info("Wrote %d video scripts into %s", len(videos), folder)
     return videos
@@ -489,16 +540,19 @@ def narrate(speak, scenes: list[dict], wav: Path) -> dict:
     return {"duration": duration, "scenes": timed}
 
 
-def render(kit: Path, names: list[str] | None = None) -> list[Path]:
-    """Voice and render every video in kit/videos.json into kit/video/<name>.mp4."""
-    from playwright.sync_api import sync_playwright
-
+def render(kit: Path, names: list[str] | None = None, editions: list[str] | None = None) -> list[Path]:
+    """Voice and render every video in kit/videos.json (or just those named, or of those editions)
+    into kit/video/<name>.mp4."""
     videos = json.loads((kit / "videos.json").read_text())
     if names:
         videos = [v for v in videos if v["name"] in names]
+    if editions is not None:
+        videos = [v for v in videos if v.get("edition", "predictions") in editions]
     if not videos:
         log.info("No videos to render")
         return []
+    from playwright.sync_api import sync_playwright
+
     google = kokoro = None
     if os.environ.get("GOOGLE_TTS_API_KEY"):
         google = Google(os.environ["GOOGLE_TTS_API_KEY"])
@@ -557,15 +611,18 @@ def main(argv=None) -> None:
     parser.add_argument("kit", type=Path, help="the kit folder written by plpred.site (normally site/social)")
     parser.add_argument("--only", nargs="*", metavar="NAME", help="render just these videos, e.g. video-round")
     parser.add_argument("--due", action="store_true",
-                        help="render nothing; exit 0 if the predictions edition is emailed today, else 1")
+                        help="render nothing; exit 0 if an edition of the kit is emailed today, else 1")
+    parser.add_argument("--today", action="store_true",
+                        help="render only the videos of the editions emailed today")
     args = parser.parse_args(argv)
-    if args.due:
+    if args.due or args.today:
         import pandas as pd
 
         from plpred import social
-        raise SystemExit(0 if "predictions" in social.due_editions(
-            args.kit, pd.Timestamp.now(tz="Europe/London").date()) else 1)
-    render(args.kit, args.only)
+        due = social.due_editions(args.kit, pd.Timestamp.now(tz="Europe/London").date())
+        if args.due:
+            raise SystemExit(0 if due else 1)
+    render(args.kit, args.only, due if args.today else None)
 
 
 if __name__ == "__main__":

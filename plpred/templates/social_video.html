@@ -60,7 +60,8 @@ html,body{margin:0;width:{{ width }}px;height:{{ height }}px;overflow:hidden;bac
 .round .head{margin-bottom:24px}
 .outro .brand{font-size:96px;font-weight:900;line-height:1.1}
 .outro .url{font-size:62px;font-weight:800;font-style:italic;margin-top:40px}
-.outro .tagline{font-size:40px;margin-top:40px;max-width:820px;line-height:1.35}
+.outro .follow{font-size:76px;font-weight:800;font-style:italic;line-height:1.08;margin-top:56px;max-width:900px}
+.outro .follow::before{content:"";display:block;width:120px;height:6px;background:var(--accent);margin:0 auto 48px}
 .cap{position:absolute;left:72px;right:72px;top:1400px;display:flex;justify-content:center;text-align:center}
 .cap span{font-weight:600;font-size:54px;line-height:1.25;color:#fff}
 .cap .hot{color:var(--accent)}
@@ -90,7 +91,7 @@ html,body{margin:0;width:{{ width }}px;height:{{ height }}px;overflow:hidden;bac
 {% elif s.kind == "hook" %}
 <div class="kicker lab accent" data-in="0:0">{{ g.home_team }} v {{ g.away_team }} · {{ g.kickoff_text }}</div>
 <div class="badges" data-in="0:0">{{ badge(g.home_team, root) }}<span class="vs disp muted">v</span>{{ badge(g.away_team, root) }}</div>
-<h1 class="head disp" data-in="0:0.2">{{ s.lines[0] }}</h1>
+<h1 class="head disp" data-in="0:0">{{ s.lines[0] }}</h1>
 {% elif s.kind == "flip" %}
 <div class="kicker lab accent" data-in="0:0">{{ g.home_team }} v {{ g.away_team }} · the big if</div>
 <h1 class="head disp" data-in="0:0">What would <span class="accent">change our mind?</span></h1>
@@ -138,10 +139,18 @@ html,body{margin:0;width:{{ width }}px;height:{{ height }}px;overflow:hidden;bac
 <div class="g" data-in="{{ loop.index }}:0"><span class="fx disp">{{ v.home_short }} v {{ v.away_short }}</span><span class="c lab {% if v.call == 'A' %}accent{% elif v.call == 'D' %}muted{% endif %}">{{ 'Draw' if v.call == 'D' else (v.home_short if v.call == 'H' else v.away_short) ~ ' win' }} {{ v.score_text }} · {{ v.our_p }}%</span></div>
 {% endfor %}
 </div>
+{% elif s.kind == "results" %}
+<div class="kicker lab accent" data-in="0:0">The verdict</div>
+<h1 class="head disp" data-in="0:0">Matchweek {{ matchweek }}: <span class="accent">{{ s.right }} of {{ s.n }}</span> right.</h1>
+<div class="list">
+{% for r in s.rows %}
+<div class="g" data-in="0:{{ loop.index * 0.2 }}"><span class="fx disp">{{ r.g.home_short }} {{ r.result_text }} {{ r.g.away_short }}</span><span class="c lab {% if not r.right %}accent{% endif %}">{% if r.g.after_kickoff %}After kick-off{% elif r.exact %}✓ Exact score{% elif r.right %}✓ Right{% else %}✗ We said {{ 'draw' if r.g.call == 'D' else (r.g.home_short if r.g.call == 'H' else r.g.away_short) }}{% endif %}</span></div>
+{% endfor %}
+</div>
 {% elif s.kind == "outro" %}
 <div class="brand disp" data-in="0:0">{{ wordmark() }}</div>
-<div class="url disp" data-in="0:0.4">inkwellandalgorithm<span class="accent">.com</span></div>
-<div class="tagline muted" data-in="0:0.8">Data-driven Premier League predictions, with the reasons. New every Thursday.</div>
+<div class="follow disp" data-in="1:0">{{ s.lines[-1] }}</div>
+<div class="url disp" data-in="1:0.4">inkwellandalgorithm<span class="accent">.com</span></div>
 {% endif %}
 </section>
 {% endfor %}
@@ -160,9 +169,12 @@ window.render = function (t) {
   document.querySelectorAll('[data-scene]').forEach(el => {
     const sc = TL.scenes[+el.dataset.scene];
     if (!sc) return;
-    const at = spec => { const [l, off] = spec.split(':'); return sc.timed[+l].start + (+off || 0); };
+    // The first frame is the hook (and the cover): what the first scene shows as its first line is
+    // spoken is already on screen at 0s, not faded in.
+    const first = +el.dataset.scene === 0;
+    const at = spec => { const [l, off] = spec.split(':'); return first && +l === 0 ? (+off || 0) - 0.45 : sc.timed[+l].start + (+off || 0); };
     const last = +el.dataset.scene === TL.scenes.length - 1;
-    el.style.opacity = Math.min(ease((t - sc.start) / 0.35), last ? 1 : 1 - clamp((t - sc.end + 0.3) / 0.3));
+    el.style.opacity = Math.min(first ? 1 : ease((t - sc.start) / 0.35), last ? 1 : 1 - clamp((t - sc.end + 0.3) / 0.3));
     el.querySelectorAll('[data-in]').forEach(n => {
       const p = ease((t - at(n.dataset.in)) / 0.45);
       n.style.opacity = p; n.style.transform = `translateY(${(1 - p) * 30}px)`;
