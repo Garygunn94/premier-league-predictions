@@ -500,7 +500,11 @@ def ready_to_post(kit: Path) -> list[Path]:
         how = f"{post['when']}\n\n{post['how']}\n"
         clip = kit / "video" / f"{post.get('video')}.mp4"
         if post.get("video") and clip.exists():
-            shutil.copy(clip, folder / f"video-{post['voice'].lower()}.mp4")
+            # Named after the match (or the round), with the voice, e.g. arsenal-v-everton-emma.mp4.
+            what = post["video"].removeprefix("video-")
+            if what == "round":
+                what = f"matchweek-{data['matchweek']}-round"
+            shutil.copy(clip, folder / f"{what}-{post['voice'].lower()}.mp4")
             how += (f"\nThere's also a narrated video, read by {post['voice']}. Post it as a Reel and on X "
                     f"(same captions), as well as the images. Note the voice, to see which one people prefer.\n")
         (folder / "how.txt").write_text(how)

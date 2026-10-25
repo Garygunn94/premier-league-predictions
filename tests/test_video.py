@@ -46,7 +46,10 @@ def test_rendered_videos_go_into_the_post_folders_and_emails(tmp_path):
         (kit / "video" / f"{v['name']}.mp4").write_bytes(b"fake mp4")
     folders = social.ready_to_post(kit)
     clips = list(folders[0].glob("*.mp4"))
-    assert len(clips) == 1 and clips[0].name in ("video-george.mp4", "video-emma.mp4")
+    mw = json.loads((kit / "posts.json").read_text())["matchweek"]
+    assert len(clips) == 1 and clips[0].name in (f"matchweek-{mw}-round-george.mp4", f"matchweek-{mw}-round-emma.mp4")
+    game = next(f for f in folders if list(f.glob("strong-v-weak-*.mp4")))
+    assert (game / "how.txt").read_text().startswith("Carousel")
     assert "narrated video, read by" in (folders[0] / "how.txt").read_text()
     msgs = social.kit_emails(kit, "me@example.com", "me@example.com")
     assert any(p.get_content_type() == "video/mp4" for p in msgs[1].iter_attachments())
