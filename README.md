@@ -172,6 +172,24 @@ voices read the videos instead (George for Charon, Emma for Kore; its ~350 MB mo
 by the workflow), and the kit names the voice actually used. Locally:
 `pip install kokoro-onnx soundfile`, plus Playwright and ffmpeg, with `GOOGLE_TTS_API_KEY` set.
 
+**Club DNA** videos are the evergreen kind: one per club, about a minute long, on what makes it
+the side it is (`plpred/dna.py`). Every club is ranked against the league on 19 per-game stats
+(xG both ways, shots, share of the shots, chance quality, finishing and goalkeeping against xG,
+corners, fouls, cards, home edge, game state, points against the bookies' expectation) in each
+of its last two seasons. A strength must be top 4 in both, relaxed to top 6 then top 8 for clubs
+with fewer than three, and only the best per family (attack, defence, control and so on) is kept.
+Then come a flaw (15th or worse in both), the stat whose rank moved most (8 places or more), and
+whether the strengths are holding up this season. A club with one Premier League season in the
+window compares it with this season so far; one promoted last summer gets this season alone.
+Every line is a template filled from those numbers, read by the same voices as the weekly videos.
+
+They stay true all season, so they're made only on request: run **Club videos** from the
+Actions tab, for every club or just the ones named (comma-separated). Four runners share the
+clubs, about 15 minutes for all twenty, and each club's video arrives as its own email with both
+captions, from and to `KIT_EMAIL` like the weekly kit.
+Remake them each summer; a mid-season run refreshes the "this season" scene. Locally:
+`python -m plpred.dna out/club-dna --only Arsenal` (add `--scripts` to skip rendering).
+
 The kit can also arrive by email, one message per post with both captions in the body and
 the images attached, so a post can be saved and posted from a phone. It comes in two
 editions, each on its own day (UK time):

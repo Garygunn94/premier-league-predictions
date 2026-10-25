@@ -1,0 +1,58 @@
+name: Club videos
+
+# "Club DNA": one narrated video per Premier League club on what makes them the side they are
+# (plpred/dna.py). They stay true for months, so they're made only when asked: run this by hand
+# from the Actions tab, for every club or just the ones named. Four runners share the clubs,
+# so all twenty take about fifteen minutes. Each club's video and captions arrive as one email,
+# from and to KIT_EMAIL like the weekly posting kit (KIT_EMAIL_PASSWORD, optional KIT_EMAIL_TO).
+
+on:
+  workflow_dispatch:
+    inputs:
+      clubs:
+        description: "Only these clubs, comma-separated (e.g. Arsenal, Man United). Empty for all."
+        type: string
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg > /dev/null
+          pip install -r requirements.txt kokoro-onnx==0.6.1 soundfile==0.14.0 playwright==1.64.0
+          python -m playwright install --with-deps chromium
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/kokoro
+          key: kokoro-v1.0
+      # Google Cloud Text-to-Speech reads the videos when GOOGLE_TTS_API_KEY is set; otherwise,
+      # or if Google fails, Kokoro does (as for the weekly videos).
+      - name: Make and email this runner's share of the videos
+        env:
+          GOOGLE_TTS_API_KEY: ${{ secrets.GOOGLE_TTS_API_KEY }}
+          KIT_EMAIL: ${{ secrets.KIT_EMAIL }}
+          KIT_EMAIL_PASSWORD: ${{ secrets.KIT_EMAIL_PASSWORD }}
+          KIT_EMAIL_TO: ${{ vars.KIT_EMAIL_TO }}
+          CLUBS: ${{ inputs.clubs }}
+        run: |
+          if [ -n "$CLUBS" ]; then
+            IFS=',' read -ra picked <<< "$CLUBS"
+            only=(); for c in "${picked[@]}"; do c="$(echo "$c" | sed 's/^ *//; s/ *$//')"; [ -n "$c" ] && only+=("$c"); done
+            python -m plpred.dna out/club-dna --shard ${{ matrix.shard }}/4 --email --only "${only[@]}"
+          else
+            python -m plpred.dna out/club-dna --shard ${{ matrix.shard }}/4 --email
+          fi
