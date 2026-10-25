@@ -185,8 +185,8 @@ Every line is a template filled from those numbers, read by the same voices as t
 
 They stay true all season, so they're made only on request: run **Club videos** from the
 Actions tab, for every club or just the ones named (comma-separated). Four runners share the
-clubs, about 15 minutes for all twenty, and the result is a `club-videos` zip on the run, locked
-with `KIT_PASSWORD`: one folder per club with the video, `instagram.txt`, `x.txt` and `how.txt`.
+clubs, about 15 minutes for all twenty, and each club's video arrives as its own email with both
+captions, from and to `KIT_EMAIL` like the weekly kit.
 Remake them each summer; a mid-season run refreshes the "this season" scene. Locally:
 `python -m plpred.dna out/club-dna --only Arsenal` (add `--scripts` to skip rendering).
 

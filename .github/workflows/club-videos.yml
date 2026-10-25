@@ -3,8 +3,8 @@ name: Club videos
 # "Club DNA": one narrated video per Premier League club on what makes them the side they are
 # (plpred/dna.py). They stay true for months, so they're made only when asked: run this by hand
 # from the Actions tab, for every club or just the ones named. Four runners share the clubs,
-# so all twenty take about fifteen minutes. The videos and their captions come back as one zip
-# attached to the run, locked with the KIT_PASSWORD secret like the posting kit.
+# so all twenty take about fifteen minutes. Each club's video and captions arrive as one email,
+# from and to KIT_EMAIL like the weekly posting kit (KIT_EMAIL_PASSWORD, optional KIT_EMAIL_TO).
 
 on:
   workflow_dispatch:
@@ -41,49 +41,18 @@ jobs:
           key: kokoro-v1.0
       # Google Cloud Text-to-Speech reads the videos when GOOGLE_TTS_API_KEY is set; otherwise,
       # or if Google fails, Kokoro does (as for the weekly videos).
-      - name: Make this runner's share of the videos
+      - name: Make and email this runner's share of the videos
         env:
           GOOGLE_TTS_API_KEY: ${{ secrets.GOOGLE_TTS_API_KEY }}
+          KIT_EMAIL: ${{ secrets.KIT_EMAIL }}
+          KIT_EMAIL_PASSWORD: ${{ secrets.KIT_EMAIL_PASSWORD }}
+          KIT_EMAIL_TO: ${{ vars.KIT_EMAIL_TO }}
           CLUBS: ${{ inputs.clubs }}
         run: |
           if [ -n "$CLUBS" ]; then
             IFS=',' read -ra picked <<< "$CLUBS"
-            only=(); for c in "${picked[@]}"; do c="$(echo "$c" | xargs)"; [ -n "$c" ] && only+=("$c"); done
-            python -m plpred.dna out/club-dna --shard ${{ matrix.shard }}/4 --only "${only[@]}"
+            only=(); for c in "${picked[@]}"; do c="$(echo "$c" | sed 's/^ *//; s/ *$//')"; [ -n "$c" ] && only+=("$c"); done
+            python -m plpred.dna out/club-dna --shard ${{ matrix.shard }}/4 --email --only "${only[@]}"
           else
-            python -m plpred.dna out/club-dna --shard ${{ matrix.shard }}/4
+            python -m plpred.dna out/club-dna --shard ${{ matrix.shard }}/4 --email
           fi
-      - uses: actions/upload-artifact@v4
-        with:
-          name: club-dna-${{ matrix.shard }}
-          path: out/club-dna/ready
-          if-no-files-found: ignore
-          retention-days: 1
-
-  # The repository is public, so anyone signed in to GitHub could download a plain artifact:
-  # the four shares are joined into one zip locked with KIT_PASSWORD.
-  lock:
-    needs: render
-    if: always()
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          pattern: club-dna-*
-          path: club-videos
-          merge-multiple: true
-      - name: Lock the videos
-        env:
-          KIT_PASSWORD: ${{ secrets.KIT_PASSWORD }}
-        run: |
-          if [ -z "$KIT_PASSWORD" ]; then
-            echo "::error::KIT_PASSWORD is not set, so the club videos can't be attached safely."
-            exit 1
-          fi
-          ls club-videos
-          7z a -tzip -mem=AES256 -p"$KIT_PASSWORD" club-videos.zip club-videos > /dev/null
-      - uses: actions/upload-artifact@v4
-        with:
-          name: club-videos
-          path: club-videos.zip
-          retention-days: 30

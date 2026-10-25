@@ -4,6 +4,7 @@
     python -m plpred.dna out/club-dna --only Arsenal     # just these clubs
     python -m plpred.dna out/club-dna --shard 2/4        # every fourth club, for parallel runs
     python -m plpred.dna out/club-dna --scripts          # write the scripts and pages, don't render
+    python -m plpred.dna out/club-dna --email            # and email each club's video and captions
 
 Unlike the weekly videos these stay true for months, so they can be posted any time. Each club is
 ranked against the league on the STATS below in each of its last two seasons. A trait is a stat
@@ -18,13 +19,17 @@ year before last) compares it with this season so far; a club promoted last summ
 season alone. Every sentence is a template filled from these numbers, like the weekly videos.
 
 The folder gets the scripts and animated pages, the videos (rendered by plpred.video.render, so
-they use the same voices) and ready/, one folder per club with the video and both captions.
+they use the same voices) and ready/, one folder per club with the video and both captions. With
+--email each club's video and captions are emailed as one message, from and to KIT_EMAIL like the
+weekly posting kit.
 """
 import argparse
 import json
 import logging
+import os
 import re
 import shutil
+import smtplib
 from pathlib import Path
 
 import numpy as np
@@ -427,6 +432,29 @@ def ready_to_post(out: Path) -> list[Path]:
     return folders
 
 
+def emails(out: Path, sender: str, to: str) -> list:
+    """One email per rendered club, laid out like the weekly kit's posts."""
+    folders = sorted(p for p in (out / "ready").iterdir() if p.is_dir()) if (out / "ready").exists() else []
+    titles = {slug(v["team"]): v["team"] for v in json.loads((out / "videos.json").read_text())}
+    return [social.post_email({"day": titles.get(f.name, f.name)}, f, "Club DNA", sender, to) for f in folders]
+
+
+def email(out: Path) -> int:
+    """Send the club videos to KIT_EMAIL (or KIT_EMAIL_TO). Skips with a warning when the secrets are unset."""
+    sender, password = os.environ.get("KIT_EMAIL"), os.environ.get("KIT_EMAIL_PASSWORD")
+    if not sender or not password:
+        log.warning("KIT_EMAIL and KIT_EMAIL_PASSWORD are not both set, so the club videos were not emailed.")
+        return 0
+    msgs = emails(out, sender, os.environ.get("KIT_EMAIL_TO") or sender)
+    if msgs:
+        with smtplib.SMTP_SSL(os.environ.get("KIT_SMTP_HOST", "smtp.gmail.com"), 465) as smtp:
+            smtp.login(sender, password)
+            for m in msgs:
+                smtp.send_message(m)
+    log.info("Emailed %d club videos", len(msgs))
+    return len(msgs)
+
+
 def main(argv=None) -> None:
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
@@ -435,6 +463,7 @@ def main(argv=None) -> None:
     parser.add_argument("--only", nargs="*", metavar="CLUB", help="just these clubs, e.g. Arsenal \"Man United\"")
     parser.add_argument("--shard", metavar="I/N", help="every Nth club starting with the Ith, e.g. 1/4")
     parser.add_argument("--scripts", action="store_true", help="write the scripts and pages only, don't render")
+    parser.add_argument("--email", action="store_true", help="email each club's video and captions to KIT_EMAIL")
     args = parser.parse_args(argv)
     teams = args.only or clubs_now(pd.read_csv(args.data / "matches.csv"))
     if args.shard:
@@ -452,6 +481,8 @@ def main(argv=None) -> None:
     if not args.scripts:
         video.render(args.out)
         ready_to_post(args.out)
+        if args.email:
+            email(args.out)
 
 
 if __name__ == "__main__":

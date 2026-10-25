@@ -112,3 +112,6 @@ def test_ready_folders_hold_the_video_and_captions(tmp_path):
     assert [p.name for p in folders[0].glob("*.mp4")] == ["dna-wall-emma.mp4"]
     assert "What makes Wall tick?" in (folders[0] / "instagram.txt").read_text()
     assert (folders[0] / "x.txt").exists() and "read by Emma" in (folders[0] / "how.txt").read_text()
+    [msg] = dna.emails(out, "me@example.com", "me@example.com")
+    assert msg["Subject"] == "Club DNA · Wall" and "---- INSTAGRAM ----" in msg.get_body().get_content()
+    assert [p.get_filename() for p in msg.iter_attachments()] == ["dna-wall-emma.mp4"]
