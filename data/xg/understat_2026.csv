@@ -70,3 +70,7 @@ season,date,home_team,away_team,home_xg,away_xg,understat_id
 2026,2026-10-18,Nott'm Forest,Arsenal,0.74721,0.9151,31248
 2026,2026-10-19,Tottenham,Coventry,0.971825,1.1439,31249
 2026,2026-10-23,Ipswich,Nott'm Forest,0.856862,2.75509,31250
+2026,2026-10-24,Aston Villa,Man City,0.645964,2.28542,31251
+2026,2026-10-24,Coventry,Fulham,0.402537,0.572746,31253
+2026,2026-10-24,Arsenal,Everton,2.28617,0.721815,31254
+2026,2026-10-24,Chelsea,Tottenham,0.460466,0.979641,31255
