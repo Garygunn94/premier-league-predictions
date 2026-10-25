@@ -8,8 +8,8 @@ Playwright and ffmpeg: each line of the script is voiced on its own, so the page
 line starts, and its charts grow and count up as the narrator reaches them. Playwright captures the
 page frame by frame and ffmpeg joins the frames and the voice into social/video/<name>.mp4.
 
-The voice is Google Cloud Text-to-Speech (Chirp 3: HD, `pip install google-cloud-texttospeech`),
-signed in with the service account key file named by GOOGLE_APPLICATION_CREDENTIALS. Without it, or
+The voice is Google Cloud Text-to-Speech (Chirp 3: HD), called over its REST API with the API key in
+GOOGLE_TTS_API_KEY. Without it, or
 if Google fails, the video is read by Kokoro instead (kokoro-onnx, free, runs on the CPU; its model,
 about 350 MB, is downloaded once into KOKORO_DIR), so a video is never lost to a voice outage.
 
@@ -17,6 +17,7 @@ Each video is read by one of two voices, picked at random but fixed for that vid
 so we can see which one people prefer. The voice is named in the kit beside every video, and
 kit/video/voices.json records the voice each video was actually read by.
 """
+import base64
 import io
 import argparse
 import hashlib
@@ -176,19 +177,21 @@ class Google:
     """Google Cloud Text-to-Speech. Chirp 3: HD has 1M free characters a month; a week's videos use
     about 5,000."""
 
-    def __init__(self):
-        from google.cloud import texttospeech
-        self.tts = texttospeech
-        self.client = texttospeech.TextToSpeechClient()
+    URL = "https://texttospeech.googleapis.com/v1/text:synthesize"
+
+    def __init__(self, key: str):
+        self.key = key
 
     def speak(self, line: str, voice: str):
+        import requests
         import soundfile as sf
-        tts = self.tts
-        res = self.client.synthesize_speech(
-            input=tts.SynthesisInput(text=line),
-            voice=tts.VoiceSelectionParams(language_code="en-GB", name=voice),
-            audio_config=tts.AudioConfig(audio_encoding=tts.AudioEncoding.LINEAR16, sample_rate_hertz=24000))
-        audio, sr = sf.read(io.BytesIO(res.audio_content), dtype="float32")
+
+        res = requests.post(self.URL, headers={"X-Goog-Api-Key": self.key}, timeout=60, json={
+            "input": {"text": line}, "voice": {"languageCode": "en-GB", "name": voice},
+            "audioConfig": {"audioEncoding": "LINEAR16", "sampleRateHertz": 24000}})
+        if not res.ok:  # Google's message says what is wrong (API not enabled, key restricted, ...)
+            raise RuntimeError(f"HTTP {res.status_code}: {res.text[:300]}")
+        audio, sr = sf.read(io.BytesIO(base64.b64decode(res.json()["audioContent"])), dtype="float32")
         return audio, sr
 
 
@@ -243,13 +246,10 @@ def render(kit: Path, names: list[str] | None = None) -> list[Path]:
         log.info("No videos to render")
         return []
     google = kokoro = None
-    if os.environ.get("GOOGLE_APPLICATION_CREDENTIALS"):
-        try:
-            google = Google()
-        except Exception as e:  # a missing library or a bad key: fall back, never lose the videos
-            log.warning("Google Text-to-Speech unavailable (%s), so Kokoro reads the videos", e)
+    if os.environ.get("GOOGLE_TTS_API_KEY"):
+        google = Google(os.environ["GOOGLE_TTS_API_KEY"])
     else:
-        log.info("GOOGLE_APPLICATION_CREDENTIALS is not set, so Kokoro reads the videos")
+        log.info("GOOGLE_TTS_API_KEY is not set, so Kokoro reads the videos")
     (kit / "video").mkdir(exist_ok=True)
     used_file = kit / "video" / "voices.json"
     used = json.loads(used_file.read_text()) if used_file.exists() else {}

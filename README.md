@@ -163,14 +163,14 @@ day the predictions edition is emailed, or on a manual Publish site run with
 **Make the narrated videos** ticked. Add music from Instagram's own library when posting, never a
 commercial track baked into the file.
 
-Google needs the `GOOGLE_TTS_CREDENTIALS` repository secret: the JSON key of a Google Cloud
-service account in a project with billing and the Cloud Text-to-Speech API enabled. Chirp 3: HD
-has 1 million free characters a month and a week's videos use about 5,000, so it should cost
-nothing. Without the secret, or if Google fails, the free [Kokoro](https://github.com/thewh1teagle/kokoro-onnx)
+Google needs the `GOOGLE_TTS_API_KEY` repository secret: an API key from a Google Cloud project
+with billing and the Cloud Text-to-Speech API enabled (APIs & Services > Credentials > Create
+credentials > API key, best restricted to the Cloud Text-to-Speech API). Chirp 3: HD has 1 million
+free characters a month and a week's videos use about 5,000, so it should cost nothing. Without
+the key, or if Google fails, the free [Kokoro](https://github.com/thewh1teagle/kokoro-onnx)
 voices read the videos instead (George for Charon, Emma for Kore; its ~350 MB model is cached
 by the workflow), and the kit names the voice actually used. Locally:
-`pip install google-cloud-texttospeech kokoro-onnx soundfile`, plus Playwright and ffmpeg, with
-`GOOGLE_APPLICATION_CREDENTIALS` pointing at the key file.
+`pip install kokoro-onnx soundfile`, plus Playwright and ffmpeg, with `GOOGLE_TTS_API_KEY` set.
 
 The kit can also arrive by email, one message per post with both captions in the body and
 the images attached, so a post can be saved and posted from a phone. It comes in two
