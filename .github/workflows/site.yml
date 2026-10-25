@@ -73,9 +73,17 @@ jobs:
       - name: Make the narrated videos
         if: steps.videos.outputs.make == 'true'
         continue-on-error: true
+        # Google Cloud Text-to-Speech reads the videos when the GOOGLE_TTS_CREDENTIALS repository
+        # secret holds a service account key (JSON); otherwise, or if Google fails, Kokoro does.
+        env:
+          GOOGLE_TTS_CREDENTIALS: ${{ secrets.GOOGLE_TTS_CREDENTIALS }}
         run: |
           sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg > /dev/null
-          pip install kokoro-onnx==0.6.1 soundfile==0.14.0
+          pip install google-cloud-texttospeech==2.37.0 kokoro-onnx==0.6.1 soundfile==0.14.0
+          if [ -n "$GOOGLE_TTS_CREDENTIALS" ]; then
+            printf '%s' "$GOOGLE_TTS_CREDENTIALS" > "$RUNNER_TEMP/google-tts.json"
+            export GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/google-tts.json"
+          fi
           python -m plpred.video site/social
       - name: Render the social media cards
         run: python -m plpred.social --png site/social
