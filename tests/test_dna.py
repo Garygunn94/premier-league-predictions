@@ -74,7 +74,7 @@ def test_scripts_read_like_speech():
     lines = [line for s in dna.scenes(p) for line in s["lines"]]
     assert lines[0].startswith("Wall. ") and "two seasons ago" in lines[0] and "last season" in lines[0]
     assert lines[2] == "One: they give away almost nothing."
-    assert "the best in the league, two seasons running" in lines[3]
+    assert lines[3] == "The best in the league, two seasons running."
     assert lines[-1].startswith("Follow for your club next")
     assert not any("-0" in line for line in lines)
 
