@@ -3,15 +3,22 @@
     python -m plpred.video site/social   # voice and render the videos written by plpred.site
 
 `plpred.site` calls `build_videos` (through `plpred.social.build_kit`) to write each video's script and
-an animated HTML page into social/videos/. Rendering is a separate step because it needs the Kokoro
-voice model (kokoro-onnx, about 350 MB, downloaded once into KOKORO_DIR), Playwright and ffmpeg:
-each line of the script is voiced on its own, so the page knows when every line starts, and its
-charts grow and count up as the narrator reaches them. Playwright captures the page frame by frame
-and ffmpeg joins the frames and the voice into social/video/<name>.mp4.
+an animated HTML page into social/videos/. Rendering is a separate step because it needs a voice,
+Playwright and ffmpeg: each line of the script is voiced on its own, so the page knows when every
+line starts, and its charts grow and count up as the narrator reaches them. Playwright captures the
+page frame by frame and ffmpeg joins the frames and the voice into social/video/<name>.mp4.
+
+The voice is Google Cloud Text-to-Speech (Chirp 3: HD), called over its REST API with the API key in
+GOOGLE_TTS_API_KEY. Without it, or
+if Google fails, the video is read by Kokoro instead (kokoro-onnx, free, runs on the CPU; its model,
+about 350 MB, is downloaded once into KOKORO_DIR), so a video is never lost to a voice outage.
 
 Each video is read by one of two voices, picked at random but fixed for that video and matchweek,
-so we can see which one people prefer. The voice is named in the kit beside every video.
+so we can see which one people prefer. The voice is named in the kit beside every video, and
+kit/video/voices.json records the voice each video was actually read by.
 """
+import base64
+import io
 import argparse
 import hashlib
 import json
@@ -27,7 +34,10 @@ from pathlib import Path
 from jinja2 import Environment
 
 log = logging.getLogger("plpred.video")
-VOICES = {"bm_george": "George", "bf_emma": "Emma"}  # Kokoro's British voices
+# The two voices we compare: a British Google voice each, and the Kokoro voice that stands in for it.
+VOICES = {"charon": {"name": "Charon", "google": "en-GB-Chirp3-HD-Charon", "kokoro": "bm_george"},
+          "kore": {"name": "Kore", "google": "en-GB-Chirp3-HD-Kore", "kokoro": "bf_emma"}}
+KOKORO_NAMES = {"bm_george": "George", "bf_emma": "Emma"}
 WIDTH, HEIGHT, FPS = 1080, 1920, 30
 SPEED = 1.08
 LEAD, GAP, SCENE_GAP, TAIL = 0.4, 0.25, 0.45, 1.2  # seconds of silence around the lines
@@ -142,7 +152,7 @@ def build_videos(ctx: dict, views: list[dict], env: Environment, out: Path) -> l
         (folder / f"{vid['name']}.html").write_text(page.render(
             **ctx, video=vid, g=vid.get("g"), width=WIDTH, height=HEIGHT, root="../.."))
     (out / "videos.json").write_text(json.dumps([
-        {"name": v["name"], "title": v["title"], "voice": v["voice"], "voice_name": VOICES[v["voice"]],
+        {"name": v["name"], "title": v["title"], "voice": v["voice"], "voice_name": VOICES[v["voice"]]["name"],
          "scenes": [{"kind": s["kind"], "lines": s["lines"]} for s in v["scenes"]]} for v in videos], indent=1))
     log.info("Wrote %d video scripts into %s", len(videos), folder)
     return videos
@@ -163,8 +173,43 @@ def model_dir() -> Path:
     return d
 
 
-def narrate(kokoro, scenes: list[dict], voice: str, wav: Path) -> dict:
-    """Voice every line, join them with short pauses, and time each scene and line."""
+class Google:
+    """Google Cloud Text-to-Speech. Chirp 3: HD has 1M free characters a month; a week's videos use
+    about 5,000."""
+
+    URL = "https://texttospeech.googleapis.com/v1/text:synthesize"
+
+    def __init__(self, key: str):
+        self.key = key
+
+    def speak(self, line: str, voice: str):
+        import requests
+        import soundfile as sf
+
+        res = requests.post(self.URL, headers={"X-Goog-Api-Key": self.key}, timeout=60, json={
+            "input": {"text": line}, "voice": {"languageCode": "en-GB", "name": voice},
+            "audioConfig": {"audioEncoding": "LINEAR16", "sampleRateHertz": 24000}})
+        if not res.ok:  # Google's message says what is wrong (API not enabled, key restricted, ...)
+            raise RuntimeError(f"HTTP {res.status_code}: {res.text[:300]}")
+        audio, sr = sf.read(io.BytesIO(base64.b64decode(res.json()["audioContent"])), dtype="float32")
+        return audio, sr
+
+
+class Kokoro:
+    """The free fallback, loaded only when a video needs it."""
+
+    def __init__(self):
+        from kokoro_onnx import Kokoro as Model
+        d = model_dir()
+        self.model = Model(str(d / MODEL_FILES[0]), str(d / MODEL_FILES[1]))
+
+    def speak(self, line: str, voice: str):
+        return self.model.create(line, voice=voice, speed=SPEED, lang="en-gb")
+
+
+def narrate(speak, scenes: list[dict], wav: Path) -> dict:
+    """Voice every line with speak(line) -> (audio, rate), join them with short pauses, and time
+    each scene and line."""
     import numpy as np
     import soundfile as sf
 
@@ -176,7 +221,7 @@ def narrate(kokoro, scenes: list[dict], voice: str, wav: Path) -> dict:
         start = 0.0 if i == 0 else t - SCENE_GAP / 2
         lines = []
         for line in sc["lines"]:
-            audio, sr = kokoro.create(line, voice=voice, speed=SPEED, lang="en-gb")
+            audio, sr = speak(line)
             lines.append({"text": line, "start": round(t, 3), "end": round(t + len(audio) / sr, 3)})
             parts += [audio.astype(np.float32), silence(GAP)]
             t += len(audio) / sr + GAP
@@ -192,7 +237,6 @@ def narrate(kokoro, scenes: list[dict], voice: str, wav: Path) -> dict:
 
 def render(kit: Path, names: list[str] | None = None) -> list[Path]:
     """Voice and render every video in kit/videos.json into kit/video/<name>.mp4."""
-    from kokoro_onnx import Kokoro
     from playwright.sync_api import sync_playwright
 
     videos = json.loads((kit / "videos.json").read_text())
@@ -201,9 +245,14 @@ def render(kit: Path, names: list[str] | None = None) -> list[Path]:
     if not videos:
         log.info("No videos to render")
         return []
-    d = model_dir()
-    kokoro = Kokoro(str(d / MODEL_FILES[0]), str(d / MODEL_FILES[1]))
+    google = kokoro = None
+    if os.environ.get("GOOGLE_TTS_API_KEY"):
+        google = Google(os.environ["GOOGLE_TTS_API_KEY"])
+    else:
+        log.info("GOOGLE_TTS_API_KEY is not set, so Kokoro reads the videos")
     (kit / "video").mkdir(exist_ok=True)
+    used_file = kit / "video" / "voices.json"
+    used = json.loads(used_file.read_text()) if used_file.exists() else {}
     done = []
     with sync_playwright() as p, tempfile.TemporaryDirectory() as tmp:
         path = os.environ.get("CHROMIUM_PATH")
@@ -211,7 +260,20 @@ def render(kit: Path, names: list[str] | None = None) -> list[Path]:
         for vid in videos:
             work = Path(tmp) / vid["name"]
             (work / "frames").mkdir(parents=True)
-            timeline = narrate(kokoro, vid["scenes"], vid["voice"], work / "voice.wav")
+            voice = VOICES[vid["voice"]]
+            timeline = None
+            if google:
+                try:
+                    timeline = narrate(lambda line: google.speak(line, voice["google"]), vid["scenes"],
+                                       work / "voice.wav")
+                    used[vid["name"]] = voice["name"]
+                except Exception as e:
+                    log.warning("Google Text-to-Speech failed on %s (%s), so Kokoro reads it", vid["name"], e)
+            if timeline is None:
+                kokoro = kokoro or Kokoro()
+                timeline = narrate(lambda line: kokoro.speak(line, voice["kokoro"]), vid["scenes"],
+                                   work / "voice.wav")
+                used[vid["name"]] = KOKORO_NAMES[voice["kokoro"]]
             page = browser.new_page(viewport={"width": WIDTH, "height": HEIGHT})
             page.add_init_script(f"window.TIMELINE = {json.dumps(timeline)};")
             page.goto((kit / "videos" / f"{vid['name']}.html").resolve().as_uri())
@@ -228,9 +290,10 @@ def render(kit: Path, names: list[str] | None = None) -> list[Path]:
                             "-c:a", "aac", "-b:a", "160k", "-shortest", "-movflags", "+faststart", str(target)],
                            check=True)
             shutil.rmtree(work)
-            log.info("Rendered %s (%.0fs, %s)", target.name, timeline["duration"], vid["voice_name"])
+            log.info("Rendered %s (%.0fs, %s)", target.name, timeline["duration"], used[vid["name"]])
             done.append(target)
         browser.close()
+    used_file.write_text(json.dumps(used, indent=1))
     return done
 
 

@@ -428,7 +428,7 @@ def build_kit(ctx: dict, views: list[dict], env: Environment, out: Path) -> Path
     for d in days:
         vid = videos.get(d.get("slug"))
         if vid:
-            d["video"], d["voice"] = vid["name"], video.VOICES[vid["voice"]]
+            d["video"], d["voice"] = vid["name"], video.VOICES[vid["voice"]]["name"]
     editions = {"predictions": {"matchweek": ctx["matchweek"], "date": str(eve.date())}}
     if res:
         editions["results"] = {"matchweek": res["matchweek"], "date": res["post_date"]}
@@ -487,6 +487,8 @@ def x_text(posts: list[str]) -> str:
 def ready_to_post(kit: Path) -> list[Path]:
     """Copy the rendered kit into kit/ready/: one folder per post, images numbered in slide order."""
     data = json.loads((kit / "posts.json").read_text())
+    used = kit / "video" / "voices.json"
+    voices_used = json.loads(used.read_text()) if used.exists() else {}
     ready = kit / "ready"
     shutil.rmtree(ready, ignore_errors=True)
     folders = []
@@ -500,12 +502,14 @@ def ready_to_post(kit: Path) -> list[Path]:
         how = f"{post['when']}\n\n{post['how']}\n"
         clip = kit / "video" / f"{post.get('video')}.mp4"
         if post.get("video") and clip.exists():
+            # The voice it was actually read by: Kokoro stands in when Google Text-to-Speech fails.
+            voice = voices_used.get(post["video"], post["voice"])
             # Named after the match (or the round), with the voice, e.g. arsenal-v-everton-emma.mp4.
             what = post["video"].removeprefix("video-")
             if what == "round":
                 what = f"matchweek-{data['matchweek']}-round"
-            shutil.copy(clip, folder / f"{what}-{post['voice'].lower()}.mp4")
-            how += (f"\nThere's also a narrated video, read by {post['voice']}. Post it as a Reel and on X "
+            shutil.copy(clip, folder / f"{what}-{voice.lower()}.mp4")
+            how += (f"\nThere's also a narrated video, read by {voice}. Post it as a Reel and on X "
                     f"(same captions), as well as the images. Note the voice, to see which one people prefer.\n")
         (folder / "how.txt").write_text(how)
         folders.append(folder)
