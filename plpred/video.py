@@ -83,57 +83,309 @@ def videoable(v: dict) -> bool:
     return not v.get("after_kickoff") and not v.get("result_text")
 
 
-def match_scenes(v: dict) -> list[dict]:
+ORDINALS = ["", "first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth", "tenth",
+            "eleventh", "twelfth", "thirteenth", "fourteenth", "fifteenth", "sixteenth", "seventeenth",
+            "eighteenth", "nineteenth", "twentieth"]
+COUNTS = ["no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"]
+OUTCOME = {"H": "home win", "D": "draw", "A": "away win"}
+
+
+class Phrasing:
+    """Picks wording for one video. Each slot's choice rotates with the game's place in the round, from
+    a start that changes every matchweek, so neighbouring videos never share a phrasing and no week
+    sounds like the last. The same matchweek always gives the same script, so rebuilds don't change it."""
+
+    def __init__(self, matchweek, index: int = 0):
+        self.matchweek, self.index = matchweek, index
+
+    def choice(self, slot: str, options: list):
+        start = hashlib.sha256(f"{self.matchweek}/{slot}".encode()).digest()[0]
+        return options[(start + self.index) % len(options)]
+
+    def __call__(self, slot: str, options: list[str], **fill) -> str:
+        return self.choice(slot, options).format(**fill)
+
+
+def name_of(v: dict, code: str) -> str:
+    return spoken(v["home_team"] if code == "H" else v["away_team"])
+
+
+def owner(team: str) -> str:
+    """Leeds' and Arsenal's."""
+    return team + ("'" if team.endswith("s") else "'s")
+
+
+def a_an(words: str) -> str:
+    return ("an " if words[0].lower() in "aeiou" else "a ") + words
+
+
+def streak(results: list[dict]) -> tuple[str, int]:
+    """The run a team is on, newest game last: ('W', 4) is four wins in a row."""
+    codes = [r["result"] for r in results]
+    if not codes:
+        return "", 0
+    n = next((i for i, c in enumerate(reversed(codes)) if c != codes[-1]), len(codes))
+    return codes[-1], n
+
+
+def meetings(v: dict, n: int = 3) -> list[str]:
+    """Who won each of the last n meetings ('H', 'A' as in this game, or 'D'), newest first."""
+    out = []
+    for m in v.get("head_to_head", [])[:n]:
+        hit = re.match(r"^(.*) (\d+)-(\d+) (.*)$", m["line"])
+        if not hit:
+            continue
+        home, hg, ag, _ = hit.groups()
+        if hg == ag:
+            out.append("D")
+        else:
+            winner = home if int(hg) > int(ag) else hit.group(4)
+            out.append("H" if winner == v["home_team"] else "A")
+    return out
+
+
+def hooks(v: dict) -> list[tuple[str, float, str]]:
+    """Ways to open this game's video, as (kind, how strong a story it is, the line), strongest first."""
     home, away = spoken(v["home_team"]), spoken(v["away_team"])
-    conf = {"strong": f"{v['our_p']} percent. A strong call.",
-            "too close to call": f"Only {v['our_p']} percent, so it's too close to call."}.get(
-        v["confidence"], f"We make it {v['our_p']} percent.")
-    scenes = [{"kind": "call", "lines": [f"{home} against {away}.",
-                                         f"Our call: {call_words(v)}, {say_score(v)}.", conf]}]
+    out = []
+    if v.get("mkt"):
+        fav = max(v["mkt"], key=v["mkt"].get)
+        if fav != v["call"]:
+            them = "a draw" if fav == "D" else f"{name_of(v, fav)} as favourites"
+            out.append(("market", 0.95, f"The bookies have {them}. We don't."))
+    st = v.get("standings") or {}
+    if st.get("home") and st.get("away"):
+        ph, pa = st["home"]["position"], st["away"]["position"]
+        top, low = ("H", "A") if ph < pa else ("A", "H")
+        pt, pl = min(ph, pa), max(ph, pa)
+        if pt == 1:
+            verb = "host" if top == "H" else "go to"
+            out.append(("table", 0.8, f"Top of the table {name_of(v, top)} {verb} {name_of(v, low)}, "
+                                      f"who are {ORDINALS[pl]}."))
+        elif pl - pt >= 10:
+            where = "bottom" if pl == 20 else ORDINALS[pl]
+            out.append(("table", 0.5 + (pl - pt) / 40, f"{name_of(v, top)} are {ORDINALS[pt]}. "
+                                                      f"{name_of(v, low)} are {where}."))
+        elif pt >= 16:
+            out.append(("table", 0.7, f"{ORDINALS[ph].capitalize()} against {ORDINALS[pa]}. "
+                                      "A big one at the bottom already."))
+        elif pl <= 6:
+            out.append(("table", 0.6, f"{ORDINALS[ph].capitalize()} against {ORDINALS[pa]}. "
+                                      "A proper top-six meeting."))
+    luck = v.get("luck") or {}
+    if luck.get("home") and luck.get("away"):
+        side = max(("home", "away"), key=lambda s: abs(luck[s]["difference"]))
+        l, team = luck[side], home if side == "home" else away
+        if abs(l["difference"]) >= 4:
+            pts, xp = l["points"], round(l["xpts"])
+            games = COUNTS[l["games"]] if l["games"] < len(COUNTS) else l["games"]
+            line = (f"{team} have {pts} points from their last {games} games. Their chances were worth {xp}."
+                    if l["difference"] > 0 else
+                    f"{owner(team)} chances were worth {xp} points in their last {games} games. "
+                    f"They've got just {pts}.")
+            out.append(("luck", min(abs(l["difference"]) / 9, 0.9), line))
+    for side, team in (("home", home), ("away", away)):
+        code, n = streak(v.get("form", {}).get(side, []))
+        if n >= 3 and code in "WL":
+            word = "won" if code == "W" else "lost"
+            line = (f"{team} have {word} their last {COUNTS[n]}." if n == 5 else
+                    f"{team} have {word} {COUNTS[n]} in a row.")
+            out.append(("form", 0.4 + n / 10, line))
+        results = [r["result"] for r in v.get("form", {}).get(side, [])]
+        if len(results) == 5 and "W" not in results:
+            out.append(("form", 0.75, f"{team} haven't won in five."))
+    met = meetings(v)
+    if len(met) == 3 and len(set(met)) == 1:
+        line = ("The last three meetings have all been draws." if met[0] == "D" else
+                f"{name_of(v, met[0])} have won the last three meetings.")
+        out.append(("history", 0.7, line))
+    for n in v.get("team_news", []):
+        if n.get("impact") in ("Big", "Medium"):
+            team = spoken(n["team"])
+            verb = "could be without" if n["status"].startswith("Doubtful") else "are without"
+            out.append(("news", 0.75 if n["impact"] == "Big" else 0.45, f"{team} {verb} {n['player']}."))
+            break
+    if v["confidence"] == "too close to call":
+        out.append(("close", 0.25, f"{home} or {away}? Our model can barely split them."))
+    if not v["headline"].startswith("Nothing to split"):
+        out.append(("headline", 0.3, spoken(v["headline"]) + "."))
+    out.append(("fixture", 0.1, f"{home} against {away}."))
+    return sorted(out, key=lambda h: -h[1])
+
+
+def pick_hooks(games: list[dict]) -> list[tuple[str, float, str]]:
+    """One opener per game, mixing the kinds across the round: a kind already used counts for less."""
+    used, picks = {}, []
+    for v in games:
+        best = max(hooks(v), key=lambda h: h[1] - 0.45 * used.get(h[0], 0))
+        used[best[0]] = used.get(best[0], 0) + 1
+        picks.append(best)
+    return picks
+
+
+def step_line(step: dict, v: dict, say: Phrasing, n: int, k: int) -> str:
+    """A reason in words a listener can check, with what it's worth to our call."""
+    detail = re.sub(r"(\d+)%", r"\1 percent", step["detail"]).replace("than an average side", "than average")
+    if step["label"].endswith("team news"):
+        names = [x.strip() for x in detail.split(":", 1)[-1].split(",")]
+        names = names[0] if len(names) == 1 else ", ".join(names[:-1]) + " and " + names[-1]
+        detail = f"{step['team']} are missing {names}"
+    detail = spoken(detail)
+    say = Phrasing(say.matchweek, say.index + k)
+    pts = f"{n} {'point' if n == 1 else 'points'}"
+    if step["helps_call"]:
+        return say("helps", ["{d}. That adds {p}.", "{d}: worth {p}.", "{d}, which is worth {p}."],
+                   d=detail, p=pts)
+    return say("hurts", ["Against that, {d}. Minus {p}.", "But {d}, and that costs {p}.",
+                         "Pulling the other way: {d}. Minus {p}."], d=detail, p=pts)
+
+
+def flip_scene(v: dict) -> dict | None:
+    """'What would change our mind', drawn as our chance now against the chance without the biggest factor."""
+    text = v.get("change_our_mind") or ""
+    factor = re.search(r"If (.+?) were only average", text)
+    swing = re.search(r"swing to (?:a |an )?(home win|away win|draw) \((\d+)%\)", text)
+    drop = re.search(r"chance would drop to (\d+)%", text)
+    if not factor or not (swing or drop):
+        return None
+    outcome, p = (swing.group(1), int(swing.group(2))) if swing else (OUTCOME[v["call"]], int(drop.group(1)))
+    f = spoken(factor.group(1))
+    if swing:
+        lines = [f"What would change our mind? If {f} were only average, it swings to {a_an(outcome)}."]
+    else:
+        lines = [f"What would change our mind? Make {f} average, and the {outcome} falls to {p} percent."]
+    label = {"home win": v["home_short"] + " win", "away win": v["away_short"] + " win", "draw": "Draw"}[outcome]
+    return {"kind": "flip", "lines": lines, "factor": factor.group(1), "rows": [
+        {"label": f"Our call: {v['call_long']}", "v": v["our_p"], "at": "0:0.3"},
+        {"label": f"If {factor.group(1)} were average: {label}", "v": p, "at": "0:2.6"}]}
+
+
+def match_scenes(v: dict, matchweek=None, index: int = 0, hook=None) -> list[dict]:
+    """The script for one game: an opener, the call, the reasons, one more angle, and the sign-off."""
+    say = Phrasing(matchweek, index)
+    home, away = spoken(v["home_team"]), spoken(v["away_team"])
+    day = (v.get("kickoff_long") or "").split(" ")[0]
+    hook = hook or hooks(v)[0]
+    scenes = []
+    if hook[0] != "fixture":
+        scenes.append({"kind": "hook", "story": hook[0], "lines": [hook[2]]})
+
+    match = say("match", ["{h} against {a}, {d}.", "{h} host {a} on {d}.", "{a} go to {h} on {d}.",
+                          "{d}: {h} versus {a}."] if day else ["{h} against {a}."], h=home, a=away, d=day)
+    if v["call"] == "D":
+        call = say("draw", ["Our call: a draw, {s}.", "We think they share it, {s}.", "The model says a draw, {s}."],
+                   s=say_score(v))
+    else:
+        call = say("call", ["Our call: {c}, {s}.", "We're going with {t}, {s}.", "The model says {c}, {s}.",
+                            "We have it {s} to {t}."], c=call_words(v), t=name_of(v, v["call"]), s=say_score(v))
+    p = v["our_p"]
+    conf = {"strong": ["{p} percent. A strong call.", "We make that {p} percent, one of our strongest.",
+                       "{p} percent, so we're confident on this one."],
+            "too close to call": ["Only {p} percent, so it's too close to call.", "But it's tight: just {p} percent.",
+                                  "{p} percent. Barely a favourite.", "Just {p} percent. It could go any way.",
+                                  "{p} percent, which is as close as it gets."]}.get(
+        v["confidence"], ["We make it {p} percent.", "{p} percent, a solid call.", "That's {p} percent."])
+    scenes.append({"kind": "call", "lines": [match, call, say("conf." + v["confidence"], conf, p=p)]})
 
     rows = [dict(r) for r in v["waterfall_rows"]["rows"]]
-    if len(rows) >= 3:
-        movers = sorted(rows[1:-1], key=lambda r: -r["width"])[:2]
-        lines = ["Here's why."]
-        rows[0]["at"] = "0:0.3"
-        for r in movers:
-            n = r["val"].lstrip("+−-")
-            lines.append(f"{spoken(r['label'])} {'takes off' if r['fill'] == 'down' else 'adds'} {n}.")
-            r["at"] = f"{len(lines) - 1}:0.2"
-        lines.append(f"That makes it {v['our_p']} percent.")
+    steps = (v.get("waterfall") or {}).get("steps", [])
+    if len(rows) >= 3 and len(steps) == len(rows) - 2:
+        order = sorted(range(len(steps)), key=lambda i: -rows[i + 1]["width"])[:2]
+        lines = []
+        rows[0]["at"] = "0:0"
+        for i in order:
+            step = dict(steps[i], helps_call=not rows[i + 1]["val"].startswith(("−", "-")))
+            lines.append(step_line(step, v, say, int(round(abs(step["change"]))), len(lines)))
+            rows[i + 1]["at"] = f"{len(lines) - 1}:0.4"
+        if rows[order[0] + 1]["val"][0] not in "−-":  # "Why? Against that..." wouldn't make sense
+            lines[0] = say("why", ["Why? {l}", "The big one: {l}", "{l}"], l=lines[0])
         last = len(lines) - 1
         for r in rows[1:-1]:
             r.setdefault("at", f"{last}:0")
-        rows[-1]["at"] = f"{last}:0.4"
+        rows[-1]["at"] = f"{last}:1.2"
         scenes.append({"kind": "reasons", "lines": lines, "rows": rows})
 
-    xg = {(x["side"], x["kind"]): x for x in v.get("xg_rows") or []}
-    if len(xg) == 4:
-        scenes.append({"kind": "numbers", "xg": [dict(x, at=at) for x, at in (
-            (xg["home", "for"], "0:0.8"), (xg["home", "against"], "0:2.4"),
-            (xg["away", "for"], "1:0.6"), (xg["away", "against"], "1:1.6"))], "lines": [
-            f"At home, {home} create {xg['home', 'for']['v']:.1f} expected goals a game, "
-            f"and allow {xg['home', 'against']['v']:.1f}.",
-            f"Away, {away} create {xg['away', 'for']['v']:.1f}, and allow {xg['away', 'against']['v']:.1f}."]})
-
+    angles = []
     if v.get("mkt"):
         fav = max(v["mkt"], key=v["mkt"].get)
         us = {"H": v["h"], "D": v["d"], "A": v["a"]}
-        name = "a draw" if fav == "D" else spoken(v["home_team"] if fav == "H" else v["away_team"])
-        scenes.append({"kind": "market", "agree": fav == v["call"], "lines": [
-            "The bookies agree." if fav == v["call"] else "The bookies see it differently.",
-            f"They make it {v['mkt'][fav]} percent {name}, to our {us[fav]}."]})
-    scenes.append({"kind": "outro", "lines": ["Every call, with the reasons, at Inkwell and Algorithm dot com."]})
+        name = "a draw" if fav == "D" else name_of(v, fav)
+        agree = fav == v["call"]
+        first = (say("agree", ["The bookies agree.", "The market's with us.", "The bookies see it the same way."])
+                 if agree else say("disagree", ["The bookies see it differently.", "The market disagrees.",
+                                                "Here's where we split from the bookies."]))
+        angles.append(("market", {"kind": "market", "agree": agree, "lines": [
+            first, f"They make it {v['mkt'][fav]} percent {name}, to our {us[fav]}."]}))
+    xg = {(x["side"], x["kind"]): x for x in v.get("xg_rows") or []}
+    if len(xg) == 4:
+        ats = ("0:0.6", "0:1.6", "0:2.6", "0:3.6")
+        hf, ha, af, aa = (xg[k]["v"] for k in (("home", "for"), ("home", "against"), ("away", "for"), ("away", "against")))
+        both = "At home, {h} create {hf:.1f} expected goals a game and allow {ha:.1f}. Away, {a} create {af:.1f} and allow {aa:.1f}."
+        pair = {"H": ["{h} create {hf:.1f} expected goals a game at home. {a} allow {aa:.1f} on the road.",
+                      "On the road, {a} allow {aa:.1f} expected goals a game. At home, {h} create {hf:.1f}."],
+                "A": ["{a} create {af:.1f} expected goals a game on the road. {h} allow {ha:.1f} at home.",
+                      "At home, {h} allow {ha:.1f} expected goals a game. Away, {a} create {af:.1f}."],
+                "D": []}[v["call"]]
+        first = say("xg", pair or [both], h=home, a=away, hf=hf, ha=ha, af=af, aa=aa)
+        second = None
+        luck = v.get("luck") or {}
+        if hook[0] != "luck" and luck.get("home") and luck.get("away"):
+            side = max(("home", "away"), key=lambda s: abs(luck[s]["difference"]))
+            d = luck[side]["difference"]
+            team = home if side == "home" else away
+            if abs(d) >= 3:
+                second = (f"And {owner(team)} results flatter them by {round(d)} points." if d > 0 else
+                          f"And {team} have {round(-d)} points fewer than their chances deserved.")
+        if not second and hook[0] != "form":
+            wins = [sum(r["result"] == "W" for r in v.get("form", {}).get(s, [])) for s in ("home", "away")]
+            second = say("form", ["Form: {h} have won {wh} of five, {a} {wa}.",
+                                  "In their last five, {h} won {wh} and {a} won {wa}."],
+                         h=home, a=away, wh=COUNTS[wins[0]], wa=COUNTS[wins[1]])
+        if second:
+            angles.append(("numbers", {"kind": "numbers", "xg": [dict(xg[k], at=at) for k, at in zip(
+                (("home", "for"), ("home", "against"), ("away", "for"), ("away", "against")), ats)],
+                "lines": [first, second]}))
+    flip = flip_scene(v)
+    if flip:
+        angles.append(("flip", flip))
+    if angles:
+        disagree = next((s for k, s in angles if k == "market" and not s["agree"]), None)
+        scenes.append(disagree or say.choice(f"angle{len(angles)}", angles)[1])
+
+    scenes.append({"kind": "outro", "lines": [
+        say("outro", ["Agree? Tell us your score in the comments.", "Every call, with the reasons, at Inkwell and Algorithm dot com.",
+                      "Think we've got it wrong? Tell us below.", "Follow for every call, every Thursday.",
+                      "The full breakdown is at Inkwell and Algorithm dot com.", "What's your call? Comments are open."])]})
     return scenes
+
+
+def round_line(v: dict, say: Phrasing) -> str:
+    home, away = spoken(v["home_team"]), spoken(v["away_team"])
+    if v["call"] == "D":
+        line = say("r.draw", ["{h} and {a} to draw.", "{h} and {a} to share the points.", "A draw at {h}, against {a}."],
+                   h=home, a=away)
+    elif v["call"] == "H":
+        line = say("r.home", ["{h} to beat {a}.", "{h} at home to {a}: a home win.", "{h} over {a}."],
+                   h=home, a=away)
+    else:
+        line = say("r.away", ["{a} to win at {h}.", "{a} to beat {h}.", "An away win for {a} at {h}."],
+                   h=home, a=away)
+    if v["confidence"] == "strong":
+        line += " " + say("r.strong", ["That's a strong one.", "We're confident there.", "A strong call."])
+    return line
 
 
 def round_scenes(ctx: dict, views: list[dict]) -> list[dict]:
     games = [v for v in views if videoable(v)]
-    lines = [f"{spoken(v['home_team'])} and {spoken(v['away_team'])}: "
-             f"{'a draw' if v['call'] == 'D' else spoken(v['home_team'] if v['call'] == 'H' else v['away_team']) + ' to win'}."
-             for v in games]
-    return [{"kind": "round", "games": games, "lines": [f"Matchweek {ctx['matchweek']}, called."] + lines},
-            {"kind": "outro", "lines": ["Every call, with the reasons, at Inkwell and Algorithm dot com."]}]
+    say = Phrasing(ctx["matchweek"])
+    n = COUNTS[len(games)] if len(games) < len(COUNTS) else str(len(games))
+    first = say("r.open", ["Matchweek {mw}, called.", "{n} games, {n} calls. Here's matchweek {mw}.",
+                           "Every call for matchweek {mw}."], mw=ctx["matchweek"], n=n.capitalize())
+    lines = [round_line(v, Phrasing(ctx["matchweek"], i)) for i, v in enumerate(games)]
+    return [{"kind": "round", "games": games, "lines": [first] + lines},
+            {"kind": "outro", "lines": [say("r.ask", ["Which one have we got wrong? Tell us below.",
+                                                      "Agree? Tell us in the comments."]),
+                                        "Every call, with the reasons, at Inkwell and Algorithm dot com."]}]
 
 
 def build_videos(ctx: dict, views: list[dict], env: Environment, out: Path) -> list[dict]:
@@ -144,8 +396,10 @@ def build_videos(ctx: dict, views: list[dict], env: Environment, out: Path) -> l
     if any(videoable(v) for v in views):
         videos.append({"name": "video-round", "title": f"Matchweek {ctx['matchweek']}, called",
                        "scenes": round_scenes(ctx, views)})
+    games = [v for v in views if videoable(v)]
     videos += [{"name": f"video-{v['slug']}", "slug": v["slug"], "title": f"{v['home_team']} v {v['away_team']}",
-                "g": v, "scenes": match_scenes(v)} for v in views if videoable(v)]
+                "g": v, "scenes": match_scenes(v, ctx["matchweek"], i, hook)}
+               for i, (v, hook) in enumerate(zip(games, pick_hooks(games)))]
     page = env.get_template("social_video.html")
     for vid in videos:
         vid["voice"] = pick_voice(ctx["matchweek"], vid["name"])

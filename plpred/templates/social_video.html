@@ -49,6 +49,14 @@ html,body{margin:0;width:{{ width }}px;height:{{ height }}px;overflow:hidden;bac
 .list .fx{font-size:42px;font-weight:800}
 .list .c{font-size:30px;font-weight:700;white-space:nowrap}
 .outro{text-align:center;align-items:center}
+.hook .badges{display:flex;gap:28px;align-items:center;margin-bottom:56px}
+.hook .badges img{width:150px;height:150px}
+.hook .badges .vs{font-size:48px;font-weight:800;font-style:italic}
+.hook .head{font-size:96px}
+.flip .head{font-size:88px}
+.flip .r{grid-template-columns:1fr;gap:14px;padding:30px 0}
+.flip .r .l{font-size:40px}
+.flip .trk{height:60px}
 .round .head{margin-bottom:24px}
 .outro .brand{font-size:96px;font-weight:900;line-height:1.1}
 .outro .url{font-size:62px;font-weight:800;font-style:italic;margin-top:40px}
@@ -64,7 +72,7 @@ html,body{margin:0;width:{{ width }}px;height:{{ height }}px;overflow:hidden;bac
 <div class="top"><span class="brand disp">{{ wordmark() }}</span><span class="tag lab muted">Matchweek {{ matchweek }}</span></div>
 
 {% for s in video.scenes %}
-<section class="scene {{ s.kind }}" data-scene="{{ loop.index0 }}">
+<section class="scene {{ s.kind }}" data-scene="{{ loop.index0 }}"{% if s.kind == "hook" %} data-nocap{% endif %}>
 {% if s.kind == "call" %}
 <div class="kicker lab accent" data-in="0:0">{% if g is sameas features.upset %}The model v the market{% elif g is sameas lead %}Match of the week{% else %}Our call{% endif %} · {{ g.kickoff_text }}</div>
 <div class="teams">
@@ -79,6 +87,18 @@ html,body{margin:0;width:{{ width }}px;height:{{ height }}px;overflow:hidden;bac
 <div style="background:var(--accent)" data-bar="2:1" data-w="{{ g.a }}"></div>
 </div>
 <div class="key lab"><span data-in="2:0">{{ g.home_short }} {{ g.h }}%</span><span class="muted" data-in="2:0.5">Draw {{ g.d }}%</span><span class="accent" data-in="2:1">{{ g.away_short }} {{ g.a }}%</span></div>
+{% elif s.kind == "hook" %}
+<div class="kicker lab accent" data-in="0:0">{{ g.home_team }} v {{ g.away_team }} · {{ g.kickoff_text }}</div>
+<div class="badges" data-in="0:0">{{ badge(g.home_team, root) }}<span class="vs disp muted">v</span>{{ badge(g.away_team, root) }}</div>
+<h1 class="head disp" data-in="0:0.2">{{ s.lines[0] }}</h1>
+{% elif s.kind == "flip" %}
+<div class="kicker lab accent" data-in="0:0">{{ g.home_team }} v {{ g.away_team }} · the big if</div>
+<h1 class="head disp" data-in="0:0">What would <span class="accent">change our mind?</span></h1>
+{% for r in s.rows %}
+<div class="r" data-in="{{ r.at }}"><span class="l">{{ r.label }}</span>
+<span class="trk bg"><span class="bar" style="background:{{ 'var(--ink)' if loop.first else 'var(--accent)' }}" data-bar="{{ r.at }}" data-w="{{ r.v }}"></span></span>
+<span class="v lab"><span data-count="{{ r.at }}" data-to="{{ r.v }}">0</span>%</span></div>
+{% endfor %}
 {% elif s.kind == "reasons" %}
 <div class="kicker lab accent" data-in="0:0">{{ g.home_team }} v {{ g.away_team }} · the reasons</div>
 <h1 class="head disp" data-in="0:0">How we got to <span class="accent">{{ g.our_p }}%</span></h1>
@@ -154,7 +174,8 @@ window.render = function (t) {
     });
   });
   let line = '';
-  TL.scenes.forEach(sc => sc.timed.forEach(l => { if (t >= l.start - 0.05 && t < l.end + 0.2) line = l.text; }));
+  const quiet = [...document.querySelectorAll('[data-nocap]')].map(el => +el.dataset.scene);
+  TL.scenes.forEach((sc, i) => quiet.includes(i) || sc.timed.forEach(l => { if (t >= l.start - 0.05 && t < l.end + 0.2) line = l.text; }));
   document.getElementById('cap').innerHTML = hot(line);
   document.getElementById('prog').style.width = (t / TL.duration * 100) + '%';
 };

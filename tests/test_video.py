@@ -18,8 +18,10 @@ def test_kit_has_a_video_script_for_the_round_and_each_game(tmp_path):
         assert "window.render" in page and 'data-scene="0"' in page
         assert v["scenes"][-1]["kind"] == "outro"
     game = next(v for v in videos if v["name"] == "video-strong-v-weak")
-    assert [s["kind"] for s in game["scenes"]][:2] == ["call", "reasons"]
-    assert game["scenes"][0]["lines"][0] == "Strong against Weak."
+    kinds = [s["kind"] for s in game["scenes"]]
+    assert kinds.index("call") < kinds.index("reasons") and kinds[0] in ("hook", "call")
+    call = next(s for s in game["scenes"] if s["kind"] == "call")
+    assert "Strong" in call["lines"][0] and "Weak" in call["lines"][0]
     posts = json.loads((kit / "posts.json").read_text())["posts"]
     assert posts[0]["video"] == "video-round"
     assert any(p["video"] == "video-strong-v-weak" for p in posts)
@@ -29,6 +31,28 @@ def test_voices_are_random_but_stable():
     picks = {video.pick_voice(8, f"video-{i}") for i in range(20)}
     assert picks == set(video.VOICES)
     assert video.pick_voice(8, "video-round") == video.pick_voice(8, "video-round")
+
+
+def test_scripts_vary_across_the_round():
+    say = [video.Phrasing(8, i) for i in range(4)]
+    options = ["a", "b", "c"]
+    picks = [s("slot", options) for s in say]
+    assert all(a != b for a, b in zip(picks, picks[1:]))
+    assert video.Phrasing(8, 2)("slot", options) == picks[2]  # rebuilds keep the script
+
+
+def test_openers_tell_the_best_story_and_mix_across_the_round():
+    base = {"home_team": "Leeds", "away_team": "Sunderland", "call": "H", "confidence": "solid",
+            "headline": "Leeds' attack should be too much for Sunderland", "mkt": None,
+            "standings": {"home": {"position": 1}, "away": {"position": 20}},
+            "form": {"home": [{"result": "W"}] * 5, "away": [{"result": "L"}] * 5}}
+    assert video.hooks(base)[0][2] == "Leeds have won their last five."
+    kind, _, line = video.hooks(dict(base, form={}))[0]
+    assert kind == "table" and line == "Top of the table Leeds host Sunderland, who are twentieth."
+    picks = video.pick_hooks([base, base])
+    assert picks[0][0] != picks[1][0]
+    upset = dict(base, mkt={"H": 30, "D": 25, "A": 45})
+    assert video.hooks(upset)[0] == ("market", 0.95, "The bookies have Sunderland as favourites. We don't.")
 
 
 def test_scripts_read_like_speech():
