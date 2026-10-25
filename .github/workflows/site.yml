@@ -50,8 +50,9 @@ jobs:
           pip install playwright==1.64.0
           python -m playwright install --with-deps chromium
       # Narrated videos (plpred.video) take about a minute and a half each, so they are made only
-      # on the day the predictions edition is emailed and on manual runs with "Make the narrated
-      # videos" ticked, not after the other daily refreshes. The Kokoro voice model (~350 MB) is
+      # on the day an edition of the kit is emailed (just that edition's videos: the calls the day
+      # before the round, the results reel the day after) and on manual runs with "Make the narrated
+      # videos" ticked (all of them), not after the other daily refreshes. The Kokoro voice model (~350 MB) is
       # cached between runs.
       - name: Check whether to make the videos
         id: videos
@@ -61,6 +62,7 @@ jobs:
           elif [ "${{ github.event_name }}" = workflow_run ] && [ "${{ github.event.workflow_run.event }}" = schedule ] \
                && python -m plpred.video site/social --due; then
             echo "make=true" >> "$GITHUB_OUTPUT"
+            echo "only=--today" >> "$GITHUB_OUTPUT"
           else
             echo "make=false" >> "$GITHUB_OUTPUT"
           fi
@@ -80,7 +82,7 @@ jobs:
         run: |
           sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg > /dev/null
           pip install kokoro-onnx==0.6.1 soundfile==0.14.0
-          python -m plpred.video site/social
+          python -m plpred.video site/social ${{ steps.videos.outputs.only }}
       - name: Render the social media cards
         run: python -m plpred.social --png site/social
       # The posting kit also goes by email, one message per post, from and to the KIT_EMAIL Gmail

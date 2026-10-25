@@ -45,6 +45,11 @@ HASHTAGS = "#PremierLeague #FootballAnalytics #xG"
 ROUND_TAGS = "#PremierLeague #PLPredictions #FootballAnalytics #xG #EPL"
 FPL_TAGS = "#FPL #FantasyPremierLeague #FPLCommunity #PremierLeague"
 X_TAG = "#PremierLeague"
+# Instagram captions end with a question (comments push a post's reach more than likes) and a
+# reason to follow. The question rotates per game so the feed doesn't repeat itself.
+ASKS = ["What's your score? Tell us in the comments 👇", "Agree, or have we got this one wrong? Tell us below 👇",
+        "Which way do you see it? Comment your score 👇"]
+FOLLOW = "Follow for every call, and the verdict after every game."
 # The three-letter codes behind the league's matchday tags, e.g. #ARSLIV.
 CODES = {"Arsenal": "ARS", "Aston Villa": "AVL", "Bournemouth": "BOU", "Brentford": "BRE", "Brighton": "BHA",
          "Burnley": "BUR", "Chelsea": "CHE", "Coventry": "COV", "Crystal Palace": "CRY", "Everton": "EVE",
@@ -128,15 +133,22 @@ def match_post(v: dict) -> str:
                  f"Why: {reason(v)}", match_tag(v))
 
 
-def carousel_caption(v: dict) -> str:
-    """The Instagram caption for one game's carousel: the call, the main reason, then five tags."""
+def ask(key: str) -> str:
+    """The comment question for a post, the same one on every rebuild."""
+    return ASKS[sum(map(ord, key)) % len(ASKS)]
+
+
+def carousel_caption(v: dict, hook: str | None = None) -> str:
+    """The Instagram caption for one game's carousel (and its Reel): the hook as the line people see
+    before 'more', the call, the main reason, a question, then five tags."""
     close = ", too close to call" if v["confidence"] == "too close to call" else f", {v['confidence']}"
     call = (late_line(v) if v.get("after_kickoff")
             else f"Our call: {call_phrase(v).removeprefix('a ')} ({v['our_p']}%{close}).")
-    return (f"{v['home_team']} v {v['away_team']}, {v['kickoff_long']}.\n\n"
+    head = f"{hook}\n\n" if hook and not v.get("after_kickoff") else ""
+    return (f"{head}{v['home_team']} v {v['away_team']}, {v['kickoff_long']}.\n"
             f"{call}\n\n"
-            f"Why: {reason(v)}\n\nSwipe for how we got there, the numbers behind it and the most likely "
-            f"scores. The full breakdown is at the link in bio.\n\n"
+            f"Why: {reason(v)}\n\n{ask(v['home_team'] + v['away_team'])}\n\nSwipe for how we got there, the numbers behind it and the "
+            f"most likely scores. {FOLLOW} The full breakdown is at the link in bio.\n\n"
             f"#PremierLeague {club_tag(v['home_team'])} {club_tag(v['away_team'])} #FootballAnalytics #xG")
 
 
@@ -166,7 +178,8 @@ def captions(ctx: dict, views: list[dict]) -> dict:
         "thursday_x": thread,
         "thursday_instagram": (f"Matchweek {mw}, called.\n\n{lines}\n\nEvery call comes with the reasons and the "
                                f"numbers behind it. Each game gets its own carousel, and the full breakdowns are at the "
-                               f"link in bio.\n\n{ROUND_TAGS}"),
+                               f"link in bio.\n\nWhich one have we got wrong? Tell us below 👇\n\n{FOLLOW}\n\n"
+                               f"{ROUND_TAGS}"),
     }
     feature = upset or lead
     if upset:
@@ -176,12 +189,13 @@ def captions(ctx: dict, views: list[dict]) -> dict:
              f"We call {call_phrase(upset)} at {upset['our_p']}%.\nWhy: {reason(upset)}")
         ig = (f"The model v the market: {upset['home_team']} v {upset['away_team']}.\n\nBookmakers favour "
               f"{fav_name} at {upset['mkt'][fav]}%. We call {call_phrase(upset)} at {upset['our_p']}%. "
-              f"Swipe for how we got there.\n\n{HASHTAGS}")
+              f"Swipe for how we got there.\n\nWho's right, us or the bookies? Tell us below 👇\n\n{HASHTAGS}")
     else:
         x = (f"Match of the week: {lead['home_team']} v {lead['away_team']}.\nWe call {call_phrase(lead)} "
              f"at {lead['our_p']}%. Here is how we got there:")
         ig = (f"Match of the week: {lead['home_team']} v {lead['away_team']}.\n\nWe call {call_phrase(lead)} at "
-              f"{lead['our_p']}%. The chart shows every factor that moved the number.\n\n{HASHTAGS}")
+              f"{lead['our_p']}%. The chart shows every factor that moved the number.\n\n{ask(lead['home_team'] + lead['away_team'])}"
+              f"\n\n{HASHTAGS}")
     out["friday_x"] = with_link(fit_x(x, match_tag(feature)), match_url(feature))
     out["friday_instagram"], out["friday_slug"] = ig, feature["slug"]
     if rec:
@@ -192,7 +206,8 @@ def captions(ctx: dict, views: list[dict]) -> dict:
         body = (f"Last week: {last['right']} of {last['n']} results right, {last['exact']} exact "
                 f"{'score' if last['exact'] == 1 else 'scores'}.\n{season}.")
         out["monday_x"] = with_link(fit_x(body, X_TAG), SITE_URL, "Every call, right or wrong:")
-        out["monday_instagram"] = f"{body}\n\nWe publish every call, right or wrong.\n\n{HASHTAGS} #DataViz"
+        out["monday_instagram"] = (f"{body}\n\nWe publish every call, right or wrong. How did your predictions "
+                                   f"do? Tell us below 👇\n\n{FOLLOW}\n\n{HASHTAGS} #DataViz")
     return out
 
 
@@ -208,7 +223,8 @@ def results_captions(res: dict) -> dict:
                       f"{call_phrase(r['g']).removeprefix('a ')} ({r['g']['our_p']}%), "
                       f"{'right' if r['right'] else 'wrong'}" for r in res["rows"])
     out = {"results_x": with_link(fit_x(body, X_TAG), SITE_URL, "Every call, right or wrong:"),
-           "results_instagram": f"{body}\n\n{lines}\n\nWe publish every call, right or wrong. Swipe for each game.\n\n"
+           "results_instagram": f"{body}\n\n{lines}\n\nWe publish every call, right or wrong. Swipe for each game."
+                                f"\n\nHow did your predictions do? Tell us below 👇\n\n{FOLLOW}\n\n"
                                 f"{HASHTAGS} #DataViz", "verdicts": {}}
     for r in res["rows"]:
         v = r["g"]
@@ -219,7 +235,8 @@ def results_captions(res: dict) -> dict:
             post += f"\n{r['kind']}: {r['text']}"
         out["verdicts"][v["slug"]] = {
             "x": [fit_x(post, match_tag(v)), f"The full breakdown: {match_url(v)}"],
-            "instagram": f"{post}\n\n#PremierLeague {club_tag(v['home_team'])} {club_tag(v['away_team'])} #xG"}
+            "instagram": f"{post}\n\nDid you see that coming? Tell us below 👇\n\n"
+                         f"#PremierLeague {club_tag(v['home_team'])} {club_tag(v['away_team'])} #xG"}
     return out
 
 
@@ -237,7 +254,8 @@ def extra_captions(ctx: dict) -> dict:
                 f"{top['team']} win the title in {round(top['title'] * 100)}% of them. "
                 f"{down['team']} go down in {round(down['relegation'] * 100)}%.{move}")
         out["projection_x"] = with_link(fit_x(body, X_TAG), f"{SITE_URL}table/", "Every club:")
-        out["projection_instagram"] = f"{body}\n\nEvery club's chances at the link in bio.\n\n{HASHTAGS}"
+        out["projection_instagram"] = (f"{body}\n\nEvery club's chances at the link in bio. Where does your club "
+                                       f"finish? Tell us below 👇\n\n{HASHTAGS}")
     if fpl and fpl.get("clean_sheets"):
         cs = fpl["clean_sheets"][:3]
         lines = ", ".join(f"{r['team']} {r['cs']}%" for r in cs)
@@ -246,12 +264,14 @@ def extra_captions(ctx: dict) -> dict:
                 f"Most expected goals: {goals['team']} ({goals['xg_for']:.1f}).")
         out["fpl_x"] = with_link(fit_x(body, "#FPL"), f"{SITE_URL}fpl/",
                                  "Every club and the next six weeks:")
-        out["fpl_instagram"] = f"{body}\n\nThe full fixture strip is at the link in bio.\n\n{FPL_TAGS}"
+        out["fpl_instagram"] = (f"{body}\n\nThe full fixture strip is at the link in bio. Who's your captain "
+                                f"this week? 👇\n\n{FPL_TAGS}")
     if miss:
         body = (f"What we got wrong: {miss['match']}.\nWe said {miss['called']} at {miss['p']}%. "
                 f"It finished {miss['result']}.\n{miss['kind']}: {miss['text']}")
         out["miss_x"] = [fit_x(body)]
-        out["miss_instagram"] = f"{body}\n\nWe publish every call, right or wrong.\n\n{HASHTAGS}"
+        out["miss_instagram"] = (f"{body}\n\nWe publish every call, right or wrong. Unlucky, or did we get it "
+                                 f"wrong? Tell us below 👇\n\n{HASHTAGS}")
     return out
 
 
@@ -343,6 +363,8 @@ def build_kit(ctx: dict, views: list[dict], env: Environment, out: Path) -> Path
     feature = next(v for v in views if v["slug"] == cap["friday_slug"])
     cards = [{"name": "round", "kind": "round", "title": f"Matchweek {ctx['matchweek']}: all the calls", "day": calls_day}]
     carousels = {v["slug"]: carousel(v, calls_day) for v in views}
+    games = [v for v in views if video.videoable(v)]
+    openers = {v["slug"]: h[2] for v, h in zip(games, video.pick_hooks(games)) if h[0] != "fixture"}
     for v in views:
         cards += carousels[v["slug"]]
     if ctx["record"]:
@@ -379,7 +401,8 @@ def build_kit(ctx: dict, views: list[dict], env: Environment, out: Path) -> Path
     ]
     days += [{"day": f"{v['home_team']} v {v['away_team']}", "slug": v["slug"],
               "when": f"Carousel · {v['kickoff_text']}" + (" · called after kick-off" if v.get("after_kickoff") else ""),
-              "x": [match_post(v), f"The full breakdown: {match_url(v)}"], "instagram": carousel_caption(v),
+              "x": [match_post(v), f"The full breakdown: {match_url(v)}"],
+              "instagram": carousel_caption(v, openers.get(v["slug"])),
               "cards": carousels[v["slug"]],
               "how": f"Post every slide, in order, as one Instagram carousel, any time from {calls_day} to "
                      "matchday. On X, attach the first four slides to the post and put the link in the "
@@ -393,7 +416,8 @@ def build_kit(ctx: dict, views: list[dict], env: Environment, out: Path) -> Path
         wait = ("" if res["complete"] else
                 f" The round isn't finished yet ({', '.join(v['home_team'] + ' v ' + v['away_team'] for v in res['pending'])}"
                 f" still to play), so wait for {post_day}'s Publish site run and the carousel will cover every game.")
-        days.append({"day": post_day, "when": f"Matchweek {res['matchweek']}: the results", "edition": "results", "x": cap["results_x"],
+        days.append({"day": post_day, "when": f"Matchweek {res['matchweek']}: the results", "edition": "results",
+                     "slug": "results", "x": cap["results_x"],
                      "instagram": cap["results_instagram"],
                      "cards": [c for c in cards if c["kind"] in ("results", "results-list", "scorecard")],
                      "how": "Post all three slides as one Instagram carousel, the day after the round's last game. "
@@ -508,6 +532,8 @@ def ready_to_post(kit: Path) -> list[Path]:
             what = post["video"].removeprefix("video-")
             if what == "round":
                 what = f"matchweek-{data['matchweek']}-round"
+            elif what == "results":
+                what = f"matchweek-{data['editions']['results']['matchweek']}-results"
             shutil.copy(clip, folder / f"{what}-{voice.lower()}.mp4")
             how += (f"\nThere's also a narrated video, read by {voice}. Post it as a Reel and on X "
                     f"(same captions), as well as the images. Note the voice, to see which one people prefer.\n")
