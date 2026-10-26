@@ -81,10 +81,10 @@ def test_biggest_miss_says_whether_the_chances_backed_us():
     matches = pd.DataFrame([{"season": 2026, "home_team": "A", "away_team": "B", "home_xg": 2.2, "away_xg": 0.6},
                             {"season": 2026, "home_team": "C", "away_team": "D", "home_xg": 0.5, "away_xg": 1.9}])
     row = dict(wrong=True, season=2026, result="0–1", match="", call_code="H", result_code="A")
-    rec = {"last": {"rows": [{**row, "home_team": "A", "away_team": "B", "p": 60},
+    rec = {"last": {"label": "17 October", "rows": [{**row, "home_team": "A", "away_team": "B", "p": 60},
                              {**row, "home_team": "C", "away_team": "D", "p": 50}]}}
     miss = site.biggest_miss(rec, matches)
-    assert miss["home_team"] == "A" and miss["kind"] == "Unlucky"
+    assert miss["home_team"] == "A" and miss["kind"] == "Unlucky" and miss["label"] == "games from 17 October"
     rec["last"]["rows"].pop(0)
     assert site.biggest_miss(rec, matches)["kind"] == "Our mistake"
     assert site.biggest_miss({"last": {"rows": []}}, matches) is None
@@ -125,3 +125,33 @@ def test_extra_captions_fit_x():
         assert all(social.x_length(post) <= social.X_LIMIT for post in cap[k])
     assert "B go down in 70%" in cap["projection_x"][0]
     assert "http" not in cap["projection_x"][0] and cap["projection_x"][1].endswith("table/")
+
+
+def results_row(home, away, call, p, right, after_kickoff=False, fav_right=None, xg=None):
+    return {"g": {"home_team": home, "away_team": away, "call": call, "our_p": p, "after_kickoff": after_kickoff,
+                  "kickoff": "2026-10-24T14:00:00+00:00"},
+            "right": right, "exact": False, "fav_right": fav_right, "result_text": "0–1", "xg": xg,
+            **site.xg_story(home, away, call, "A", np.nan, np.nan)}
+
+
+def test_round_miss_is_the_newest_round_even_before_its_xg_arrives():
+    res = {"matchweek": 8, "rows": [results_row("A", "B", "H", 70, False, after_kickoff=True),
+                                    results_row("C", "D", "H", 55, False), results_row("E", "F", "H", 65, True)]}
+    miss = site.round_miss(res)
+    assert miss["match"] == "C v D" and miss["called"] == "C to win" and miss["p"] == 55  # late calls aren't ours
+    assert miss["label"] == "Matchweek 8" and miss["kind"] == "Jury's out" and not miss["has_xg"]
+    res["rows"].pop(1)
+    assert site.round_miss(res) is None
+
+
+def test_with_round_adds_the_newest_round_once():
+    rec = {"n": 10, "right": 5, "exact": 1, "rate": 50, "fav_rate": 50, "fav_n": 10, "fav_right": 5,
+           "last": {"rows": [{"home_team": "X", "away_team": "Y"}], "right": 1, "n": 1, "exact": 0, "label": "17 October"}}
+    res = {"matchweek": 8, "rows": [results_row("A", "B", "H", 60, True, fav_right=True),
+                                    results_row("C", "D", "H", 60, True, fav_right=False),
+                                    results_row("E", "F", "H", 60, False, after_kickoff=True)]}
+    both = site.with_round(rec, res)
+    assert (both["n"], both["right"], both["rate"], both["fav_rate"]) == (12, 7, 58, 50)
+    assert both["last"]["n"] == 2 and both["last"]["right"] == 2 and both["last"]["label"] == "24 October"
+    rec["last"]["rows"] = [{"home_team": "A", "away_team": "B"}, {"home_team": "C", "away_team": "D"}]
+    assert site.with_round(rec, res) is rec  # the record already has this round

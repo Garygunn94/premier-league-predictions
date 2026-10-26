@@ -154,7 +154,7 @@ html,body{margin:0;width:{{ size }}px;height:{{ size }}px;overflow:hidden}
 <div><div class="n disp">{{ record.rate }}%</div><div class="u lab">right this season{% if record.fav_rate is not none %} · bookies' favourite {{ record.fav_rate }}%{% endif %}</div></div>
 </div>
 {% elif card.kind == "miss" %}
-<div class="kicker lab accent">What we got wrong · games from {{ record.last.label }}</div>
+<div class="kicker lab accent">What we got wrong · {{ miss.label }}</div>
 <h1 class="head disp">{{ miss.match }}: <span class="accent">{{ miss.kind|lower }}.</span></h1>
 <div class="verdict" style="flex-wrap:wrap;gap:8px 24px"><span class="lab big" style="font-size:32px">We said {{ miss.called }}</span><span class="lab" style="font-size:22px;font-weight:600">{{ miss.p }}% · it finished {{ miss.result }}</span></div>
 <div class="why-text" style="font-size:30px">{{ miss.text }}</div>
