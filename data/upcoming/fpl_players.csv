@@ -11,14 +11,14 @@ Arsenal,Hincapie,DEF,a,100.0,,40,0,0,0,0.0
 Arsenal,White,DEF,a,100.0,,532,7,0,3,1.01
 Arsenal,Mosquera,DEF,a,100.0,,168,2,0,0,0.01
 Arsenal,Saka,MID,i,0.0,Thigh injury - Unknown return date,596,7,3,0,4.83
-Arsenal,Rice,MID,a,100.0,,670,8,0,4,1.97
+Arsenal,Rice,MID,d,75.0,Unspecified injury - 75% chance of playing,670,8,0,4,1.97
 Arsenal,Eze,MID,a,,,209,2,0,0,0.34
 Arsenal,Ødegaard,MID,a,,,646,8,2,0,4.18
-Arsenal,Madueke,MID,a,,,248,2,1,0,1.11
+Arsenal,Madueke,MID,d,75.0,Ankle injury - 75% chance of playing,248,2,1,0,1.11
 Arsenal,Merino,MID,a,,,173,1,0,0,0.98
 Arsenal,Martinelli,MID,u,0.0,Has joined Al Hilal permanently,0,0,0,0,0.0
 Arsenal,Zubimendi,MID,a,100.0,,99,0,0,0,0.26
-Arsenal,Dowman,MID,a,100.0,,19,0,0,0,0.09
+Arsenal,Dowman,MID,s,0.0,Suspended until 29 Nov,19,0,0,0,0.09
 Arsenal,Nwaneri,MID,u,0.0,Has joined Borussia Dortmund on loan for the rest of the season,0,0,0,0,0.0
 Arsenal,Fábio Vieira,MID,u,0.0,Has joined Hamburger SV permanently,0,0,0,0,0.0
 Arsenal,Nelson,MID,u,0.0,has departed the club as a free agent.,0,0,0,0,0.0
@@ -100,7 +100,7 @@ Brentford,Van den Berg,DEF,a,100.0,,160,2,0,0,0.18
 Brentford,Lewis-Potter,MID,a,,,625,8,2,1,2.28
 Brentford,Ajer,DEF,a,,,720,8,1,0,0.59
 Brentford,Kayode,DEF,a,,,564,7,1,0,1.31
-Brentford,Henry,DEF,a,,,2,0,0,0,0.0
+Brentford,Henry,DEF,i,0.0,Hip injury - Unknown return date,2,0,0,0,0.0
 Brentford,Hickey,DEF,a,,,277,2,0,0,0.16
 Brentford,Ji-soo,DEF,a,,,0,0,0,0,0.0
 Brentford,Schuster,DEF,a,100.0,,298,3,0,1,0.64
@@ -133,7 +133,7 @@ Brighton,Igor,DEF,u,0.0,Has joined Burnley permanently,0,0,0,0,0.0
 Brighton,Costinha,DEF,a,,,174,0,0,0,0.79
 Brighton,Svoboda,DEF,a,,,5,0,0,0,0.0
 Brighton,Mitoma,MID,i,0.0,Hamstring injury - Expected back 31 Oct,0,0,0,0,0.0
-Brighton,Minteh,MID,d,50.0,Leg injury - 50% chance of playing,0,0,0,0,0.0
+Brighton,Minteh,MID,d,75.0,Leg injury - 75% chance of playing,0,0,0,0,0.0
 Brighton,Hinshelwood,MID,a,100.0,,127,1,3,0,2.39
 Brighton,Groß,MID,a,,,700,8,3,6,3.67
 Brighton,Georginio,FWD,a,100.0,,140,1,0,2,1.05
@@ -141,7 +141,7 @@ Brighton,O'Riley,MID,a,,,10,0,0,0,0.29
 Brighton,Gomez,MID,a,,,700,8,1,3,2.22
 Brighton,Buonanotte,MID,u,0.0,Has joined Elche on loan for the rest of the season,0,0,0,0,0.0
 Brighton,Ayari,MID,a,100.0,,574,7,2,1,1.69
-Brighton,Wieffer,DEF,d,25.0,Knee injury - 25% chance of playing,156,2,0,0,0.25
+Brighton,Wieffer,DEF,d,75.0,Knee injury - 75% chance of playing,156,2,0,0,0.25
 Brighton,Howell,MID,u,0.0,Has joined Leicester City on loan for the rest of the season,0,0,0,0,0.0
 Brighton,Watson,MID,u,0.0,Has joined Leicester City on loan for the rest of the season,0,0,0,0,0.0
 Brighton,Oriola,MID,a,,,0,0,0,0,0.0
@@ -149,14 +149,14 @@ Brighton,Yohanna,MID,i,0.0,Unspecified injury - Expected back 31 Oct,12,0,0,0,0.
 Brighton,Tzimas,FWD,i,0.0,Knee injury - Unknown return date,0,0,0,0,0.0
 Brighton,Kostoulas,FWD,a,,,572,7,3,4,2.5
 Brighton,Ferguson,FWD,i,0.0,Ankle injury - Unknown return date,0,0,0,0,0.0
-Brighton,Struijk,DEF,d,75.0,Hamstring injury - 75% chance of playing,154,2,0,0,0.32
+Brighton,Struijk,DEF,d,50.0,Hamstring injury - 50% chance of playing,154,2,0,0,0.32
 Brighton,Vuskovic,DEF,a,,,707,8,1,1,1.42
 Brighton,David,FWD,a,,,23,0,0,0,0.42
 Brighton,Osman,MID,a,,,40,0,0,0,0.12
 Brighton,Yalcouyé,MID,a,,,303,3,2,0,2.08
 Brighton,Hadjam,DEF,a,,,11,0,1,0,0.15
 Brighton,Cozier-Duberry,MID,u,0.0,Has joined Middlesbrough on loan for the rest of the season,0,0,0,0,0.0
-Brighton,Andrés,MID,d,75.0,Thigh injury - 75% chance of playing,342,4,1,1,0.7
+Brighton,Andrés,MID,d,75.0,Hip injury - 75% chance of playing,342,4,1,1,0.7
 Brighton,Azeez,MID,i,0.0,Hamstring injury - Expected back 31 Oct,0,0,0,0,0.0
 Brighton,Ibrahim,MID,a,,,0,0,0,0,0.0
 Chelsea,Martinez,GK,i,0.0,Head injury - Unknown return date,524,6,0,0,0.01
@@ -183,10 +183,10 @@ Chelsea,Caicedo,MID,a,100.0,,264,3,0,0,0.08
 Chelsea,Lavia,MID,a,,,277,4,1,0,0.86
 Chelsea,D.Essugo,MID,u,0.0,Has joined RC Strasbourg on loan for the rest of the season,0,0,0,0,0.0
 Chelsea,Quenda,MID,a,100.0,,99,1,0,0,0.04
-Chelsea,João Pedro,FWD,d,75.0,Unspecified injury - 75% chance of playing,521,6,5,3,3.36
+Chelsea,João Pedro,FWD,i,0.0,Thigh injury - Unknown return date,521,6,5,3,3.36
 Chelsea,Marc Guiu,FWD,u,0.0,Has joined RB Leipzig permanently,0,0,0,0,0.0
 Chelsea,Mheuka,FWD,a,,,0,0,0,0,0.0
-Chelsea,Emegha,FWD,i,0.0,Hamstring injury - Unknown return date,0,0,0,0,0.0
+Chelsea,Emegha,FWD,a,100.0,,0,0,0,0,0.0
 Chelsea,Lacroix,DEF,a,,,634,7,0,1,0.62
 Chelsea,Penders,GK,a,,,105,1,0,0,0.0
 Chelsea,Anselmino,DEF,a,100.0,,0,0,0,0,0.0
@@ -233,7 +233,7 @@ Coventry,Gboho,MID,a,,,0,0,0,0,0.0
 Coventry,Mfuni,DEF,a,,,127,1,1,0,0.32
 Crystal Palace,Guessand,MID,a,,,54,0,0,0,0.06
 Crystal Palace,Disasi,DEF,a,100.0,,229,3,0,0,0.36
-Crystal Palace,Henderson,GK,d,50.0,Foot injury - 50% chance of playing,270,3,0,0,0.0
+Crystal Palace,Henderson,GK,d,75.0,Foot injury - 75% chance of playing,270,3,0,0,0.0
 Crystal Palace,Benitez,GK,a,,,450,5,0,0,0.0
 Crystal Palace,Richards,DEF,a,,,720,8,0,0,0.27
 Crystal Palace,Canvot,DEF,a,,,630,7,0,0,0.21
@@ -254,7 +254,7 @@ Crystal Palace,Doucouré,MID,a,,,0,0,0,0,0.0
 Crystal Palace,J.Rak-Sakyi,MID,u,0.0,has joined  Kasimpasa on loan for the rest of the seaon.,0,0,0,0,0.0
 Crystal Palace,Cardines,DEF,u,0.0,Has joined Bristol City on loan for the rest of the season,0,0,0,0,0.0
 Crystal Palace,Drakes-Thomas,MID,a,,,0,0,0,0,0.0
-Crystal Palace,Strand Larsen,FWD,d,75.0,Unspecified injury - 75% chance of playing,440,5,1,1,1.94
+Crystal Palace,Strand Larsen,FWD,d,75.0,Ankle injury - 75% chance of playing,440,5,1,1,1.94
 Crystal Palace,Mateta,FWD,a,100.0,,152,2,0,0,1.99
 Crystal Palace,Nketiah,FWD,a,100.0,,239,3,0,1,1.76
 Crystal Palace,Uche,FWD,u,0.0,has returned to Getafe CF,0,0,0,0,0.0
@@ -549,7 +549,7 @@ Newcastle,Elanga,MID,a,100.0,,245,3,2,0,0.77
 Newcastle,J.Ramsey,MID,a,100.0,,82,0,1,0,0.33
 Newcastle,J.Murphy,MID,a,,,329,4,0,1,1.13
 Newcastle,Joelinton,MID,a,100.0,,204,2,0,0,0.17
-Newcastle,L.Miley,MID,a,100.0,,544,7,0,0,0.5
+Newcastle,L.Miley,MID,d,75.0,Muscular injury - 75% chance of playing,544,7,0,0,0.5
 Newcastle,Willock,MID,a,,,473,6,2,0,1.53
 Newcastle,Touré,MID,a,100.0,,115,0,1,0,0.5
 Newcastle,Steur,MID,a,,,228,2,0,0,0.06
