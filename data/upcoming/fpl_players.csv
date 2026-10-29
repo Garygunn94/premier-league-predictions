@@ -133,7 +133,7 @@ Brighton,Igor,DEF,u,0.0,Has joined Burnley permanently,0,0,0,0,0.0
 Brighton,Costinha,DEF,a,,,174,0,0,0,0.79
 Brighton,Svoboda,DEF,a,,,5,0,0,0,0.0
 Brighton,Mitoma,MID,i,0.0,Hamstring injury - Expected back 31 Oct,0,0,0,0,0.0
-Brighton,Minteh,MID,d,75.0,Leg injury - 75% chance of playing,0,0,0,0,0.0
+Brighton,Minteh,MID,a,100.0,,0,0,0,0,0.0
 Brighton,Hinshelwood,MID,a,100.0,,127,1,3,0,2.39
 Brighton,Groß,MID,a,,,700,8,3,6,3.67
 Brighton,Georginio,FWD,a,100.0,,140,1,0,2,1.05
@@ -141,7 +141,7 @@ Brighton,O'Riley,MID,a,,,10,0,0,0,0.29
 Brighton,Gomez,MID,a,,,700,8,1,3,2.22
 Brighton,Buonanotte,MID,u,0.0,Has joined Elche on loan for the rest of the season,0,0,0,0,0.0
 Brighton,Ayari,MID,a,100.0,,574,7,2,1,1.69
-Brighton,Wieffer,DEF,d,75.0,Knee injury - 75% chance of playing,156,2,0,0,0.25
+Brighton,Wieffer,DEF,a,100.0,,156,2,0,0,0.25
 Brighton,Howell,MID,u,0.0,Has joined Leicester City on loan for the rest of the season,0,0,0,0,0.0
 Brighton,Watson,MID,u,0.0,Has joined Leicester City on loan for the rest of the season,0,0,0,0,0.0
 Brighton,Oriola,MID,a,,,0,0,0,0,0.0
@@ -187,7 +187,7 @@ Chelsea,João Pedro,FWD,i,0.0,Thigh injury - Unknown return date,521,6,5,3,3.36
 Chelsea,Marc Guiu,FWD,u,0.0,Has joined RB Leipzig permanently,0,0,0,0,0.0
 Chelsea,Mheuka,FWD,a,,,0,0,0,0,0.0
 Chelsea,Emegha,FWD,a,100.0,,0,0,0,0,0.0
-Chelsea,Lacroix,DEF,a,,,634,7,0,1,0.62
+Chelsea,Lacroix,DEF,d,75.0,Hamstring injury - 75% chance of playing,634,7,0,1,0.62
 Chelsea,Penders,GK,a,,,105,1,0,0,0.0
 Chelsea,Anselmino,DEF,a,100.0,,0,0,0,0,0.0
 Chelsea,Barco,MID,a,,,115,1,0,0,0.18
@@ -233,7 +233,7 @@ Coventry,Gboho,MID,a,,,0,0,0,0,0.0
 Coventry,Mfuni,DEF,a,,,127,1,1,0,0.32
 Crystal Palace,Guessand,MID,a,,,54,0,0,0,0.06
 Crystal Palace,Disasi,DEF,a,100.0,,229,3,0,0,0.36
-Crystal Palace,Henderson,GK,d,75.0,Foot injury - 75% chance of playing,270,3,0,0,0.0
+Crystal Palace,Henderson,GK,a,100.0,,270,3,0,0,0.0
 Crystal Palace,Benitez,GK,a,,,450,5,0,0,0.0
 Crystal Palace,Richards,DEF,a,,,720,8,0,0,0.27
 Crystal Palace,Canvot,DEF,a,,,630,7,0,0,0.21
@@ -319,7 +319,7 @@ Fulham,De Fougerolles,DEF,u,0.0,has joined  Real Salt Lake on loan for the rest 
 Fulham,Zepa,MID,a,,,0,0,0,0,0.0
 Fulham,Larsson,MID,a,100.0,,102,1,0,0,0.43
 Fulham,Ángel,MID,a,,,19,0,0,0,0.0
-Fulham,Affengruber,DEF,a,,,450,5,0,0,0.13
+Fulham,Affengruber,DEF,d,75.0,Unspecified injury - 75% chance of playing,450,5,0,0,0.13
 Hull,Iroegbunam,MID,a,100.0,,211,1,0,1,0.2
 Hull,Phillips,GK,a,,,0,0,0,0,0.0
 Hull,Butland,GK,i,0.0,Arm injury - Unknown return date,0,0,0,0,0.0
@@ -446,7 +446,7 @@ Liverpool,Jacquet,DEF,a,100.0,,682,8,0,0,0.49
 Liverpool,Leoni,DEF,i,0.0,Knee injury - Unknown return date,0,0,0,0,0.0
 Liverpool,Tsimikas,DEF,a,,,66,1,0,0,0.06
 Liverpool,Ramsay,DEF,u,0.0,Has joined St Mirren on loan for the rest of the season,0,0,0,0,0.0
-Liverpool,Wirtz,MID,d,75.0,Ankle injury - 75% chance of playing,621,8,0,4,2.26
+Liverpool,Wirtz,MID,a,100.0,,621,8,0,4,2.26
 Liverpool,Gakpo,MID,a,100.0,,460,5,1,3,2.95
 Liverpool,Szoboszlai,MID,i,0.0,Hamstring injury - Unknown return date,471,6,1,0,2.58
 Liverpool,Ngumoha,MID,a,,,165,1,0,0,0.3
@@ -650,7 +650,7 @@ Sunderland,Seelt,DEF,u,0.0,Has joined Swansea City on loan for the rest of the s
 Sunderland,Hjelde,DEF,u,0.0,Has joined KV Mechelen on loan for the rest of the season,0,0,0,0,0.0
 Sunderland,O'Nien,DEF,a,,,187,2,0,0,0.18
 Sunderland,Masuaku,DEF,u,0.0,Has joined Konyaspor permanently,0,0,0,0,0.0
-Sunderland,Meunier,DEF,d,75.0,Groin injury - 75% chance of playing,429,6,0,1,1.07
+Sunderland,Meunier,DEF,a,100.0,,429,6,0,1,1.07
 Sunderland,E.Le Fée,MID,a,,,686,8,1,1,3.96
 Sunderland,Diarra,MID,a,100.0,,70,0,0,1,0.19
 Sunderland,Xhaka,MID,a,,,720,8,0,1,1.69
