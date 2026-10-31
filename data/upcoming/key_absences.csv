@@ -2,24 +2,23 @@ team,player,position,status,chance_next_round,news,minutes,starts,goals,assists,
 Arsenal,Saka,MID,i,0.0,Thigh injury - Unknown return date,596,7,3,0,4.83
 Arsenal,Calafiori,DEF,d,75.0,Hip injury - 75% chance of playing,609,7,1,2,2.2
 Arsenal,Rice,MID,d,75.0,Unspecified injury - 75% chance of playing,670,8,0,4,1.97
-Arsenal,Tzolis,MID,i,0.0,Hamstring injury - Expected back 1 Nov,362,5,0,2,0.74
+Arsenal,Tzolis,MID,d,75.0,Hamstring injury - 75% chance of playing,362,5,0,2,0.74
 Bournemouth,Scott,MID,i,0.0,Thigh injury - Expected back 21 Nov,446,5,1,2,1.06
 Brighton,F.Kadıoğlu,DEF,d,75.0,Hip injury - 75% chance of playing,517,7,0,0,0.31
 Chelsea,João Pedro,FWD,i,0.0,Thigh injury - Unknown return date,521,6,5,3,3.36
-Chelsea,Lacroix,DEF,d,50.0,Hamstring injury - 50% chance of playing,634,7,0,1,0.62
-Chelsea,Hato,DEF,d,75.0,Unspecified injury - 75% chance of playing,412,6,0,3,0.24
+Chelsea,Lacroix,DEF,i,0.0,Hamstring injury - Unknown return date,634,7,0,1,0.62
+Chelsea,Hato,DEF,i,0.0,Unspecified injury - Unknown return date,412,6,0,3,0.24
 Chelsea,Martinez,GK,i,0.0,Head injury - Unknown return date,524,6,0,0,0.01
 Coventry,Thomas,DEF,d,50.0,Calf injury - 50% chance of playing,676,8,0,0,0.97
 Coventry,Amenda,DEF,i,0.0,Calf injury - Unknown return date,360,4,0,0,0.41
 Crystal Palace,Strand Larsen,FWD,d,75.0,Ankle injury - 75% chance of playing,440,5,1,1,1.94
 Crystal Palace,Timber,MID,d,75.0,Hamstring injury - 75% chance of playing,388,5,0,1,0.52
-Fulham,Affengruber,DEF,d,75.0,Unspecified injury - 75% chance of playing,450,5,0,0,0.13
-Ipswich,Lukić,MID,i,0.0,Groin injury - Unknown return date,490,6,0,1,0.48
+Everton,Branthwaite,DEF,d,75.0,Concussion - 75% chance of playing,630,7,0,0,0.33
+Ipswich,Lukić,MID,d,75.0,Groin injury - 75% chance of playing,490,6,0,1,0.48
 Leeds,Stach,MID,d,50.0,Foot injury - 50% chance of playing,651,7,1,0,1.9
-Liverpool,Szoboszlai,MID,i,0.0,Hamstring injury - Unknown return date,471,6,1,0,2.58
-Liverpool,Munoz,MID,d,25.0,Knee injury - 25% chance of playing,425,5,2,1,1.1
+Liverpool,Szoboszlai,MID,d,50.0,Hamstring injury - 50% chance of playing,471,6,1,0,2.58
+Liverpool,Munoz,MID,d,50.0,Knee injury - 50% chance of playing,425,5,2,1,1.1
 Man City,Semenyo,MID,i,0.0,Knee injury - Unknown return date,553,6,2,3,1.81
-Man City,Matheus N.,DEF,d,75.0,Unspecified injury - 75% chance of playing,378,4,0,0,0.1
 Man United,Mainoo,MID,d,25.0,Unspecified injury - 25% chance of playing,444,5,0,1,0.85
 Man United,Shaw,DEF,i,0.0,Unspecified injury - Unknown return date,425,5,0,1,0.62
 Newcastle,L.Miley,MID,d,75.0,Muscular injury - 75% chance of playing,544,7,0,0,0.5

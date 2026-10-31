@@ -14,7 +14,7 @@ Arsenal,Saka,MID,i,0.0,Thigh injury - Unknown return date,596,7,3,0,4.83
 Arsenal,Rice,MID,d,75.0,Unspecified injury - 75% chance of playing,670,8,0,4,1.97
 Arsenal,Eze,MID,a,,,209,2,0,0,0.34
 Arsenal,Ødegaard,MID,a,,,646,8,2,0,4.18
-Arsenal,Madueke,MID,d,75.0,Ankle injury - 75% chance of playing,248,2,1,0,1.11
+Arsenal,Madueke,MID,d,50.0,Ankle injury - 50% chance of playing,248,2,1,0,1.11
 Arsenal,Merino,MID,a,,,173,1,0,0,0.98
 Arsenal,Martinelli,MID,u,0.0,Has joined Al Hilal permanently,0,0,0,0,0.0
 Arsenal,Zubimendi,MID,a,100.0,,99,0,0,0,0.26
@@ -27,7 +27,7 @@ Arsenal,Havertz,FWD,a,100.0,,586,7,2,0,2.56
 Arsenal,G.Jesus,FWD,u,0.0,Has joined FC Barcelona permanently,0,0,0,0,0.0
 Arsenal,Konsa,DEF,a,100.0,,551,6,1,0,0.64
 Arsenal,Bruno G.,MID,a,100.0,,237,2,2,0,0.46
-Arsenal,Tzolis,MID,i,0.0,Hamstring injury - Expected back 1 Nov,362,5,0,2,0.74
+Arsenal,Tzolis,MID,d,75.0,Hamstring injury - 75% chance of playing,362,5,0,2,0.74
 Aston Villa,M.Bizot,GK,a,100.0,,90,1,0,0,0.0
 Aston Villa,Digne,DEF,u,0.0,Has joined Paris Saint-Germain permanently,0,0,0,0,0.0
 Aston Villa,Cash,DEF,a,100.0,,566,6,0,0,0.27
@@ -110,7 +110,7 @@ Brentford,Damsgaard,MID,a,100.0,,324,3,0,1,1.15
 Brentford,Jensen,MID,a,100.0,,224,3,0,1,0.59
 Brentford,Janelt,MID,a,100.0,,630,7,2,0,1.14
 Brentford,Milambo,MID,i,0.0,Knee injury - Unknown return date,0,0,0,0,0.0
-Brentford,Carvalho,MID,a,100.0,,3,0,1,0,0.43
+Brentford,Carvalho,MID,i,0.0,Knock - Expected back 23 Nov,3,0,1,0,0.43
 Brentford,Yarmoliuk,MID,s,0.0,Suspended until 8 Nov,334,4,1,1,0.51
 Brentford,Dasilva,MID,i,0.0,Hamstring injury - Unknown return date,0,0,0,0,0.0
 Brentford,Anthony,MID,a,,,455,5,1,1,2.3
@@ -167,10 +167,10 @@ Chelsea,Sánchez,GK,u,0.0,Has joined Como on loan for the rest of the season,90,
 Chelsea,Jörgensen,GK,u,0.0,Has joined RC Strasbourg on loan for the rest of the season,0,0,0,0,0.0
 Chelsea,James,DEF,i,0.0,Knee injury - Unknown return date,292,3,0,0,0.59
 Chelsea,Chalobah,DEF,u,0.0,Has joined Como permanently,0,0,0,0,0.0
-Chelsea,Gusto,DEF,d,75.0,Unspecified injury - 75% chance of playing,274,3,0,0,0.2
+Chelsea,Gusto,DEF,a,100.0,,274,3,0,0,0.2
 Chelsea,Fofana,DEF,a,100.0,,312,4,0,0,0.08
 Chelsea,B.Badiashile,DEF,u,0.0,Has joined Napoli on loan for the rest of the season,0,0,0,0,0.0
-Chelsea,Hato,DEF,d,75.0,Unspecified injury - 75% chance of playing,412,6,0,3,0.24
+Chelsea,Hato,DEF,i,0.0,Unspecified injury - Unknown return date,412,6,0,3,0.24
 Chelsea,Colwill,DEF,a,,,611,7,0,0,0.23
 Chelsea,M.Sarr,DEF,u,0.0,Has joined Real Sociedad on loan for the rest of the season,0,0,0,0,0.0
 Chelsea,Acheampong,DEF,a,,,491,5,0,0,0.06
@@ -179,7 +179,7 @@ Chelsea,Palmer,MID,a,100.0,,698,8,2,4,2.59
 Chelsea,Neto,MID,a,,,591,7,3,1,2.3
 Chelsea,Estêvão,MID,a,,,47,0,0,0,0.23
 Chelsea,Gittens,MID,i,0.0,Ankle injury - Unknown return date,0,0,0,0,0.0
-Chelsea,Caicedo,MID,d,75.0,Unspecified injury - 75% chance of playing,264,3,0,0,0.08
+Chelsea,Caicedo,MID,a,100.0,,264,3,0,0,0.08
 Chelsea,Lavia,MID,a,,,277,4,1,0,0.86
 Chelsea,D.Essugo,MID,u,0.0,Has joined RC Strasbourg on loan for the rest of the season,0,0,0,0,0.0
 Chelsea,Quenda,MID,a,100.0,,99,1,0,0,0.04
@@ -187,11 +187,11 @@ Chelsea,João Pedro,FWD,i,0.0,Thigh injury - Unknown return date,521,6,5,3,3.36
 Chelsea,Marc Guiu,FWD,u,0.0,Has joined RB Leipzig permanently,0,0,0,0,0.0
 Chelsea,Mheuka,FWD,a,,,0,0,0,0,0.0
 Chelsea,Emegha,FWD,a,100.0,,0,0,0,0,0.0
-Chelsea,Lacroix,DEF,d,50.0,Hamstring injury - 50% chance of playing,634,7,0,1,0.62
+Chelsea,Lacroix,DEF,i,0.0,Hamstring injury - Unknown return date,634,7,0,1,0.62
 Chelsea,Penders,GK,a,,,105,1,0,0,0.0
-Chelsea,Anselmino,DEF,a,100.0,,0,0,0,0,0.0
+Chelsea,Anselmino,DEF,i,0.0,Unspecified injury - Unknown return date,0,0,0,0,0.0
 Chelsea,Barco,MID,a,,,115,1,0,0,0.18
-Chelsea,Chavarria,DEF,i,0.0,Unspecified injury - Expected back 31 Oct,298,2,0,1,0.35
+Chelsea,Chavarria,DEF,a,100.0,,298,2,0,1,0.35
 Chelsea,Nicoll-Jazuli,MID,a,,,3,0,0,0,0.0
 Chelsea,Sharman-Lowe,GK,a,,,0,0,0,0,0.0
 Coventry,Pinnock,DEF,a,,,552,6,0,0,0.24
@@ -273,7 +273,7 @@ Everton,Pickford,GK,a,,,720,8,0,0,0.03
 Everton,Travers,GK,a,,,0,0,0,0,0.0
 Everton,King,GK,a,,,0,0,0,0,0.0
 Everton,Tarkowski,DEF,a,,,720,8,1,1,0.29
-Everton,Branthwaite,DEF,a,100.0,,630,7,0,0,0.33
+Everton,Branthwaite,DEF,d,75.0,Concussion - 75% chance of playing,630,7,0,0,0.33
 Everton,Keane,DEF,a,,,90,1,0,0,0.02
 Everton,O'Brien,DEF,a,,,118,1,0,0,0.01
 Everton,Mykolenko,DEF,a,100.0,,613,7,0,0,0.42
@@ -302,7 +302,7 @@ Fulham,Tete,DEF,a,100.0,,126,1,0,0,0.22
 Fulham,Bassey,DEF,a,,,720,8,0,1,0.44
 Fulham,Castagne,DEF,a,,,588,7,0,2,1.24
 Fulham,Iwobi,MID,a,,,657,8,1,0,3.32
-Fulham,Smith Rowe,MID,d,75.0,Knock - 75% chance of playing,41,0,0,0,0.08
+Fulham,Smith Rowe,MID,a,100.0,,41,0,0,0,0.08
 Fulham,Kevin,MID,a,,,75,0,0,0,0.34
 Fulham,Bobb,MID,a,,,575,8,1,0,2.86
 Fulham,Berge,MID,a,,,556,6,0,1,0.79
@@ -319,7 +319,7 @@ Fulham,De Fougerolles,DEF,u,0.0,has joined  Real Salt Lake on loan for the rest 
 Fulham,Zepa,MID,a,,,0,0,0,0,0.0
 Fulham,Larsson,MID,a,100.0,,102,1,0,0,0.43
 Fulham,Ángel,MID,a,,,19,0,0,0,0.0
-Fulham,Affengruber,DEF,d,75.0,Unspecified injury - 75% chance of playing,450,5,0,0,0.13
+Fulham,Affengruber,DEF,a,100.0,,450,5,0,0,0.13
 Hull,Iroegbunam,MID,a,100.0,,211,1,0,1,0.2
 Hull,Phillips,GK,a,,,0,0,0,0,0.0
 Hull,Butland,GK,d,50.0,Arm injury - 50% chance of playing,0,0,0,0,0.0
@@ -364,7 +364,7 @@ Hull,Norton-Cuffy,DEF,a,100.0,,126,1,0,0,0.06
 Hull,Thomas,MID,a,,,271,3,0,1,0.86
 Hull,Mouzakitis,MID,a,,,0,0,0,0,0.0
 Ipswich,Diop,DEF,a,,,720,8,0,0,0.27
-Ipswich,Lukić,MID,i,0.0,Groin injury - Unknown return date,490,6,0,1,0.48
+Ipswich,Lukić,MID,d,75.0,Groin injury - 75% chance of playing,490,6,0,1,0.48
 Ipswich,Walton,GK,a,,,360,4,0,0,0.02
 Ipswich,Palmer,GK,a,,,0,0,0,0,0.0
 Ipswich,Button,GK,a,,,0,0,0,0,0.0
@@ -448,7 +448,7 @@ Liverpool,Tsimikas,DEF,a,,,66,1,0,0,0.06
 Liverpool,Ramsay,DEF,u,0.0,Has joined St Mirren on loan for the rest of the season,0,0,0,0,0.0
 Liverpool,Wirtz,MID,a,100.0,,621,8,0,4,2.26
 Liverpool,Gakpo,MID,a,100.0,,460,5,1,3,2.95
-Liverpool,Szoboszlai,MID,i,0.0,Hamstring injury - Unknown return date,471,6,1,0,2.58
+Liverpool,Szoboszlai,MID,d,50.0,Hamstring injury - 50% chance of playing,471,6,1,0,2.58
 Liverpool,Ngumoha,MID,a,,,165,1,0,0,0.3
 Liverpool,Chiesa,MID,a,100.0,,2,0,0,0,0.0
 Liverpool,Gravenberch,MID,a,100.0,,341,4,0,1,0.34
@@ -457,7 +457,7 @@ Liverpool,C.Jones,MID,u,0.0,Has joined Internazionale permanently,0,0,0,0,0.0
 Liverpool,Endo,MID,a,100.0,,0,0,0,0,0.0
 Liverpool,Nyoni,MID,a,,,145,0,0,0,0.16
 Liverpool,Bajcetic,MID,u,0.0,Has joined Celta Vigo permanently,0,0,0,0,0.0
-Liverpool,Munoz,MID,d,25.0,Knee injury - 25% chance of playing,425,5,2,1,1.1
+Liverpool,Munoz,MID,d,50.0,Knee injury - 50% chance of playing,425,5,2,1,1.1
 Liverpool,McConnell,MID,a,,,0,0,0,0,0.0
 Liverpool,Isak,FWD,a,100.0,,567,7,6,0,4.4
 Liverpool,Ekitiké,FWD,i,0.0,Achilles injury - Unknown return date,0,0,0,0,0.0
@@ -472,7 +472,7 @@ Man City,Donnarumma,GK,a,,,720,8,0,0,0.0
 Man City,Bettinelli,GK,a,,,0,0,0,0,0.0
 Man City,O'Reilly,DEF,a,100.0,,288,4,0,0,1.56
 Man City,Guéhi,DEF,a,,,675,8,1,1,1.47
-Man City,Matheus N.,DEF,d,75.0,Unspecified injury - 75% chance of playing,378,4,0,0,0.1
+Man City,Matheus N.,DEF,a,100.0,,378,4,0,0,0.1
 Man City,Rúben,DEF,a,,,720,8,0,0,1.37
 Man City,Gvardiol,DEF,a,,,577,6,1,4,1.69
 Man City,Aït-Nouri,DEF,a,,,0,0,0,0,0.0
@@ -555,7 +555,7 @@ Newcastle,Touré,MID,a,100.0,,115,0,1,0,0.5
 Newcastle,Steur,MID,a,,,228,2,0,0,0.06
 Newcastle,Woltemade,FWD,u,0.0,Has joined Juventus on loan for the rest of the season,19,0,0,1,0.03
 Newcastle,Wissa,FWD,a,,,621,7,1,1,3.11
-Newcastle,Osula,FWD,d,75.0,Ankle injury - 75% chance of playing,177,2,1,1,0.9
+Newcastle,Osula,FWD,d,50.0,Ankle injury - 50% chance of playing,177,2,1,1,0.9
 Newcastle,Neave,FWD,u,0.0,Has joined Wolves on loan for the rest of the season,0,0,0,0,0.0
 Newcastle,Bamba,MID,a,,,27,0,0,0,0.0
 Newcastle,Horníček,GK,a,,,720,8,0,0,0.0
@@ -598,7 +598,7 @@ Nott'm Forest,Schlager,MID,a,,,621,7,0,0,0.75
 Nott'm Forest,Diomande,DEF,a,,,343,4,0,0,0.25
 Nott'm Forest,Benda,GK,a,,,0,0,0,0,0.0
 Tottenham,Van Hecke,DEF,a,100.0,,720,8,1,0,1.2
-Tottenham,Tosin,DEF,d,75.0,Calf injury - 75% chance of playing,75,1,0,0,0.02
+Tottenham,Tosin,DEF,i,0.0,Calf injury - Unknown return date,75,1,0,0,0.02
 Tottenham,Marmoush,FWD,a,100.0,,513,6,1,0,0.92
 Tottenham,Sávio,MID,i,0.0,Muscular injury - Expected back 21 Nov,330,4,0,0,1.49
 Tottenham,Tonali,MID,a,100.0,,697,8,0,1,1.59
@@ -612,7 +612,7 @@ Tottenham,Romero,DEF,u,0.0,Has joined Atletico Madrid permanently,0,0,0,0,0.0
 Tottenham,Robertson,DEF,a,100.0,,498,6,0,2,0.72
 Tottenham,Van de Ven,DEF,a,100.0,,556,6,0,0,0.74
 Tottenham,Spence,DEF,u,0.0,Has joined Internazionale permanently,0,0,0,0,0.0
-Tottenham,Udogie,DEF,i,0.0,Knee injury - Unknown return date,159,2,0,0,0.28
+Tottenham,Udogie,DEF,a,100.0,,159,2,0,0,0.28
 Tottenham,Phillips,DEF,u,0.0,Has joined Middlesbrough permanently,0,0,0,0,0.0
 Tottenham,Davies,DEF,a,,,22,0,1,0,0.04
 Tottenham,Byfield,DEF,a,,,0,0,0,0,0.0
@@ -621,7 +621,7 @@ Tottenham,Souza,DEF,u,0.0,Has joined FC Porto on loan for the rest of the season
 Tottenham,Kudus,MID,a,100.0,,362,3,0,2,1.02
 Tottenham,Xavi,MID,i,0.0,Knee injury - Unknown return date,0,0,0,0,0.0
 Tottenham,Tel,MID,a,,,348,4,1,0,0.7
-Tottenham,Maddison,MID,d,75.0,Unspecified injury - 75% chance of playing,193,2,1,0,0.26
+Tottenham,Maddison,MID,a,100.0,,193,2,1,0,0.26
 Tottenham,Bentancur,MID,s,0.0,Suspended until 7 Nov,381,4,0,0,0.14
 Tottenham,Odobert,MID,i,0.0,Knee injury - Unknown return date,0,0,0,0,0.0
 Tottenham,P.M.Sarr,MID,u,0.0,Has joined Juventus on loan for the rest of the season,0,0,0,0,0.0
