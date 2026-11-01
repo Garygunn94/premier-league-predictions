@@ -87,7 +87,7 @@ html,body{margin:0;width:{{ size }}px;height:{{ size }}px;overflow:hidden}
 <div class="split-key lab"><span>{{ g.home_short }} {{ g.h }}%</span><span class="muted">Draw {{ g.d }}%</span><span class="accent">{{ g.away_short }} {{ g.a }}%</span></div>
 </div>
 {% if g.front_reasons %}
-<div><div class="why disp">{{ g.front_reasons[0].title }}</div><div class="why-text">{{ g.front_reasons[0].text }}</div></div>
+<div><div class="why disp">{{ g.front_reasons[0].title }}</div><div class="why-text">{{ g.plain_reason or g.front_reasons[0].text }}</div></div>
 {% endif %}
 {% elif card.kind == "reasons" %}
 <div class="kicker lab accent">{{ g.home_team }} v {{ g.away_team }} · {{ g.kickoff_text }}</div>
@@ -202,7 +202,7 @@ html,body{margin:0;width:{{ size }}px;height:{{ size }}px;overflow:hidden}
 </div>
 <div class="verdict"><span class="lab big" style="white-space:nowrap">{{ r.verdict }}{{ ' ✓' if r.right else ' ✗' }}</span><span class="lab" style="font-size:22px;font-weight:600;text-align:right">We said {{ g.call_long if g.call != 'D' else 'draw' }} {{ g.score_text }} · {{ g.our_p }}%{% if g.mkt_p is not none %}<br>Bookies {{ g.mkt_p }}%{% endif %}</span></div>
 {% if r.xg %}<div><div class="why disp">{{ r.kind }}</div><div class="why-text">{{ r.text }}</div></div>
-{% elif g.front_reasons %}<div><div class="why disp">Why we called it: {{ g.front_reasons[0].title }}</div><div class="why-text">{{ g.front_reasons[0].text }} The xG verdict follows once the chances are in.</div></div>{% endif %}
+{% elif g.front_reasons %}<div><div class="why disp">Why we called it: {{ g.front_reasons[0].title }}</div><div class="why-text">{{ g.plain_reason or g.front_reasons[0].text }} The xG verdict follows once the chances are in.</div></div>{% endif %}
 {% elif card.kind == "brand" %}
 <h1 class="head disp" style="font-size:120px;line-height:.95;font-style:normal;font-weight:900">{{ wordmark() }}</h1>
 <p class="why-text" style="font-size:36px;font-style:italic">Data-driven Premier League predictions, with the reasons. New every Thursday.</p>

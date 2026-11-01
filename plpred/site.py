@@ -35,7 +35,7 @@ import numpy as np
 import pandas as pd
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from plpred import explain, fantasy, luck, model, proof, pundits, seasons, simulate, social
+from plpred import explain, fantasy, luck, model, proof, pundits, seasons, simulate, social, video
 from plpred.predict import load_settings
 from plpred.sources import api_football
 
@@ -141,6 +141,7 @@ def game_view(g: dict) -> dict:
     for m in view["head_to_head"]:
         m["date_text"] = pd.Timestamp(m["date"]).strftime("%b %Y")
     view["front_reasons"] = front_reasons(view)
+    view["plain_reason"] = video.reason_text(view)  # the main reason as a fan would say it, for social posts
     view["waterfall_rows"] = waterfall_rows(g)
     view["xg_rows"] = xg_rows(g)
     view["form_rows"] = [{"team": t, "games": g["form"][side]} for t, side in ((home, "home"), (away, "away"))]

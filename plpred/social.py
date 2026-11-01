@@ -77,7 +77,10 @@ def call_phrase(v: dict) -> str:
 
 
 def reason(v: dict) -> str:
-    """The strongest reason as one sentence with its number, e.g. 'Arsenal concede 27% less...'."""
+    """The strongest reason as a fan would say it, e.g. 'Arsenal have the best defence in the league.'"""
+    plain = video.reason_text(v)
+    if plain:
+        return plain
     if not v["front_reasons"]:
         return ""
     return v["front_reasons"][0]["text"].split(". Worth")[0].rstrip(".") + "."

@@ -196,3 +196,34 @@ def test_match_reel_is_one_idea_a_scene(tmp_path):
             text = " ".join(line for s in v["scenes"] for line in s["lines"])
             # no win percentages, expected goals or "worth N points" read out
             assert "percent" not in text and "expected goals" not in text and " points" not in text
+
+
+def test_captions_give_the_reason_as_a_fan_would_say_it():
+    v = {"home_team": "Arsenal", "away_team": "Everton", "call": "H",
+         "ranks": {"attack": ["Man City", "Arsenal", "Everton"], "defence": ["Arsenal", "Man City", "Everton"],
+                   "overall": ["Arsenal", "Man City", "Everton"]},
+         "waterfall": {"steps": [{"label": "Arsenal's attack", "kind": "attack", "team": "Arsenal", "change": 11,
+                                  "detail": "Arsenal create and score 32% more than an average side"}]}}
+    assert video.reason_text(v) == "Arsenal have the second-best attack in the league."
+    assert social.reason(dict(v, front_reasons=[])) == "Arsenal have the second-best attack in the league."
+    # calls made before the ranks were kept: still no percentages or points
+    assert video.reason_text(dict(v, ranks=None)) == "Arsenal score more than most."
+
+
+def test_a_reason_never_points_the_wrong_way():
+    teams = [f"T{i}" for i in range(1, 21)]
+    order = lambda *front: [*front, *[t for t in teams if t not in front]]
+    v = {"home_team": "Newcastle", "away_team": "Everton", "call": "H",
+         "ranks": {"defence": order("T1", "T2", "Everton"), "attack": order("Newcastle"),
+                   "overall": order("Newcastle", "T1", "Everton")},
+         "waterfall": {"steps": [{"kind": "defence", "team": "Everton", "change": 5,
+                                  "detail": "Everton concede 15% more than an average side"},
+                                 {"kind": "attack", "team": "Newcastle", "change": 3,
+                                  "detail": "Newcastle create and score 20% more than an average side"}]}}
+    # Everton's defence is third-best, so that can't be why we back Newcastle: the next reason is
+    assert video.reason_text(v) == "Newcastle have the best attack in the league."
+    # a middling place explains nothing, so the reason becomes the overall ratings
+    v["ranks"]["attack"] = order(*teams[:8], "Newcastle")
+    assert video.reason_text(v) == "Our model rates Newcastle first and Everton third: almost level."
+    v["ranks"]["overall"] = order("Newcastle", *teams[:8], "Everton")
+    assert video.reason_text(v) == "Our model rates Newcastle first and Everton tenth overall."

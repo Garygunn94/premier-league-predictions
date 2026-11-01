@@ -251,44 +251,95 @@ def ladder(order: list[str], picks: list[str], end: str | None) -> list[dict]:
              "gap": k > 0 and i != keep[k - 1] + 1} for k, i in enumerate(keep)]
 
 
-def why_scene(v: dict, say: Phrasing) -> dict | None:
-    """The one reason a viewer can repeat: the biggest thing behind the call, said as a place in the league."""
-    home, away = spoken(v["home_team"]), spoken(v["away_team"])
+def news_names(step: dict) -> str:
+    names = [x.strip() for x in step["detail"].split(":", 1)[-1].split(",")]
+    return names[0] if len(names) == 1 else ", ".join(names[:-1]) + " and " + names[-1]
+
+
+def old_reason(step: dict) -> str:
+    """Calls made before the ranks were kept: the reason in words, without its percentage."""
+    more = " more " in step["detail"]
+    return ({"attack": ["{t} score more than most.", "{t} struggle to score."],
+             "defence": ["{t} concede more than most.", "{t} concede less than most."]}[step["kind"]]
+            [0 if more else 1]).format(t=spoken(step["team"]))
+
+
+def main_reason(v: dict) -> dict | None:
+    """The biggest thing behind the call that a fan can check, as {kind, team, text, ...}. A rating is
+    said as a place in the league, and only when that place points the same way as the call and is
+    striking: our side in the top six, or the other side in the bottom six. 'Everton have the eighth-best defence' can't be the
+    reason we back Newcastle, even if Everton concede a little more than an average side. When no
+    single rating says it plainly, the reason is how the model rates the two clubs overall."""
     ranks = v.get("ranks")
     steps = [s for s in (v.get("waterfall") or {}).get("steps", []) if s["change"] > 0]
-    if v["call"] == "D" or not steps:
-        if not ranks:
-            return None
-        order = ranks["overall"]
-        ph, pa = order.index(v["home_team"]) + 1, order.index(v["away_team"]) + 1
-        line = say("level", ["Our model rates {h} {ph} and {a} {pa}. Almost level.",
-                             "{h} {ph}, {a} {pa} in our ratings. Hard to split."],
-                   h=home, a=away, ph=ORDINALS[ph], pa=ORDINALS[pa])
-        return {"kind": "why", "lines": [line], "head": "Almost level.", "sub": "Our overall ratings",
-                "ladder": ladder(order, [v["home_team"], v["away_team"]], None)}
-    top = steps[0]
-    team = top["team"]
-    if top["kind"] == "news":
-        names = [x.strip() for x in top["detail"].split(":", 1)[-1].split(",")]
-        names = names[0] if len(names) == 1 else ", ".join(names[:-1]) + " and " + names[-1]
-        line = f"{spoken(team)} are missing {names}."
+    ours = {"H": v["home_team"], "A": v["away_team"]}.get(v["call"])
+    if ours and steps:
+        if not ranks:  # calls made before the ranks were kept
+            top = steps[0]
+            if top["kind"] == "news":
+                return {"kind": "news", "team": top["team"], "text": f"{spoken(top['team'])} are missing {news_names(top)}."}
+            return {"kind": "old", "team": top["team"], "text": old_reason(top)}
+        for step in steps:
+            if step["kind"] == "news":
+                return {"kind": "news", "team": step["team"],
+                        "text": f"{spoken(step['team'])} are missing {news_names(step)}."}
+            order = ranks.get(step["kind"], [])
+            if step["team"] not in order:
+                continue
+            rank, n = order.index(step["team"]) + 1, len(order)
+            words = rank_words(rank, n, step["kind"])
+            # near the right end of the table: 'the ninth-best attack' explains nothing
+            if words.split()[1].endswith("best") == (step["team"] == ours) and min(rank, n + 1 - rank) <= 6:
+                return {"kind": step["kind"], "team": step["team"], "words": words, "order": order,
+                        "text": f"{spoken(step['team'])} have {words} in the league."}
+    if not ranks:
+        return None
+    order = ranks["overall"]
+    h, a = (ORDINALS[order.index(t) + 1] for t in (v["home_team"], v["away_team"]))
+    level = v["call"] == "D" or abs(order.index(v["home_team"]) - order.index(v["away_team"])) <= 2
+    return {"kind": "overall", "order": order, "level": level,
+            "h": h, "a": a, "text": f"Our model rates {spoken(v['home_team'])} {h} and {spoken(v['away_team'])} {a}"
+                                   + (": almost level." if level else " overall.")}
+
+
+def reason_text(v: dict) -> str | None:
+    """The call's main reason as a fan would say it, for the captions and cards: 'Arsenal have the
+    best defence in the league.' rather than '...26% less than an average side, worth 6 points'."""
+    r = main_reason(v)
+    return r["text"] if r else None
+
+
+def why_scene(v: dict, say: Phrasing) -> dict | None:
+    """The one reason a viewer can repeat, from main_reason, with its place in the league on screen."""
+    r = main_reason(v)
+    if not r:
+        return None
+    if r["kind"] == "overall":
+        home, away = spoken(v["home_team"]), spoken(v["away_team"])
+        if r["level"]:
+            line = say("level", ["Our model rates {h} {ph} and {a} {pa}. Almost level.",
+                                 "{h} {ph}, {a} {pa} in our ratings. Hard to split."],
+                       h=home, a=away, ph=r["h"], pa=r["a"])
+            head = "Almost level."
+        else:
+            line = say("overall", ["Simple: our model rates {h} {ph} and {a} {pa}.",
+                                   "The reason: {h} are {ph} in our ratings, {a} {pa}."],
+                       h=home, a=away, ph=r["h"], pa=r["a"])
+            head = "The better side."
+        return {"kind": "why", "lines": [line], "head": head, "sub": "Our overall ratings",
+                "ladder": ladder(r["order"], [v["home_team"], v["away_team"]], None)}
+    if r["kind"] == "news":
         return {"kind": "why", "lines": [say("why.news", ["The reason: {l}", "It's about who's missing. {l}"],
-                                             l=line)], "head": line}
-    if not ranks or team not in ranks.get(top["kind"], []):  # calls made before the ranks were kept
-        more = " more " in top["detail"]
-        words = ({"attack": ["{t} score more than most.", "{t} struggle to score."],
-                  "defence": ["{t} concede more than most.", "{t} concede less than most."]}[top["kind"]]
-                 [0 if more else 1]).format(t=spoken(team))
-        return {"kind": "why", "lines": [say("why.old", ["The reason: {d}", "The big one: {d}"], d=words)],
-                "head": words}
-    order = ranks[top["kind"]]
-    rank = order.index(team) + 1
-    words = rank_words(rank, len(order), top["kind"])
+                                             l=r["text"])], "head": r["text"]}
+    if r["kind"] == "old":
+        return {"kind": "why", "lines": [say("why.old", ["The reason: {d}", "The big one: {d}"], d=r["text"])],
+                "head": r["text"]}
+    words = r["words"]
     line = say("why", ["The reason: {t} have {w} in the league.", "It comes down to this: {t} have {w} in the league.",
-                       "Why? {t} have {w} in the league."], t=spoken(team), w=words)
+                       "Why? {t} have {w} in the league."], t=spoken(r["team"]), w=words)
     return {"kind": "why", "lines": [line], "head": f"{words[0].upper()}{words[1:]}.",
-            "sub": f"{'Attack' if top['kind'] == 'attack' else 'Defence'}: the model's ratings now",
-            "ladder": ladder(order, [team], "top" if words.split()[1].endswith("best") else "bottom")}
+            "sub": f"{'Attack' if r['kind'] == 'attack' else 'Defence'}: the model's ratings now",
+            "ladder": ladder(r["order"], [r["team"]], "top" if words.split()[1].endswith("best") else "bottom")}
 
 
 def match_scenes(v: dict, matchweek=None, index: int = 0, hook=None) -> list[dict]:
