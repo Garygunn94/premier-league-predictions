@@ -197,7 +197,7 @@ def captions(ctx: dict, views: list[dict]) -> dict:
         x = (f"Match of the week: {lead['home_team']} v {lead['away_team']}.\nWe call {call_phrase(lead)} "
              f"at {lead['our_p']}%. Here is how we got there:")
         ig = (f"Match of the week: {lead['home_team']} v {lead['away_team']}.\n\nWe call {call_phrase(lead)} at "
-              f"{lead['our_p']}%. The chart shows every factor that moved the number.\n\n{ask(lead['home_team'] + lead['away_team'])}"
+              f"{lead['our_p']}%. Swipe for what pushed us there.\n\n{ask(lead['home_team'] + lead['away_team'])}"
               f"\n\n{HASHTAGS}")
     out["friday_x"] = with_link(fit_x(x, match_tag(feature)), match_url(feature))
     out["friday_instagram"], out["friday_slug"] = ig, feature["slug"]
@@ -251,8 +251,9 @@ def extra_captions(ctx: dict) -> dict:
         top = sim["teams"][0]
         down = max(sim["teams"], key=lambda r: r["relegation"])
         moves = ctx.get("sim_moves") or []
-        move = (f"\nBiggest mover: {moves[0]['team']}, {moves[0]['what']} chance "
-                f"{moves[0]['change']:+d} points to {moves[0]['now']}%.") if moves else ""
+        m = moves[0] if moves else None
+        move = (f"\nBiggest mover: {m['team']}, {m['what']} chance {'up' if m['change'] > 0 else 'down'} "
+                f"from {m['now'] - m['change']}% to {m['now']}%.") if m else ""
         body = (f"We played out the rest of the season {sim['runs']:,} times.\n"
                 f"{top['team']} win the title in {round(top['title'] * 100)}% of them. "
                 f"{down['team']} go down in {round(down['relegation'] * 100)}%.{move}")
@@ -284,8 +285,10 @@ def newsletter(ctx: dict, views: list[dict]) -> str:
     lines = [f"# Matchweek {mw}, called", "",
              f"**Match of the week: {lead['home_team']} v {lead['away_team']}.** {lead['headline']}. "
              f"We call {call_phrase(lead).removeprefix('a ')} ({lead['our_p']}%).", ""]
-    for r in lead["front_reasons"]:
-        lines.append(f"- **{r['title']}.** {r['text']}")
+    for i, r in enumerate(lead["front_reasons"]):
+        # the main reason as a fan would say it, not "...32% more than an average side. Worth +11 points"
+        text = lead.get("plain_reason") if i == 0 and lead.get("plain_reason") else r["text"].split(". Worth")[0]
+        lines.append(f"- **{r['title']}.** {text.rstrip('.')}.")
     lines += ["", f"[Read the full breakdown]({match_url(lead)})", "", "## Every call", ""]
     for v in views:
         lines.append(f"- [{v['home_team']} v {v['away_team']}]({match_url(v)}): "

@@ -104,7 +104,7 @@ html,body{margin:0;width:{{ size }}px;height:{{ size }}px;overflow:hidden}
 <h1 class="head disp" style="font-size:60px">What the <span class="accent">data</span> says.</h1>
 {% if g.xg_rows %}
 <div>
-<div class="sub lab muted">Expected goals a game, this season</div>
+<div class="sub lab muted">Chances a game this season, in expected goals</div>
 {% for x in g.xg_rows %}
 <div class="hb"><span class="l">{{ x.label }}</span><div class="t"><div style="width:{{ x.w }}%;background:{{ 'var(--ink)' if x.side == 'home' and x.kind == 'for' else 'var(--draw)' if x.side == 'home' else 'var(--accent)' if x.kind == 'for' else 'var(--accent-deep)' }}"></div></div><span class="v lab">{{ '%.1f'|format(x.v) }}</span></div>
 {% endfor %}
@@ -128,7 +128,7 @@ html,body{margin:0;width:{{ size }}px;height:{{ size }}px;overflow:hidden}
 {% endfor %}
 </div>
 <div>
-<div class="sub lab muted">Expected goals in this game: {{ g.home_short }} {{ '%.1f'|format(g.expected_goals.home) }}, {{ g.away_short }} {{ '%.1f'|format(g.expected_goals.away) }}</div>
+<div class="sub lab muted">Goals we expect: {{ g.home_short }} {{ '%.1f'|format(g.expected_goals.home) }}, {{ g.away_short }} {{ '%.1f'|format(g.expected_goals.away) }}</div>
 {{ split(g) }}
 <div class="split-key lab"><span>{{ g.home_short }} {{ g.h }}%</span><span class="muted">Draw {{ g.d }}%</span><span class="accent">{{ g.away_short }} {{ g.a }}%</span></div>
 </div>
@@ -202,7 +202,7 @@ html,body{margin:0;width:{{ size }}px;height:{{ size }}px;overflow:hidden}
 </div>
 <div class="verdict"><span class="lab big" style="white-space:nowrap">{{ r.verdict }}{{ ' ✓' if r.right else ' ✗' }}</span><span class="lab" style="font-size:22px;font-weight:600;text-align:right">We said {{ g.call_long if g.call != 'D' else 'draw' }} {{ g.score_text }} · {{ g.our_p }}%{% if g.mkt_p is not none %}<br>Bookies {{ g.mkt_p }}%{% endif %}</span></div>
 {% if r.xg %}<div><div class="why disp">{{ r.kind }}</div><div class="why-text">{{ r.text }}</div></div>
-{% elif g.front_reasons %}<div><div class="why disp">Why we called it: {{ g.front_reasons[0].title }}</div><div class="why-text">{{ g.plain_reason or g.front_reasons[0].text }} The xG verdict follows once the chances are in.</div></div>{% endif %}
+{% elif g.front_reasons %}<div><div class="why disp">Why we called it: {{ g.front_reasons[0].title }}</div><div class="why-text">{{ g.plain_reason or g.front_reasons[0].text }} Once the chance data is in, we'll say whether it was luck.</div></div>{% endif %}
 {% elif card.kind == "brand" %}
 <h1 class="head disp" style="font-size:120px;line-height:.95;font-style:normal;font-weight:900">{{ wordmark() }}</h1>
 <p class="why-text" style="font-size:36px;font-style:italic">Data-driven Premier League predictions, with the reasons. New every Thursday.</p>
