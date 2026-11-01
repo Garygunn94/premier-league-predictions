@@ -33,7 +33,7 @@ from pathlib import Path
 import pandas as pd
 from jinja2 import Environment
 
-from plpred import video
+from plpred import leagues, video
 
 log = logging.getLogger("plpred.social")
 BRAND = "Inkwell & Algorithm"
@@ -50,20 +50,9 @@ X_TAG = "#PremierLeague"
 ASKS = ["What's your score? Tell us in the comments 👇", "Agree, or have we got this one wrong? Tell us below 👇",
         "Which way do you see it? Comment your score 👇"]
 FOLLOW = "Follow for every call, and the verdict after every game."
-# The three-letter codes behind the league's matchday tags, e.g. #ARSLIV.
-CODES = {"Arsenal": "ARS", "Aston Villa": "AVL", "Bournemouth": "BOU", "Brentford": "BRE", "Brighton": "BHA",
-         "Burnley": "BUR", "Chelsea": "CHE", "Coventry": "COV", "Crystal Palace": "CRY", "Everton": "EVE",
-         "Fulham": "FUL", "Hull": "HUL", "Ipswich": "IPS", "Leeds": "LEE", "Leicester": "LEI",
-         "Liverpool": "LIV", "Luton": "LUT", "Man City": "MCI", "Man United": "MUN", "Newcastle": "NEW",
-         "Nott'm Forest": "NFO", "Sheffield United": "SHU", "Southampton": "SOU", "Sunderland": "SUN",
-         "Tottenham": "TOT", "West Ham": "WHU", "Wolves": "WOL"}
-CLUB_TAGS = {"Arsenal": "#Arsenal", "Aston Villa": "#AVFC", "Bournemouth": "#AFCB", "Brentford": "#BrentfordFC",
-             "Brighton": "#BHAFC", "Burnley": "#BurnleyFC", "Chelsea": "#ChelseaFC", "Coventry": "#PUSB",
-             "Crystal Palace": "#CPFC", "Everton": "#EFC", "Fulham": "#FulhamFC", "Hull": "#HullCity",
-             "Ipswich": "#ITFC", "Leeds": "#LUFC", "Leicester": "#LCFC", "Liverpool": "#LFC",
-             "Man City": "#MCFC", "Man United": "#MUFC", "Newcastle": "#NUFC", "Nott'm Forest": "#NFFC",
-             "Southampton": "#SaintsFC", "Sunderland": "#SAFC", "Tottenham": "#THFC", "West Ham": "#WHUFC",
-             "Wolves": "#Wolves"}
+# The three-letter codes behind the league's matchday tags, e.g. #ARSLIV, and each club's own tag.
+CODES = {**leagues.PREMIER_LEAGUE.codes, **leagues.LA_LIGA.codes}
+CLUB_TAGS = {**leagues.PREMIER_LEAGUE.club_tags, **leagues.LA_LIGA.club_tags}
 SIZE = 1080
 X_LIMIT = 280
 X_URL_LENGTH = 23  # X counts every link as 23 characters
@@ -72,12 +61,32 @@ EDITIONS = ("predictions", "results")
 
 # ---------------------------------------------------------------- captions
 
+def league_of(ctx: dict) -> dict:
+    """The league's view (see plpred.leagues), the Premier League's when the context has none."""
+    return ctx.get("league") or leagues.PREMIER_LEAGUE.view()
+
+
+def home_url(lg: dict) -> str:
+    """The league's front page: the site's, or its own section's (La Liga's is laliga/)."""
+    return f"{SITE_URL}{lg['prefix']}"
+
+
 def call_phrase(v: dict) -> str:
-    return f"a draw {v['score_text']}" if v["call"] == "D" else f"a {v['call_long']} {v['score_text']}"
+    if v["call"] == "D":
+        return f"a draw {v['score_text']}"
+    return f"{'an' if v['call_long'][0] in 'AEIOU' else 'a'} {v['call_long']} {v['score_text']}"
+
+
+def bare_call(v: dict) -> str:
+    """The call without its article: 'draw 1–1', 'Arsenal win 2–0'."""
+    return call_phrase(v).split(" ", 1)[1]
 
 
 def reason(v: dict) -> str:
-    """The strongest reason as one sentence with its number, e.g. 'Arsenal concede 27% less...'."""
+    """The strongest reason as a fan would say it, e.g. 'Arsenal have the best defence in the league.'"""
+    plain = video.reason_text(v)
+    if plain:
+        return plain
     if not v["front_reasons"]:
         return ""
     return v["front_reasons"][0]["text"].split(". Worth")[0].rstrip(".") + "."
@@ -120,7 +129,7 @@ def late_line(v: dict) -> str:
     """For a game called after kick-off: say so, and how it finished, so it never reads as a prediction."""
     outcome = (f" It finished {v['result_text']}, so the model was "
                f"{'right' if v['result_call'] == v['call'] else 'wrong'}.") if v.get("result_text") else ""
-    return (f"Before the round, the model would have called {call_phrase(v).removeprefix('a ')} "
+    return (f"Before the round, the model would have called {bare_call(v)} "
             f"({v['our_p']}%).{outcome} Run after kick-off, so not part of our record.")
 
 
@@ -143,19 +152,19 @@ def carousel_caption(v: dict, hook: str | None = None) -> str:
     before 'more', the call, the main reason, a question, then five tags."""
     close = ", too close to call" if v["confidence"] == "too close to call" else f", {v['confidence']}"
     call = (late_line(v) if v.get("after_kickoff")
-            else f"Our call: {call_phrase(v).removeprefix('a ')} ({v['our_p']}%{close}).")
+            else f"Our call: {bare_call(v)} ({v['our_p']}%{close}).")
     head = f"{hook}\n\n" if hook and not v.get("after_kickoff") else ""
     return (f"{head}{v['home_team']} v {v['away_team']}, {v['kickoff_long']}.\n"
             f"{call}\n\n"
             f"Why: {reason(v)}\n\n{ask(v['home_team'] + v['away_team'])}\n\nSwipe for how we got there, the numbers behind it and the "
             f"most likely scores. {FOLLOW} The full breakdown is at the link in bio.\n\n"
-            f"#PremierLeague {club_tag(v['home_team'])} {club_tag(v['away_team'])} #FootballAnalytics #xG")
+            f"{v.get('league_tag', X_TAG)} {club_tag(v['home_team'])} {club_tag(v['away_team'])} #FootballAnalytics #xG")
 
 
 def reel_caption(v: dict, hook: str, style: str) -> str:
     """The caption for one game's narrated video. A "reveal" video keeps our call for its last seconds,
     so its caption mustn't give it away: it asks for a guess instead."""
-    tags = f"#PremierLeague {club_tag(v['home_team'])} {club_tag(v['away_team'])} #FootballAnalytics #xG"
+    tags = f"{v.get('league_tag', X_TAG)} {club_tag(v['home_team'])} {club_tag(v['away_team'])} #FootballAnalytics #xG"
     if style == "reveal":
         return (f"{hook}\n\n{v['home_team']} v {v['away_team']}, {v['kickoff_long']}. Our call is at the end of the "
                 f"video. Guess first: put your score in the comments before you watch it 👇\n\n{FOLLOW}\n\n{tags}")
@@ -166,8 +175,11 @@ def reel_caption(v: dict, hook: str, style: str) -> str:
 
 def captions(ctx: dict, views: list[dict]) -> dict:
     mw, lead, upset, rec = ctx["matchweek"], ctx["lead"], ctx["features"]["upset"], ctx["record"]
+    lg = league_of(ctx)
+    X_TAG, HASHTAGS, ROUND_TAGS, SITE_URL = lg["tag"], lg["hashtags"], lg["round_tags"], home_url(lg)
     late = [v for v in views if v.get("after_kickoff")]
-    intro = (f"Matchweek {mw}: every Premier League game called, with the data behind each call.\n"
+    named = "" if lg["main"] else f"{lg['name']} "
+    intro = (f"{named}Matchweek {mw}: every {lg['name']} game called, with the data behind each call.\n"
              if not late else
              f"Matchweek {mw}, run late: {len(late)} games had already kicked off, so for those we show what the "
              f"model would have called from pre-round data, and how it went.\n")
@@ -179,7 +191,7 @@ def captions(ctx: dict, views: list[dict]) -> dict:
         last += (f"\n\nThis week's calls have the fingerprint {ctx['proof']['short']}, the start of their "
                  f"SHA-256 hash. How to check it: {SITE_URL}record/#proof")
     thread.append(last)
-    lines = "\n".join(f"{v['home_team']} v {v['away_team']}: {call_phrase(v).removeprefix('a ')} ({v['our_p']}%)"
+    lines = "\n".join(f"{v['home_team']} v {v['away_team']}: {bare_call(v)} ({v['our_p']}%)"
                       + (f", finished {v['result_text']}" if v.get("result_text") else
                          ", called after kick-off" if v.get("after_kickoff") else "")
                       for v in views)
@@ -188,7 +200,7 @@ def captions(ctx: dict, views: list[dict]) -> dict:
                   f"use only results from before the round and aren't part of our record.")
     out = {
         "thursday_x": thread,
-        "thursday_instagram": (f"Matchweek {mw}, called.\n\n{lines}\n\nEvery call comes with the reasons and the "
+        "thursday_instagram": (f"{named}Matchweek {mw}, called.\n\n{lines}\n\nEvery call comes with the reasons and the "
                                f"numbers behind it. Each game gets its own carousel, and the full breakdowns are at the "
                                f"link in bio.\n\nWhich one have we got wrong? Tell us below 👇\n\n{FOLLOW}\n\n"
                                f"{ROUND_TAGS}"),
@@ -206,7 +218,7 @@ def captions(ctx: dict, views: list[dict]) -> dict:
         x = (f"Match of the week: {lead['home_team']} v {lead['away_team']}.\nWe call {call_phrase(lead)} "
              f"at {lead['our_p']}%. Here is how we got there:")
         ig = (f"Match of the week: {lead['home_team']} v {lead['away_team']}.\n\nWe call {call_phrase(lead)} at "
-              f"{lead['our_p']}%. The chart shows every factor that moved the number.\n\n{ask(lead['home_team'] + lead['away_team'])}"
+              f"{lead['our_p']}%. Swipe for what pushed us there.\n\n{ask(lead['home_team'] + lead['away_team'])}"
               f"\n\n{HASHTAGS}")
     out["friday_x"] = with_link(fit_x(x, match_tag(feature)), match_url(feature))
     out["friday_instagram"], out["friday_slug"] = ig, feature["slug"]
@@ -223,16 +235,18 @@ def captions(ctx: dict, views: list[dict]) -> dict:
     return out
 
 
-def results_captions(res: dict) -> dict:
+def results_captions(res: dict, lg: dict | None = None) -> dict:
     """The round's results post and one verdict post per game, scored on the calls we published."""
     mw = res["matchweek"]
+    lg = lg or leagues.PREMIER_LEAGUE.view()
+    X_TAG, HASHTAGS, SITE_URL = lg["tag"], lg["hashtags"], home_url(lg)
     fav = f" The bookies' favourite got {res['fav_right']} of {res['fav_n']}." if res["fav_n"] else ""
     exact = f", {res['exact']} exact {'score' if res['exact'] == 1 else 'scores'}" if res["exact"] else ""
     late = (f"\n{res['late_n']} were called after kick-off from pre-round data ({res['late_right']} right), so they "
             f"aren't in our record." if res["late_n"] else "")
-    body = f"Matchweek {mw}: {res['right']} of {res['n']} results right{exact}.{fav}{late}"
+    body = f"{'' if lg['main'] else lg['name'] + ' '}Matchweek {mw}: {res['right']} of {res['n']} results right{exact}.{fav}{late}"
     lines = "\n".join(f"{r['g']['home_team']} {r['result_text']} {r['g']['away_team']}: we said "
-                      f"{call_phrase(r['g']).removeprefix('a ')} ({r['g']['our_p']}%), "
+                      f"{bare_call(r['g'])} ({r['g']['our_p']}%), "
                       f"{'right' if r['right'] else 'wrong'}" for r in res["rows"])
     out = {"results_x": with_link(fit_x(body, X_TAG), SITE_URL, "Every call, right or wrong:"),
            "results_instagram": f"{body}\n\n{lines}\n\nWe publish every call, right or wrong. Swipe for each game."
@@ -240,29 +254,32 @@ def results_captions(res: dict) -> dict:
                                 f"{HASHTAGS} #DataViz", "verdicts": {}}
     for r in res["rows"]:
         v = r["g"]
-        said = (f"Before the round, the model would have said {call_phrase(v).removeprefix('a ')} ({v['our_p']}%)"
-                if v.get("after_kickoff") else f"We said {call_phrase(v).removeprefix('a ')} ({v['our_p']}%)")
+        said = (f"Before the round, the model would have said {bare_call(v)} ({v['our_p']}%)"
+                if v.get("after_kickoff") else f"We said {bare_call(v)} ({v['our_p']}%)")
         post = f"{v['home_team']} {r['result_text']} {v['away_team']}\n{said}. {r['verdict']}."
         if r["xg"]:
             post += f"\n{r['kind']}: {r['text']}"
         out["verdicts"][v["slug"]] = {
             "x": [fit_x(post, match_tag(v)), f"The full breakdown: {match_url(v)}"],
             "instagram": f"{post}\n\nDid you see that coming? Tell us below 👇\n\n"
-                         f"#PremierLeague {club_tag(v['home_team'])} {club_tag(v['away_team'])} #xG"}
+                         f"{lg['tag']} {club_tag(v['home_team'])} {club_tag(v['away_team'])} #xG"}
     return out
 
 
 def extra_captions(ctx: dict) -> dict:
     """Captions for the projection, the FPL corner and the biggest miss, when the site has them."""
     out = {}
+    lg = league_of(ctx)
+    X_TAG, HASHTAGS, SITE_URL = lg["tag"], lg["hashtags"], home_url(lg)
     sim, fpl, miss = ctx.get("sim"), ctx.get("fpl"), ctx.get("miss")
     if sim:
         top = sim["teams"][0]
         down = max(sim["teams"], key=lambda r: r["relegation"])
         moves = ctx.get("sim_moves") or []
-        move = (f"\nBiggest mover: {moves[0]['team']}, {moves[0]['what']} chance "
-                f"{moves[0]['change']:+d} points to {moves[0]['now']}%.") if moves else ""
-        body = (f"We played out the rest of the season {sim['runs']:,} times.\n"
+        m = moves[0] if moves else None
+        move = (f"\nBiggest mover: {m['team']}, {m['what']} chance {'up' if m['change'] > 0 else 'down'} "
+                f"from {m['now'] - m['change']}% to {m['now']}%.") if m else ""
+        body = (f"We played out the rest of the {'' if lg['main'] else lg['name'] + ' '}season {sim['runs']:,} times.\n"
                 f"{top['team']} win the title in {round(top['title'] * 100)}% of them. "
                 f"{down['team']} go down in {round(down['relegation'] * 100)}%.{move}")
         out["projection_x"] = with_link(fit_x(body, X_TAG), f"{SITE_URL}table/", "Every club:")
@@ -292,13 +309,15 @@ def newsletter(ctx: dict, views: list[dict]) -> str:
     mw, lead, rec = ctx["matchweek"], ctx["lead"], ctx["record"]
     lines = [f"# Matchweek {mw}, called", "",
              f"**Match of the week: {lead['home_team']} v {lead['away_team']}.** {lead['headline']}. "
-             f"We call {call_phrase(lead).removeprefix('a ')} ({lead['our_p']}%).", ""]
-    for r in lead["front_reasons"]:
-        lines.append(f"- **{r['title']}.** {r['text']}")
+             f"We call {bare_call(lead)} ({lead['our_p']}%).", ""]
+    for i, r in enumerate(lead["front_reasons"]):
+        # the main reason as a fan would say it, not "...32% more than an average side. Worth +11 points"
+        text = lead.get("plain_reason") if i == 0 and lead.get("plain_reason") else r["text"].split(". Worth")[0]
+        lines.append(f"- **{r['title']}.** {text.rstrip('.')}.")
     lines += ["", f"[Read the full breakdown]({match_url(lead)})", "", "## Every call", ""]
     for v in views:
         lines.append(f"- [{v['home_team']} v {v['away_team']}]({match_url(v)}): "
-                     f"{call_phrase(v).removeprefix('a ')} ({v['our_p']}%, {v['confidence']})"
+                     f"{bare_call(v)} ({v['our_p']}%, {v['confidence']})"
                      + (f", called after kick-off, finished {v['result_text']}" if v.get("result_text") else
                         ", called after kick-off" if v.get("after_kickoff") else ""))
     strong = [v for v in views if v["confidence"] == "strong"]
@@ -344,7 +363,7 @@ def superbru(ctx: dict, views: list[dict]) -> str:
 def carousel(v: dict, day: str | None = None) -> list[dict]:
     """One game's slides: the call, how we got there, the numbers, the likely scores, us v the bookies."""
     teams = f"{v['home_team']} v {v['away_team']}"
-    slides = [("call", teams), ("reasons", f"How we got to {v['our_p']}%: {teams}"),
+    slides = [("call", teams), ("reasons", f"Why: {teams}"),
               ("numbers", f"The numbers: {teams}"), ("scores", f"Most likely scores: {teams}")]
     if v["mkt"]:
         slides.append(("market", f"Us v the bookies: {teams}"))
@@ -364,29 +383,37 @@ def build_kit(ctx: dict, views: list[dict], env: Environment, out: Path) -> Path
     start = min(uk_time(v["kickoff"]) for v in views)
     eve = start.normalize() - pd.Timedelta(days=1)
     calls_day, match_day = eve.strftime("%A"), start.strftime("%A")
+    lg = league_of(ctx)
+    # A league's own kit sits a folder deeper (social/laliga/), so its pages reach the site's root further up.
+    up = 1 + lg["prefix"].count("/")
     cards_dir = out / "cards"
     cards_dir.mkdir(parents=True, exist_ok=True)
     card = env.get_template("social_card.html")
-    base = {**ctx, "brand": BRAND, "handle": HANDLE, "ig_handle": IG_HANDLE, "size": SIZE, "root": "../.."}
+    base = {**ctx, "brand": BRAND, "handle": HANDLE, "ig_handle": IG_HANDLE, "size": SIZE,
+            "root": "/".join([".."] * (up + 1))}
     cap = {**captions(ctx, views), **extra_captions(ctx)}
     res = ctx.get("results")
     if res:
-        cap.update(results_captions(res))
+        cap.update(results_captions(res, lg))
+    # Every game gets a carousel and a Reel in the Premier League; in La Liga only the featured ones
+    # (the big clubs' games and top-four clashes, see plpred.leagues.featured).
+    shown = [v for v in views if v.get("featured", True)]
     feature = next(v for v in views if v["slug"] == cap["friday_slug"])
     cards = [{"name": "round", "kind": "round", "title": f"Matchweek {ctx['matchweek']}: all the calls", "day": calls_day}]
-    carousels = {v["slug"]: carousel(v, calls_day) for v in views}
-    games = [v for v in views if video.videoable(v)]
+    carousels = {v["slug"]: carousel(v, calls_day) for v in {**{v["slug"]: v for v in shown}, feature["slug"]: feature}.values()}
+    games = [v for v in shown if video.videoable(v)]
     openers = {v["slug"]: h[2] for v, h in zip(games, video.pick_hooks(games)) if h[0] != "fixture"}
-    for v in views:
-        cards += carousels[v["slug"]]
+    for v in carousels:
+        cards += carousels[v]
     if ctx["record"]:
         cards.append({"name": "scorecard", "kind": "scorecard", "day": res["post_day"] if res else "Monday",
                       "title": "Last week's scorecard"})
     if res:
         cards += [{"name": "results", "kind": "results", "day": res["post_day"], "title": f"Matchweek {res['matchweek']}: the results"},
                   {"name": "results-list", "kind": "results-list", "day": res["post_day"], "title": "Every call against the result"}]
+        verdicts = [r for r in res["rows"] if r["g"].get("featured", True)]
         cards += [{"name": f"verdict-{r['g']['slug']}", "kind": "verdict", "g": r["g"], "r": r, "day": res["post_day"],
-                   "title": f"The verdict: {r['g']['home_team']} v {r['g']['away_team']}"} for r in res["rows"]]
+                   "title": f"The verdict: {r['g']['home_team']} v {r['g']['away_team']}"} for r in verdicts]
     if "miss_x" in cap:
         cards.append({"name": "miss", "kind": "miss", "day": res["post_day"] if res else "Monday",
                       "title": "What we got wrong"})
@@ -418,7 +445,7 @@ def build_kit(ctx: dict, views: list[dict], env: Environment, out: Path) -> Path
               "cards": carousels[v["slug"]],
               "how": f"Post every slide, in order, as one Instagram carousel, any time from {calls_day} to "
                      "matchday. On X, attach the first four slides to the post and put the link in the "
-                     "first reply."} for v in views]
+                     "first reply."} for v in shown]
     if "fpl_x" in cap:
         days.insert(1, {"day": f"{calls_day}, later", "when": "Before the FPL deadline", "x": cap["fpl_x"],
                         "instagram": cap["fpl_instagram"], "cards": [c for c in cards if c["kind"] == "fpl"],
@@ -440,7 +467,7 @@ def build_kit(ctx: dict, views: list[dict], env: Environment, out: Path) -> Path
                   "x": cap["verdicts"][r["g"]["slug"]]["x"], "instagram": cap["verdicts"][r["g"]["slug"]]["instagram"],
                   "cards": [c for c in cards if c["name"] == f"verdict-{r['g']['slug']}"],
                   "how": "One game's verdict. It's ready the morning after the game, so space these out over the "
-                         "days after the round rather than posting them all at once."} for r in res["rows"]]
+                         "days after the round rather than posting them all at once."} for r in verdicts]
     elif "monday_x" in cap:
         days.append({"day": "Monday", "when": "The scorecard", "edition": "results", "x": cap["monday_x"],
                      "instagram": cap["monday_instagram"], "cards": [c for c in cards if c["kind"] == "scorecard"],
@@ -474,16 +501,20 @@ def build_kit(ctx: dict, views: list[dict], env: Environment, out: Path) -> Path
     editions = {"predictions": {"matchweek": ctx["matchweek"], "date": str(eve.date())}}
     if res:
         editions["results"] = {"matchweek": res["matchweek"], "date": res["post_date"]}
-    (out / "posts.json").write_text(json.dumps({"matchweek": ctx["matchweek"], "editions": editions, "posts": [
+    (out / "posts.json").write_text(json.dumps({"matchweek": ctx["matchweek"], "league": lg["name"],
+                                                "main": lg["main"], "editions": editions, "posts": [
         {"day": d["day"], "when": d["when"], "how": d["how"], "x": d["x"], "instagram": d["instagram"],
          "edition": d.get("edition", "predictions"), "images": [c["name"] for c in d["cards"]],
          "video": d.get("video"), "voice": d.get("voice"), "style": d.get("style"), "reel": d.get("reel")}
         for d in days]}))
-    (out / "superbru.txt").write_text(superbru(ctx, views))
-    letter = newsletter(ctx, views)
-    (out / "newsletter.md").write_text(letter)
+    letter = ""
+    if lg["fpl"]:  # Superbru and the newsletter are the Premier League's
+        (out / "superbru.txt").write_text(superbru(ctx, views))
+        letter = newsletter(ctx, views)
+        (out / "newsletter.md").write_text(letter)
     (out / "index.html").write_text(env.get_template("social_kit.html").render(
-        **ctx, brand=BRAND, days=days, newsletter=letter, root="..", x_length=x_length, x_limit=X_LIMIT))
+        **ctx, brand=BRAND, days=days, newsletter=letter, root="/".join([".."] * up), x_length=x_length,
+        x_limit=X_LIMIT))
     log.info("Wrote %d social cards into %s", len(cards), out)
     return out
 
@@ -553,6 +584,8 @@ def ready_to_post(kit: Path) -> list[Path]:
                 what = f"matchweek-{data['matchweek']}-round"
             elif what == "results":
                 what = f"matchweek-{data['editions']['results']['matchweek']}-results"
+            if not data.get("main", True) and what.startswith("matchweek-"):
+                what = f"{slugify(data['league'])}-{what}"  # e.g. la-liga-matchweek-12-round
             style = f"-{post['style']}" if post.get("style") else ""
             shutil.copy(clip, folder / f"{what}-{voice.lower()}{style}.mp4")
             if post.get("reel"):
@@ -583,6 +616,7 @@ def kit_emails(kit: Path, sender: str, to: str, editions=EDITIONS) -> list[Email
     data = json.loads((kit / "posts.json").read_text())
     folders = sorted(p for p in (kit / "ready").iterdir() if p.is_dir())
     out = []
+    league = "" if data.get("main", True) else f"{data['league']} · "
     for edition in editions:
         mw = data.get("editions", {}).get(edition, {}).get("matchweek", data["matchweek"])
         picks = kit / "superbru.txt"
@@ -594,7 +628,7 @@ def kit_emails(kit: Path, sender: str, to: str, editions=EDITIONS) -> list[Email
             out.append(msg)
         posts = [(post, folder) for post, folder in zip(data["posts"], folders)
                  if post.get("edition", "predictions") == edition]
-        out += [post_email(post, folder, f"Matchweek {mw} · {edition.title()} · {i} of {len(posts)}", sender, to)
+        out += [post_email(post, folder, f"{league}Matchweek {mw} · {edition.title()} · {i} of {len(posts)}", sender, to)
                 for i, (post, folder) in enumerate(posts, 1)]
     return out
 

@@ -220,6 +220,25 @@ The **Publish site** workflow builds and deploys it to GitHub Pages after every 
 update and every push to `main`. GitHub Pages must be set to deploy from GitHub
 Actions (Settings > Pages > Source).
 
+## La Liga
+
+La Liga runs alongside the Premier League with the same model, in its own data folder
+(`data/laliga/`, marked by `league.txt`) and its own section of the site (`/laliga/`).
+
+- **Data.** Results, shots and odds from football-data.co.uk (`SP1`), xG from Understat
+  (`La_liga`), and the season's fixtures from Understat (kick-offs, scores) joined with
+  openfootball's football.json (matchday numbers). Either fixture source alone is enough.
+  There is no FPL equivalent, so La Liga calls have no team news.
+- **Model.** Its own back-test and settings (`data/laliga/backtest/`). The 2025/26 replay got
+  about 53% of results right against the bookmakers' favourite's 55%, and the strong calls
+  (55% or more) won 72%, the same as the favourite in those games.
+- **Site.** `/laliga/` is the newest La Liga matchweek, with a page per matchweek and match and
+  the season projection. No club crests: clubs show three-letter codes.
+- **Posting kit.** `site/social/laliga/`, emailed separately with "La Liga" in the subject: the
+  round card and X thread, the results carousel, and carousels, Reels and verdicts only for the
+  big clubs' games (Real Madrid, Barcelona, Atletico Madrid, Real Betis) and top-four clashes
+  (`plpred.leagues.featured`). No Superbru, newsletter or FPL posts.
+
 ## Running locally
 
 ```sh
@@ -228,7 +247,9 @@ python -m plpred.update            # all sources
 python -m plpred.update history    # or just some: xg, history, fpl, fixtures
 python -m plpred.backtest         # replay past weeks and score the model
 python -m plpred.predict          # predict the coming round, with reasons
-python -m plpred.site             # build the site into site/
+python -m plpred.site             # build the site into site/ (and site/laliga/)
+python -m plpred.update --league la-liga        # La Liga into data/laliga/
+python -m plpred.predict --data data/laliga     # and the same for the other steps
 python -m pytest
 ```
 

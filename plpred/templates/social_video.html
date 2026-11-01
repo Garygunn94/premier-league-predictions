@@ -35,18 +35,38 @@ html,body{margin:0;width:{{ width }}px;height:{{ height }}px;overflow:hidden;bac
 .trk.bg{background:var(--rule)}
 .bar{position:absolute;top:0;bottom:0;left:0;width:0}
 .start{background:var(--draw)}.up{background:var(--ink)}.down{background:var(--accent)}.total{background:var(--accent)}
+.sub{font-size:28px;font-weight:600;margin:0 0 8px}
+.fr{display:flex;justify-content:space-between;align-items:center;padding:18px 0;border-bottom:1px solid var(--rule)}
+.fr .who{font-size:54px;font-weight:800}
+.fr .pos{font-size:26px;font-weight:600;margin-left:14px}
+.chips{display:flex;gap:12px}
+.chip{width:74px;height:74px;font-size:32px}
+.mk{display:grid;grid-template-columns:290px 1fr;gap:20px;align-items:center;padding:24px 0;border-bottom:1px solid var(--rule)}
+.mk .n{font-size:52px;font-weight:800;line-height:1.1}
+.mk .row{display:grid;grid-template-columns:190px 1fr 110px;align-items:center;gap:16px;font-size:26px;font-weight:600;margin:8px 0}
+.mk .num{font-size:38px;font-weight:700;text-align:right}
 .list .g{display:flex;justify-content:space-between;align-items:baseline;gap:20px;padding:10px 0;border-bottom:1px solid var(--rule)}
 .list .fx{font-size:42px;font-weight:800}
 .list .c{font-size:30px;font-weight:700;white-space:nowrap}
 .outro{text-align:center;align-items:center}
 .hook .badges{display:flex;gap:28px;align-items:center;margin-bottom:56px}
-.hook .badges .vs{font-size:48px;font-weight:800;font-style:italic}
 .hook .badges img{width:130px;height:130px}
-.hook .head{line-height:1;margin:0 0 30px;transform-origin:left center}
+.hook .badges .mono{font-size:56px;height:130px;min-width:160px;border-width:3px}
+.hook .badges .vs{font-size:48px;font-weight:800;font-style:italic}
+.hook .head{line-height:1;margin:0 0 30px}
 .hook [data-pop]{transform-origin:left center}
 .hook .rule{height:10px;background:var(--accent);width:0}
 .hook .tease{font-size:60px;font-weight:800;font-style:italic;line-height:1.1;margin-top:44px;color:var(--accent)}
+.flip .head{font-size:88px}
+.flip .r{grid-template-columns:1fr;gap:14px;padding:30px 0}
+.flip .r .l{font-size:40px}
+.flip .trk{height:60px}
 .round .head{margin-bottom:24px}
+.lad{display:flex;align-items:baseline;gap:36px;padding:16px 0;border-bottom:1px solid var(--rule)}
+.lad .n{font-size:40px;font-weight:700;width:70px;text-align:right;color:var(--muted)}
+.lad .t{font-size:64px;font-weight:800}
+.lad.hot .n,.lad.hot .t{color:var(--accent)}
+.lad.gap{margin-top:40px;border-top:1px dashed var(--rule)}
 .outro .brand{font-size:96px;font-weight:900;line-height:1.1}
 .outro .url{font-size:62px;font-weight:800;font-style:italic;margin-top:40px}
 .outro .follow{font-size:76px;font-weight:800;font-style:italic;line-height:1.08;margin-top:56px;max-width:900px}
@@ -59,46 +79,42 @@ html,body{margin:0;width:{{ width }}px;height:{{ height }}px;overflow:hidden;bac
 </style>
 </head>
 <body>
-<div class="top"><span class="brand disp">{{ wordmark() }}</span><span class="tag lab muted">Matchweek {{ matchweek }}</span></div>
+<div class="top"><span class="brand disp">{{ wordmark() }}</span><span class="tag lab muted">{% if league and not league.main %}{{ league.name }} · {% endif %}Matchweek {{ matchweek }}</span></div>
 
 {% for s in video.scenes %}
 <section class="scene {{ s.kind }}" data-scene="{{ loop.index0 }}"{% if s.kind == "hook" %} data-nocap{% endif %}>
 {% if s.kind == "call" %}
+{% set c = s.call_line %}
 <div class="kicker lab accent" data-in="0:0">{% if g is sameas features.upset %}The model v the market{% elif g is sameas lead %}Match of the week{% else %}Our call{% endif %} · {{ g.kickoff_text }}</div>
 <div class="teams">
 <span class="team disp" data-in="0:0">{{ badge(g.home_team, root) }}{{ g.home_short }}</span>
-<span class="score disp" data-in="0:0.6">{{ g.score_text }}</span>
-<span class="team disp muted" data-in="0:0.5">{{ g.away_short }}{{ badge(g.away_team, root) }}</span>
+<span class="score disp" data-in="{{ c }}:0.4">{{ g.score_text }}</span>
+<span class="team disp muted" data-in="0:0.3">{{ g.away_short }}{{ badge(g.away_team, root) }}</span>
 </div>
-<div class="verdict" data-in="0:0"><span class="lab big">{{ g.call_label }}</span><span class="lab small"><span data-count="1:0" data-to="{{ g.our_p }}">0</span>% · {{ g.confidence }}</span></div>
-<div class="bars">
-<div style="background:var(--ink)" data-bar="1:0" data-w="{{ g.h }}"></div>
-<div style="background:var(--draw)" data-bar="1:0.5" data-w="{{ g.d }}"></div>
-<div style="background:var(--accent)" data-bar="1:1" data-w="{{ g.a }}"></div>
-</div>
-<div class="key lab"><span data-in="1:0">{{ g.home_short }} {{ g.h }}%</span><span class="muted" data-in="1:0.5">Draw {{ g.d }}%</span><span class="accent" data-in="1:1">{{ g.away_short }} {{ g.a }}%</span></div>
+<div class="verdict" data-in="{{ c + 1 }}:0"><span class="lab big">{{ g.call_long }}</span><span class="lab small">{{ {'strong': 'Strong call', 'too close to call': 'Only just'}.get(g.confidence, 'Favourites') }}</span></div>
 {% elif s.kind == "hook" %}
-{#- The first frame, and the cover: the claim fills the screen and is already moving at 0s. -#}
-{% set n = s.lines[0]|length %}
 <div class="kicker lab accent" data-in="0:0">{{ g.home_team }} v {{ g.away_team }} · {{ g.kickoff_text }}</div>
 <div class="badges" data-in="0:0">{{ badge(g.home_team, root) }}<span class="vs disp muted">v</span>{{ badge(g.away_team, root) }}</div>
+{#- The first frame, and the cover: the claim fills the screen and is already moving at 0s. -#}
+{% set n = s.lines[0]|length %}
 <div data-pop><h1 class="head disp" style="font-size:{{ 128 if n <= 40 else 112 if n <= 60 else 96 if n <= 85 else 84 }}px">{{ s.lines[0] }}</h1></div>
 <div class="rule" data-bar="0:0" data-w="100"></div>
 {% if s.lines|length > 1 %}<div class="tease disp" data-in="1:0">{{ s.lines[1] }}</div>{% endif %}
-{% elif s.kind == "reasons" %}
-<div class="kicker lab accent" data-in="0:0">{{ g.home_team }} v {{ g.away_team }} · the reasons</div>
-<h1 class="head disp" data-in="0:0">{% if video.style == "reveal" %}The <span class="accent">evidence.</span>{% else %}How we got to <span class="accent">{{ g.our_p }}%</span>{% endif %}</h1>
-{% for r in s.rows %}
-<div class="r" data-in="{{ r.at }}"><span class="l"{% if r.bold %} style="font-weight:700"{% endif %}>{{ r.label }}</span>
-<span class="trk"><span class="bar {{ r.fill }}" style="left:{{ r.left }}%" data-bar="{{ r.at }}" data-w="{{ r.width }}"></span></span>
-<span class="v lab muted">{{ r.val }}</span></div>
+{% elif s.kind == "why" %}
+<div class="kicker lab accent" data-in="0:0">{{ g.home_team }} v {{ g.away_team }} · {{ 'the clue' if video.style == 'reveal' else 'the reason' }}</div>
+<h1 class="head disp" data-in="0:0">{{ s.head }}</h1>
+{% if s.ladder %}
+<div class="sub lab muted" data-in="0:0.3">{{ s.sub }}</div>
+{% for r in s.ladder %}
+<div class="lad{% if r.hot %} hot{% endif %}{% if r.gap %} gap{% endif %}" data-in="0:{{ 0.4 + loop.index0 * 0.15 }}"><span class="n lab">{{ r.rank }}</span><span class="t disp">{{ r.team }}</span></div>
 {% endfor %}
+{% endif %}
 {% elif s.kind == "round" %}
 <div class="kicker lab accent" data-in="0:0">Every game called</div>
 <h1 class="head disp" data-in="0:0">Matchweek {{ matchweek }}, <span class="accent">called.</span></h1>
 <div class="list">
 {% for v in s.games %}
-<div class="g" data-in="{{ loop.index }}:0"><span class="fx disp">{{ v.home_short }} v {{ v.away_short }}</span><span class="c lab {% if v.call == 'A' %}accent{% elif v.call == 'D' %}muted{% endif %}">{{ 'Draw' if v.call == 'D' else (v.home_short if v.call == 'H' else v.away_short) ~ ' win' }} {{ v.score_text }} · {{ v.our_p }}%</span></div>
+<div class="g" data-in="0:{{ 0.3 + loop.index0 * 0.12 }}"><span class="fx disp">{{ v.home_short }} v {{ v.away_short }}</span><span class="c lab {% if v.confidence == 'strong' %}accent{% else %}muted{% endif %}">{{ 'Draw' if v.call == 'D' else (v.home_short if v.call == 'H' else v.away_short) ~ ' win' }} {{ v.score_text }}{% if v.confidence == 'strong' %} · Strong{% endif %}</span></div>
 {% endfor %}
 </div>
 {% elif s.kind == "results" %}
@@ -111,9 +127,8 @@ html,body{margin:0;width:{{ width }}px;height:{{ height }}px;overflow:hidden;bac
 </div>
 {% elif s.kind == "outro" %}
 <div class="brand disp" data-in="0:0">{{ wordmark() }}</div>
-{% set k = s.lines|length - 1 %}
-<div class="follow disp" data-in="{{ k }}:0">{{ s.lines[-1] }}</div>
-<div class="url disp" data-in="{{ k }}:0.4">inkwellandalgorithm<span class="accent">.com</span></div>
+<div class="follow disp" data-in="1:0">{{ s.lines[-1] }}</div>
+<div class="url disp" data-in="1:0.4">inkwellandalgorithm<span class="accent">.com</span></div>
 {% endif %}
 </section>
 {% endfor %}

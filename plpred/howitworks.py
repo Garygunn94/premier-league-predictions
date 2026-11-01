@@ -257,82 +257,50 @@ def scenes(data: Path) -> tuple[list[dict], dict]:
                      "How do you teach a computer to call football matches?",
                      "What happens when you let the data call the Premier League?"])]}]
 
+    # About a minute, one idea a scene: the data, the ratings, one game played out, the record. The trends
+    # and the table-v-chances story make reels of their own, and stay in the caption.
     w = data_weights(matches, settings)
     facts["weights"] = w
-    now = w[-1]
     out.append({"kind": "data", "seasons": w, "lines": [
-        f"Step one: the data. {len(matches):,} games from the last three seasons: every shot, every chance, "
-        "and the bookies' odds.",
-        f"Recent games count most. This season is {now['games_pct']} percent of the games, "
-        f"but {now['weight_pct']} percent of the weight."]})
+        "Step one: the data. Every game from the last three seasons.",
+        "Not just goals, but every chance, and the bookies' odds. Recent games count most."]})
+    facts["trends"] = league_trends(matches)
+    facts["luck"] = results_v_performance(matches)
 
-    trends = league_trends(matches)
-    facts["trends"] = trends
-    for i, t in enumerate(trends):
-        lines = ([say("trend", ["Step two: what the data says this season.", "Step two: what's changing this season."])]
-                 if i == 0 else [])
-        out.append({"kind": "trend", "t": t, "first": i == 0, "lines": lines + [t["line"]]})
-
-    rvp = results_v_performance(matches)
-    facts["luck"] = rvp
-    if rvp:
-        u, o = rvp["under"], rvp["over"]
-        intro = ("The table doesn't tell the whole story." if trends else
-                 "Step two: what the data says this season. The table doesn't tell the whole story.")
-        out.append({"kind": "luck", "r": rvp, "lines": [
-            intro,
-            f"{video.spoken(u['team'])} are {ORD_WORDS[u['actual']]}, but on the chances they've made and allowed, "
-            f"they'd be {ORD_WORDS[u['position']]}.",
-            f"{video.spoken(o['team'])} have {abs(o['difference']):.0f} more points than their chances say. "
-            "The model trusts the chances more than the scorelines."]})
-
-    ladder = ratings_ladder(matches, settings)
+    ladder = ratings_ladder(matches, settings, n=5)
     out.append({"kind": "model", "rows": ladder, "lines": [
-        f"Step three: the model. Every club gets an attack and a defence rating, built {xg_mix(settings)}.",
-        "A Dixon-Coles model turns two clubs' ratings into the chance of every scoreline."]})
+        "Step two: it rates every club's attack and defence.",
+        f"Right now, {video.spoken(ladder[0]['name'])} come out on top."]})
 
     ex = example(data)
     facts["example"] = ex
     if ex:
         g = ex["g"]
         home, away = video.spoken(g["home_team"]), video.spoken(g["away_team"])
-        v = {"home_team": g["home_team"], "away_team": g["away_team"], "call": g["call"]}
-        step_lines = [video.step_line({**s, "helps_call": s["change"] > 0}, v, video.Phrasing("how", 0),
-                                      round(abs(s["change"])), k) for k, s in enumerate(ex["steps"])]
-        take = f"Take {home} against {away}" + (f", matchweek {ex['matchweek']}." if ex["matchweek"].isdigit() else ".")
-        start = f"Start with two average sides: {ex['start']} percent for {a_an(ex['outcome'])}."
-        out.append({"kind": "example", "ex": ex, "lines": [take, start] + step_lines + [
-            f"We land on {ex['top']} percent. And the likeliest score: {video.say_score({'score_text': ex['score']})}."]})
-
-    rates = call_rates(data, current - 1)
-    facts["rates"] = rates
-    lines = ["Step four: the likeliest result is our call. At 55 percent or more, it's a strong one.",
-             "Under 45, or neck and neck, it's too close to call."]
-    if rates:
-        lines.append(f"Last season, strong calls came true {rates['strong']} percent of the time. "
-                     f"Too-close ones, {rates['close']}.")
-    out.append({"kind": "calls", "rates": rates, "lines": lines})
+        ex["tens"] = max(1, round(ex["top"] / 10))
+        k = video.COUNTS[ex["tens"]]
+        odds = (f"It's a draw about {k} times in ten." if g["call"] == "D" else
+                f"{video.spoken(g['home_team'] if g['call'] == 'H' else g['away_team'])} win about {k} times in ten.")
+        out.append({"kind": "example", "ex": ex, "lines": [
+            f"Step three: it plays the game out thousands of times. Take {home} against {away}.",
+            f"{odds} So that's our call: {video.say_score({'score_text': ex['score']})}."]})
+    facts["rates"] = call_rates(data, current - 1)
 
     rec = honest_record(data, current)
     facts["record"] = rec
     if rec:
-        lines = []
-        for r in rec:
-            if r["now"]:
-                lines.append(f"This season so far: {r['us']} percent right. The bookies' favourite: {r['fav']}.")
-            else:
-                lines.append(f"The honest bit. Replayed week by week, last season we called {r['us']} percent "
-                             f"of results right. The bookies' favourite: {r['fav']}.")
-        if rec[0]["now"]:
-            lines[0] = "The honest bit. " + lines[0]
-        say_v, head = verdict(rec)
-        lines.append(say_v + " And every call is published before kick-off.")
-        out.append({"kind": "record", "rows": rec, "head": head, "lines": lines})
+        r = next((r for r in rec if r["now"] and r["n"] >= 30), rec[0])
+        when = "This season so far" if r["now"] else "Replayed over last season"
+        say_v, head = verdict([r])
+        out.append({"kind": "record", "rows": [r], "head": head, "lines": [
+            "Are we any good?",
+            f"{when}: {r['us']} percent right. The bookies' favourite: {r['fav']}.",
+            say_v + " Every call is posted before kick-off."]})
 
     out.append({"kind": "outro", "lines": [
         say("ask", ["What should the model look at next? Tell us below.",
                     "What would you add to the model? Tell us below."]),
-        say("follow", ["Follow to see every call before kick-off.", "Follow, and check our calls every Thursday."])]})
+        say("follow", ["Follow to keep us honest.", "Follow, and check our calls every Thursday."])]})
     return out, facts
 
 

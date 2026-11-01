@@ -74,7 +74,7 @@ def test_scripts_read_like_speech():
     lines = [line for s in dna.scenes(p, full=True) for line in s["lines"]]
     assert lines[0].startswith("Wall. ") and "two seasons ago" in lines[0] and "last season" in lines[0]
     assert lines[2] == "One: they give away almost nothing."
-    assert "the best in the league, two seasons running" in lines[3]
+    assert lines[3] == "The best in the league, two seasons running."
     assert lines[-1].startswith("Follow for your club next")
     assert not any("-0" in line for line in lines)
 
@@ -86,8 +86,6 @@ def test_the_short_cut_opens_on_the_story_and_keeps_two_traits():
         assert short[0]["lines"][0] == dna.hook_line(p) and short[-1] == full[-1]
         assert [s["kind"] for s in short[1:-1]] in (["change", "trait"], ["trait", "trait"], ["trait"])
         assert sum(len(s["lines"]) for s in short) < sum(len(s["lines"]) for s in full)
-    p = dna.profile(league(), "Wall")
-    assert "two seasons" in dna.scenes(p)[0]["lines"][1]
 
 
 def test_build_writes_a_page_script_and_captions_per_club(tmp_path):

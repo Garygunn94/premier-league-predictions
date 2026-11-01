@@ -19,9 +19,9 @@ def test_kit_has_a_video_script_for_the_round_and_each_game(tmp_path):
         assert v["scenes"][-1]["kind"] == "outro"
     game = next(v for v in videos if v["name"] == "video-strong-v-weak")
     kinds = [s["kind"] for s in game["scenes"]]
-    assert kinds[0] == "hook" and kinds[-1] == "outro" and set(kinds) == {"hook", "call", "reasons", "outro"}
-    call = next(s for s in game["scenes"] if s["kind"] == "call")
-    assert "Strong" in call["lines"][0]
+    assert kinds == ["hook", "why", "call", "outro"]  # every game's call is revealed at the end
+    named = " ".join(s["lines"][0] for s in game["scenes"][:2])
+    assert "Strong" in named and "Weak" in named
     posts = json.loads((kit / "posts.json").read_text())["posts"]
     assert posts[0]["video"] == "video-round"
     assert any(p["video"] == "video-strong-v-weak" for p in posts)
@@ -119,13 +119,8 @@ def played_round(tmp_path, both=True):
 def test_every_video_ends_asking_for_a_comment_and_a_follow(tmp_path):
     kit = site.build(make_data(tmp_path), tmp_path / "site") / "social"
     for v in json.loads((kit / "videos.json").read_text()):
-        *ask, follow = v["scenes"][-1]["lines"]
-        assert follow in video.FOLLOW
-        if v.get("style"):  # a game's video leaves the question to its caption, to stay short
-            assert not ask and "👇" in next(p["reel"] for p in json.loads((kit / "posts.json").read_text())["posts"]
-                                            if p.get("video") == v["name"])
-        else:
-            assert "?" in ask[0]
+        ask, follow = v["scenes"][-1]["lines"]
+        assert "?" in ask and follow in video.FOLLOW
         assert follow in (kit / "videos" / f"{v['name']}.html").read_text()
 
 
@@ -180,35 +175,81 @@ def test_instagram_captions_open_on_the_hook_and_ask_a_question(tmp_path):
     assert "👇" in posts[0]["instagram"]
 
 
+def test_a_reason_is_said_as_a_place_in_the_league():
+    assert video.rank_words(1, 20, "attack") == "the best attack"
+    assert video.rank_words(5, 20, "attack") == "the fifth-best attack"
+    assert video.rank_words(18, 20, "defence") == "the third-worst defence"
+    assert video.rank_words(20, 20, "defence") == "the worst defence"
+    order = [f"T{i}" for i in range(1, 21)]
+    assert [r["rank"] for r in video.ladder(order, ["T2"], "top")] == [1, 2, 3, 4, 5]
+    rows = video.ladder(order, ["T9"], "top")
+    assert [r["rank"] for r in rows] == [1, 2, 3, 9] and rows[-1]["gap"] and rows[-1]["hot"]
+    assert [r["rank"] for r in video.ladder(order, ["T18"], "bottom")] == [16, 17, 18, 19, 20]
+    assert [r["rank"] for r in video.ladder(order, ["T6", "T8"], None)] == [5, 6, 7, 8, 9]
+
+
+def test_match_reel_is_one_idea_a_scene(tmp_path):
+    kit = site.build(make_data(tmp_path), tmp_path / "site") / "social"
+    for v in json.loads((kit / "videos.json").read_text()):
+        if v["name"].startswith("video-") and v["name"] not in ("video-round", "video-results"):
+            assert len(v["scenes"]) <= 4
+            text = " ".join(line for s in v["scenes"] for line in s["lines"])
+            # no win percentages, expected goals or "worth N points" read out
+            assert "percent" not in text and "expected goals" not in text and " points" not in text
+
+
+def test_captions_give_the_reason_as_a_fan_would_say_it():
+    v = {"home_team": "Arsenal", "away_team": "Everton", "call": "H",
+         "ranks": {"attack": ["Man City", "Arsenal", "Everton"], "defence": ["Arsenal", "Man City", "Everton"],
+                   "overall": ["Arsenal", "Man City", "Everton"]},
+         "waterfall": {"steps": [{"label": "Arsenal's attack", "kind": "attack", "team": "Arsenal", "change": 11,
+                                  "detail": "Arsenal create and score 32% more than an average side"}]}}
+    assert video.reason_text(v) == "Arsenal have the second-best attack in the league."
+    assert social.reason(dict(v, front_reasons=[])) == "Arsenal have the second-best attack in the league."
+    # calls made before the ranks were kept: still no percentages or points
+    assert video.reason_text(dict(v, ranks=None)) == "Arsenal score more than most."
+
+
+def test_a_reason_never_points_the_wrong_way():
+    teams = [f"T{i}" for i in range(1, 21)]
+    order = lambda *front: [*front, *[t for t in teams if t not in front]]
+    v = {"home_team": "Newcastle", "away_team": "Everton", "call": "H",
+         "ranks": {"defence": order("T1", "T2", "Everton"), "attack": order("Newcastle"),
+                   "overall": order("Newcastle", "T1", "Everton")},
+         "waterfall": {"steps": [{"kind": "defence", "team": "Everton", "change": 5,
+                                  "detail": "Everton concede 15% more than an average side"},
+                                 {"kind": "attack", "team": "Newcastle", "change": 3,
+                                  "detail": "Newcastle create and score 20% more than an average side"}]}}
+    # Everton's defence is third-best, so that can't be why we back Newcastle: the next reason is
+    assert video.reason_text(v) == "Newcastle have the best attack in the league."
+    # a middling place explains nothing, so the reason becomes the overall ratings
+    v["ranks"]["attack"] = order(*teams[:8], "Newcastle")
+    assert video.reason_text(v) == "Our model rates Newcastle first and Everton third: almost level."
+    v["ranks"]["overall"] = order("Newcastle", *teams[:8], "Everton")
+    assert video.reason_text(v) == "Our model rates Newcastle first and Everton tenth overall."
+
+
 def test_every_game_keeps_the_call_for_the_end(tmp_path):
     kit = site.build(make_data(tmp_path), tmp_path / "site") / "social"
     games = [v for v in json.loads((kit / "videos.json").read_text()) if v.get("style")]
     assert games and {v["style"] for v in games} == {"reveal"}
     for v in games:
-        assert [s["kind"] for s in v["scenes"]] == ["hook", "reasons", "call", "outro"]
-        assert "at the end" in v["scenes"][0]["lines"][1]
-        # The reasons chart stops short of our call: that's what the last scene gives away.
-        page = (kit / "videos" / f"{v['name']}.html").read_text()
-        assert "Our call:" not in page and "evidence" in page
+        assert v["scenes"][0]["kind"] == "hook" and "at the end" in v["scenes"][0]["lines"][1]
+        assert [s["kind"] for s in v["scenes"]][-2:] == ["call", "outro"]
+        assert not any(l.startswith(("The reason", "Why?")) for s in v["scenes"] for l in s["lines"])
 
 
-def test_upfront_gives_the_call_straight_after_the_opener(tmp_path):
-    kit = site.build(make_data(tmp_path), tmp_path / "site") / "social"
-    game = next(v for v in json.loads((kit / "videos.json").read_text()) if v.get("style"))
+def test_upfront_gives_the_call_straight_after_the_opener():
     v = {"home_team": "Leeds", "away_team": "Sunderland", "call": "H", "confidence": "solid", "our_p": 50,
-         "score_text": "2–1", "headline": "Nothing to split them", "waterfall_rows": {"rows": []}}
+         "score_text": "2–1", "headline": "Nothing to split them", "kickoff_long": "Saturday 15:00"}
     scenes = video.match_scenes(v, 9, 0, style="upfront")
     assert [s["kind"] for s in scenes] == ["hook", "call", "outro"] and len(scenes[0]["lines"]) == 1
-    assert game["style"] == "reveal"
 
 
 def test_reveal_captions_dont_give_the_call_away(tmp_path):
     kit = site.build(make_data(tmp_path), tmp_path / "site") / "social"
     posts = [p for p in json.loads((kit / "posts.json").read_text())["posts"] if p.get("style")]
-    assert posts and all(p["reel"] for p in posts)
-    for p in posts:
-        assert ("Our call:" in p["reel"]) == (p["style"] == "upfront")
-        assert p["reel"].count("#") <= 5
+    assert posts and all(p["reel"] and "Our call:" not in p["reel"] and p["reel"].count("#") <= 5 for p in posts)
     fake_render(kit)
     (kit / "video").mkdir()
     for v in json.loads((kit / "videos.json").read_text()):
@@ -216,6 +257,6 @@ def test_reveal_captions_dont_give_the_call_away(tmp_path):
     folders = social.ready_to_post(kit)
     game = next(f for f in folders if list(f.glob("strong-v-weak-*.mp4")))
     [clip] = game.glob("*.mp4")
-    assert clip.stem.rsplit("-", 1)[1] in video.STYLES and (game / "reel.txt").exists()
+    assert clip.stem.endswith("-reveal") and (game / "reel.txt").exists()
     msgs = social.kit_emails(kit, "me@example.com", "me@example.com")
     assert any("---- REEL AND TIKTOK ----" in m.get_body().get_content() for m in msgs)

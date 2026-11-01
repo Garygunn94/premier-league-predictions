@@ -54,18 +54,22 @@ jobs:
       # before the round, the results reel the day after) and on manual runs with "Make the narrated
       # videos" ticked (all of them), not after the other daily refreshes. The Kokoro voice model (~350 MB) is
       # cached between runs.
+      # Two kits: the Premier League's in site/social and La Liga's in site/social/laliga.
       - name: Check whether to make the videos
         id: videos
         run: |
-          if [ "${{ github.event_name }}" = workflow_dispatch ] && [ "${{ inputs.videos }}" = true ]; then
-            echo "make=true" >> "$GITHUB_OUTPUT"
-          elif [ "${{ github.event_name }}" = workflow_run ] && [ "${{ github.event.workflow_run.event }}" = schedule ] \
-               && python -m plpred.video site/social --due; then
-            echo "make=true" >> "$GITHUB_OUTPUT"
-            echo "only=--today" >> "$GITHUB_OUTPUT"
-          else
-            echo "make=false" >> "$GITHUB_OUTPUT"
-          fi
+          make=false
+          for kit in site/social site/social/laliga; do
+            [ -f "$kit/videos.json" ] || continue
+            if [ "${{ github.event_name }}" = workflow_dispatch ] && [ "${{ inputs.videos }}" = true ]; then
+              make=true
+            elif [ "${{ github.event_name }}" = workflow_run ] && [ "${{ github.event.workflow_run.event }}" = schedule ] \
+                 && python -m plpred.video "$kit" --due; then
+              make=true
+              echo "only=--today" >> "$GITHUB_OUTPUT"
+            fi
+          done
+          echo "make=$make" >> "$GITHUB_OUTPUT"
       - uses: actions/cache@v4
         if: steps.videos.outputs.make == 'true'
         with:
@@ -82,9 +86,13 @@ jobs:
         run: |
           sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg > /dev/null
           pip install kokoro-onnx==0.6.1 soundfile==0.14.0
-          python -m plpred.video site/social ${{ steps.videos.outputs.only }}
+          for kit in site/social site/social/laliga; do
+            [ -f "$kit/videos.json" ] && python -m plpred.video "$kit" ${{ steps.videos.outputs.only }}
+          done
       - name: Render the social media cards
-        run: python -m plpred.social --png site/social
+        run: |
+          python -m plpred.social --png site/social
+          if [ -d site/social/laliga ]; then python -m plpred.social --png site/social/laliga; fi
       # The posting kit also goes by email, one message per post, from and to the KIT_EMAIL Gmail
       # account (KIT_EMAIL_PASSWORD is a Gmail app password), in two editions: the predictions the
       # day before a round's first game and the results the day after its last. After each
@@ -99,7 +107,9 @@ jobs:
           KIT_EMAIL_PASSWORD: ${{ secrets.KIT_EMAIL_PASSWORD }}
           KIT_EMAIL_TO: ${{ vars.KIT_EMAIL_TO }}
           EDITION: ${{ github.event_name == 'workflow_dispatch' && inputs.email_kit || 'due' }}
-        run: python -m plpred.social --email site/social --edition "$EDITION"
+        run: |
+          python -m plpred.social --email site/social --edition "$EDITION"
+          if [ -d site/social/laliga ]; then python -m plpred.social --email site/social/laliga --edition "$EDITION"; fi
       # The posting kit (captions, newsletter, every card) is private. Artifacts on a public
       # repository can be downloaded by anyone signed in to GitHub, so the kit is attached to this
       # run as a zip locked with the KIT_PASSWORD repository secret, and only when that secret is
@@ -124,9 +134,15 @@ jobs:
         run: |
           mkdir previews
           cp site/social/png/brand.png site/social/png/round.png site/social/png/call-*.png previews/
+          if [ -d site/social/laliga/png ]; then
+            mkdir previews/laliga
+            cp site/social/laliga/png/round.png site/social/laliga/png/call-*.png previews/laliga/
+          fi
           rm -rf site/social
           mkdir -p site/social
+          mv previews/laliga site/social/laliga-png 2>/dev/null || true
           mv previews site/social/png
+          if [ -d site/social/laliga-png ]; then mkdir -p site/social/laliga && mv site/social/laliga-png site/social/laliga/png; fi
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site

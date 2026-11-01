@@ -37,6 +37,11 @@ html,body{margin:0;width:{{ size }}px;height:{{ size }}px;overflow:hidden}
 .post .wf .bar{position:absolute;top:0;bottom:0}
 .post .wf .start{background:var(--draw)}.post .wf .up{background:var(--ink)}.post .wf .down{background:var(--accent)}.post .wf .total{background:var(--accent)}
 .post .wf .v{font-size:24px;font-weight:700;text-align:right}
+.post .lad{display:flex;align-items:baseline;gap:24px;padding:12px 0;border-bottom:1px solid var(--rule)}
+.post .lad .n{font-size:28px;font-weight:700;width:44px;text-align:right;color:var(--muted)}
+.post .lad .t{font-size:44px;font-weight:800}
+.post .lad.hot .n,.post .lad.hot .t{color:var(--accent)}
+.post .lad.gap{margin-top:26px;border-top:1px dashed var(--rule)}
 .post .nums{display:flex;gap:56px}
 .post .nums .n{font-size:150px;font-weight:900;line-height:.95}
 .post .nums .u{font-size:24px;color:var(--muted);margin-top:24px}
@@ -64,7 +69,7 @@ html,body{margin:0;width:{{ size }}px;height:{{ size }}px;overflow:hidden}
 </head>
 <body>
 <div class="post">
-<div class="top"><span class="brand disp">{{ wordmark() }}</span><span class="tag lab muted">{% if card.kind != "brand" %}Premier League · Matchweek {{ matchweek }}{% else %}Premier League{% endif %}</span></div>
+<div class="top"><span class="brand disp">{{ wordmark() }}</span><span class="tag lab muted">{% if card.kind != "brand" %}{{ league.name if league else "Premier League" }} · Matchweek {{ matchweek }}{% else %}{{ league.name if league else "Premier League" }}{% endif %}</span></div>
 <div class="main">
 {% if card.kind == "round" %}
 <div class="kicker lab accent">{% if late %}{{ late }} of {{ views|length }} called after kick-off, from pre-round data{% else %}Every game called{% endif %}</div>
@@ -87,24 +92,32 @@ html,body{margin:0;width:{{ size }}px;height:{{ size }}px;overflow:hidden}
 <div class="split-key lab"><span>{{ g.home_short }} {{ g.h }}%</span><span class="muted">Draw {{ g.d }}%</span><span class="accent">{{ g.away_short }} {{ g.a }}%</span></div>
 </div>
 {% if g.front_reasons %}
-<div><div class="why disp">{{ g.front_reasons[0].title }}</div><div class="why-text">{{ g.front_reasons[0].text }}</div></div>
+<div><div class="why disp">{{ g.front_reasons[0].title }}</div><div class="why-text">{{ g.plain_reason or g.front_reasons[0].text }}</div></div>
 {% endif %}
 {% elif card.kind == "reasons" %}
 <div class="kicker lab accent">{{ g.home_team }} v {{ g.away_team }} · {{ g.kickoff_text }}</div>
-<h1 class="head disp">How we got to <span class="accent">{{ g.our_p }}%</span></h1>
-<div class="wf">
-{% for r in g.waterfall_rows.rows %}
-<div class="r"><span class="l"{% if r.bold %} style="font-weight:700"{% endif %}>{{ r.label }}</span>
-<span class="track"><span class="bar {{ r.fill }}" style="left:{{ r.left }}%;width:{{ r.width }}%"></span></span>
-<span class="v lab">{{ r.val }}</span></div>
+{% set rc = g.reason_card %}
+{% if rc %}
+<h1 class="head disp">{{ rc.head }}</h1>
+{% if rc.ladder %}
+<div>
+<div class="sub lab muted">{{ rc.sub }}</div>
+{% for r in rc.ladder %}
+<div class="lad{% if r.hot %} hot{% endif %}{% if r.gap %} gap{% endif %}"><span class="n lab">{{ r.rank }}</span><span class="t disp">{{ r.team }}</span></div>
 {% endfor %}
 </div>
+{% endif %}
+{% if g.plain_reason != rc.head %}<div class="why-text">{{ g.plain_reason }}</div>{% endif %}
+{% else %}
+<h1 class="head disp">Why <span class="accent">{{ g.call_long }}</span></h1>
+<div class="why-text">{{ g.front_reasons[0].text if g.front_reasons else '' }}</div>
+{% endif %}
 {% elif card.kind == "numbers" %}
 <div class="kicker lab accent">{{ g.home_team }} v {{ g.away_team }} · the numbers</div>
 <h1 class="head disp" style="font-size:60px">What the <span class="accent">data</span> says.</h1>
 {% if g.xg_rows %}
 <div>
-<div class="sub lab muted">Expected goals a game, this season</div>
+<div class="sub lab muted">Chances a game this season, in expected goals</div>
 {% for x in g.xg_rows %}
 <div class="hb"><span class="l">{{ x.label }}</span><div class="t"><div style="width:{{ x.w }}%;background:{{ 'var(--ink)' if x.side == 'home' and x.kind == 'for' else 'var(--draw)' if x.side == 'home' else 'var(--accent)' if x.kind == 'for' else 'var(--accent-deep)' }}"></div></div><span class="v lab">{{ '%.1f'|format(x.v) }}</span></div>
 {% endfor %}
@@ -128,7 +141,7 @@ html,body{margin:0;width:{{ size }}px;height:{{ size }}px;overflow:hidden}
 {% endfor %}
 </div>
 <div>
-<div class="sub lab muted">Expected goals in this game: {{ g.home_short }} {{ '%.1f'|format(g.expected_goals.home) }}, {{ g.away_short }} {{ '%.1f'|format(g.expected_goals.away) }}</div>
+<div class="sub lab muted">Goals we expect: {{ g.home_short }} {{ '%.1f'|format(g.expected_goals.home) }}, {{ g.away_short }} {{ '%.1f'|format(g.expected_goals.away) }}</div>
 {{ split(g) }}
 <div class="split-key lab"><span>{{ g.home_short }} {{ g.h }}%</span><span class="muted">Draw {{ g.d }}%</span><span class="accent">{{ g.away_short }} {{ g.a }}%</span></div>
 </div>
@@ -202,10 +215,10 @@ html,body{margin:0;width:{{ size }}px;height:{{ size }}px;overflow:hidden}
 </div>
 <div class="verdict"><span class="lab big" style="white-space:nowrap">{{ r.verdict }}{{ ' ✓' if r.right else ' ✗' }}</span><span class="lab" style="font-size:22px;font-weight:600;text-align:right">We said {{ g.call_long if g.call != 'D' else 'draw' }} {{ g.score_text }} · {{ g.our_p }}%{% if g.mkt_p is not none %}<br>Bookies {{ g.mkt_p }}%{% endif %}</span></div>
 {% if r.xg %}<div><div class="why disp">{{ r.kind }}</div><div class="why-text">{{ r.text }}</div></div>
-{% elif g.front_reasons %}<div><div class="why disp">Why we called it: {{ g.front_reasons[0].title }}</div><div class="why-text">{{ g.front_reasons[0].text }} The xG verdict follows once the chances are in.</div></div>{% endif %}
+{% elif g.front_reasons %}<div><div class="why disp">Why we called it: {{ g.front_reasons[0].title }}</div><div class="why-text">{{ g.plain_reason or g.front_reasons[0].text }} Once the chance data is in, we'll say whether it was luck.</div></div>{% endif %}
 {% elif card.kind == "brand" %}
 <h1 class="head disp" style="font-size:120px;line-height:.95;font-style:normal;font-weight:900">{{ wordmark() }}</h1>
-<p class="why-text" style="font-size:36px;font-style:italic">Data-driven Premier League predictions, with the reasons. New every Thursday.</p>
+<p class="why-text" style="font-size:36px;font-style:italic">{{ league.tagline if league else "Data-driven Premier League predictions, with the reasons. New every Thursday." }}</p>
 {% endif %}
 </div>
 <div class="foot lab muted"><span>Data-driven predictions, with the reasons</span><span>X {{ handle }} · IG {{ ig_handle }}</span></div>

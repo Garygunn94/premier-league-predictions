@@ -282,6 +282,20 @@ def intro_line(p: dict) -> str:
     return f"{name}. {finish_words(s[0]).capitalize()} {w[0]}, {finish_words(s[1])} {w[1]}."
 
 
+def sentence(words: str) -> str:
+    return words[0].upper() + words[1:]
+
+
+def top_rows(rows: list[dict], best: bool, n: int = 5) -> list[dict]:
+    """Five places of a ladder, big enough to read on a phone: the top five (the bottom five for a flaw),
+    or the top three and the club, with a gap marked where places are skipped."""
+    order = rows if best else rows[::-1]
+    me = next(i for i, r in enumerate(order) if r["me"])
+    keep = list(range(n)) if me < n else [*range(n - 2), me]
+    out = [dict(order[i], gap=k > 0 and i != keep[k - 1] + 1) for k, i in enumerate(keep)]
+    return out if best else out[::-1]
+
+
 def ladder(t: dict, team: str) -> list[dict]:
     """The chart: every club's value, best first, bars measured from zero."""
     vals = [v for _, v in t["ladder"]]
@@ -308,42 +322,37 @@ def hook_line(p: dict) -> str:
 
 def scenes(p: dict, full: bool = False) -> list[dict]:
     """The script. The short cut (about 25 seconds, the default) opens on the club's story, then
-    gives the biggest change and one strength. The full one (about 70 seconds) has every trait, the
-    flaw and how this season is going."""
+    gives the biggest change and one strength. The full one has every trait, the flaw and how this
+    season is going."""
     team, w = p["team"], when(p)
-    seasons = "two seasons" if len(p["seasons"]) == 2 else "this season"
-    out = [{"kind": "intro", "lines": [
-        intro_line(p),
-        f"We ranked them against the league on {NUMBER_WORDS.get(len(STATS), len(STATS))} stats. "
-        "Here's what makes them tick."] if full else [
-        hook_line(p), f"{NUMBER_WORDS.get(len(STATS), len(STATS)).capitalize()} stats, {seasons}. "
-                      "Here's what stands out."]}]
+    out = [{"kind": "intro", "lines": [intro_line(p) if full else hook_line(p), "Here's what makes them different."]}]
     traits = p["traits"]
     if not full:
-        change = [t for t in traits if t["kind"] == "change"]
-        traits = change[:1] + [t for t in traits if t["kind"] == "strength"][:2 - len(change[:1])]
+        change = [t for t in traits if t["kind"] == "change"][:1]
+        traits = change + [t for t in traits if t["kind"] == "strength"][:2 - len(change)]
     n = 0
+    # One idea a scene and a place in the league rather than a stat: the values stay on screen and in
+    # the caption for anyone who wants them.
     for t in traits:
         if t["kind"] == "strength":
-            mean = fmt(t["key"], t["league_avg"][-1])
-            avg = "" if (t["key"] in SIGNED and t["key"] != "home_edge") or mean == fmt(t["key"], t["values"][-1]) \
-                or not full else f" The league average is {mean}."
             first = (f"What hasn't changed: they {t['words']}." if not full and traits[0]["kind"] == "change"
                      else f"{COUNT[n]}: they {t['words']}.")
             out.append({"kind": "trait", "t": t, "label": f"Trait {COUNT[n].lower()} · {t['family']}",
-                        "rows": ladder(t, team), "lines": [
-                            first, f"{read_out(t, -1)} {w[-1]}, {rank_phrase(p, t['ranks'])}.{avg}"]})
+                        "rows": top_rows(ladder(t, team), True), "lines": [
+                            first,
+                            sentence(rank_phrase(p, t["ranks"]))
+                            + (f" {w[-1]}." if len(t["ranks"]) == 1 else ".")]})
             n += 1
         elif t["kind"] == "weakness":
-            out.append({"kind": "trait", "t": t, "label": f"The flaw · {t['family']}", "rows": ladder(t, team),
+            out.append({"kind": "trait", "t": t, "label": f"The flaw · {t['family']}",
+                        "rows": top_rows(ladder(t, team), False),
                         "lines": [f"The flaw: they {t['words']}.",
-                                  f"{read_out(t, -1)} {w[-1]}, {ORD_WORDS[t['ranks'][-1]]} of twenty."]})
+                                  f"{sentence(ORD_WORDS[t['ranks'][-1]])} of twenty {w[-1]}."]})
         else:
             up = t["change"] > 0
             out.append({"kind": "change", "t": t, "up": up, "vals": [fmt(t["key"], v) for v in t["values"]], "lines": [
                 f"{'The big change' if up else 'The big worry'}: they now {t['words']}.",
-                f"{read_out(t, 0)} {w[0]}, {ORD_WORDS[t['ranks'][0]]}. "
-                f"{read_out(t, -1, unit=False)} {w[-1]}, {ORD_WORDS[t['ranks'][-1]]}."]})
+                f"{sentence(ORD_WORDS[t['ranks'][0]])} for it {w[0]}. {sentence(ORD_WORDS[t['ranks'][-1]])} {w[-1]}."]})
     if p["now"] and full:
         now = p["now"]
         rows = [{"label": FAMILY_NAME.get(t["family"], t["family"]).capitalize(), "then": t["ranks"][-1],
@@ -354,7 +363,7 @@ def scenes(p: dict, full: bool = False) -> list[dict]:
         if slipped:
             verdict += f" But the {slipped[0]['label'].lower()} has slipped to {ORD_WORDS[slipped[0]['rank']]}."
         out.append({"kind": "now", "rows": rows, "now": now, "lines": [
-            f"This season, after {now['games']} games, they're {ORD_WORDS[now['position']]}.",
+            f"{sentence(video.COUNTS[now['games']] if now['games'] < len(video.COUNTS) else str(now['games']))} games in, they're {ORD_WORDS[now['position']]}.",
             verdict.strip() or "The same traits are holding up."]})
     out.append({"kind": "outro", "lines": ["Follow for your club next."]})  # the address is on screen
     return out
@@ -402,8 +411,7 @@ def clubs_now(matches: pd.DataFrame) -> list[str]:
 
 
 def build(data: Path, out: Path, teams: list[str] | None = None, full: bool = False) -> list[dict]:
-    """Write each club's script (the short cut, or the full one), captions and animated page into out/,
-    listed in out/videos.json."""
+    """Write each club's script, captions and animated page into out/, listed in out/videos.json."""
     matches = pd.read_csv(data / "matches.csv")
     (out / "videos").mkdir(parents=True, exist_ok=True)
     shutil.copy(TEMPLATES / "style.css", out / "style.css")
@@ -488,7 +496,7 @@ def main(argv=None) -> None:
     parser.add_argument("--data", type=Path, default=Path("data"))
     parser.add_argument("--only", nargs="*", metavar="CLUB", help="just these clubs, e.g. Arsenal \"Man United\"")
     parser.add_argument("--shard", metavar="I/N", help="every Nth club starting with the Ith, e.g. 1/4")
-    parser.add_argument("--full", action="store_true", help="the full ~70-second cut instead of the ~25-second one")
+    parser.add_argument("--full", action="store_true", help="the full ~70-second cut instead of the short one")
     parser.add_argument("--scripts", action="store_true", help="write the scripts and pages only, don't render")
     parser.add_argument("--email", action="store_true", help="email each club's video and captions to KIT_EMAIL")
     args = parser.parse_args(argv)
