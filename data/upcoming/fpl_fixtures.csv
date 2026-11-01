@@ -74,19 +74,19 @@ gameweek,kickoff,home_team,away_team,finished
 8,2026-10-24T14:00:00Z,Arsenal,Everton,True
 8,2026-10-24T14:00:00Z,Coventry,Fulham,True
 8,2026-10-24T16:30:00Z,Chelsea,Tottenham,True
-8,2026-10-25T14:00:00Z,Crystal Palace,Newcastle,False
-8,2026-10-25T14:00:00Z,Hull,Brentford,False
-8,2026-10-25T14:00:00Z,Liverpool,Brighton,False
-8,2026-10-25T14:00:00Z,Man United,Bournemouth,False
-8,2026-10-25T16:30:00Z,Sunderland,Leeds,False
-9,2026-10-31T12:30:00Z,Chelsea,Man United,False
-9,2026-10-31T15:00:00Z,Bournemouth,Leeds,False
-9,2026-10-31T15:00:00Z,Brentford,Nott'm Forest,False
-9,2026-10-31T15:00:00Z,Coventry,Sunderland,False
-9,2026-10-31T15:00:00Z,Hull,Ipswich,False
-9,2026-10-31T15:00:00Z,Man City,Brighton,False
-9,2026-10-31T17:30:00Z,Tottenham,Crystal Palace,False
-9,2026-10-31T20:00:00Z,Aston Villa,Fulham,False
+8,2026-10-25T14:00:00Z,Crystal Palace,Newcastle,True
+8,2026-10-25T14:00:00Z,Hull,Brentford,True
+8,2026-10-25T14:00:00Z,Liverpool,Brighton,True
+8,2026-10-25T14:00:00Z,Man United,Bournemouth,True
+8,2026-10-25T16:30:00Z,Sunderland,Leeds,True
+9,2026-10-31T12:30:00Z,Chelsea,Man United,True
+9,2026-10-31T15:00:00Z,Bournemouth,Leeds,True
+9,2026-10-31T15:00:00Z,Brentford,Nott'm Forest,True
+9,2026-10-31T15:00:00Z,Coventry,Sunderland,True
+9,2026-10-31T15:00:00Z,Hull,Ipswich,True
+9,2026-10-31T15:00:00Z,Man City,Brighton,True
+9,2026-10-31T17:30:00Z,Tottenham,Crystal Palace,True
+9,2026-10-31T20:00:00Z,Aston Villa,Fulham,True
 9,2026-11-01T16:30:00Z,Liverpool,Arsenal,False
 9,2026-11-02T20:00:00Z,Newcastle,Everton,False
 10,2026-11-06T20:00:00Z,Everton,Coventry,False

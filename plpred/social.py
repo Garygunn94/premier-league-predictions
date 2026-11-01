@@ -439,7 +439,10 @@ def build_kit(ctx: dict, views: list[dict], env: Environment, out: Path) -> Path
                      "edition": "results", "x": cap["miss_x"],
                      "instagram": cap["miss_instagram"], "cards": [c for c in cards if c["kind"] == "miss"],
                      "how": "Our most confident wrong call of the round, and whether the chances backed us. "
-                            "Owning the misses is what makes the hits believable."})
+                            "Owning the misses is what makes the hits believable."
+                            + ("" if ctx["miss"].get("has_xg", True) else
+                               " The xG for this game isn't in yet (it usually arrives within a few days), so if "
+                               "you'd rather post the full verdict, use the kit from a later Publish site run.")})
     if "projection_x" in cap:
         after = (pd.Timestamp(res["post_date"]) + pd.Timedelta(days=1)).strftime("%A") if res else "Wednesday"
         days.append({"day": after, "edition": "results", "when": "The season so far", "x": cap["projection_x"],

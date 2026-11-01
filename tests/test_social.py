@@ -134,3 +134,21 @@ def test_kit_editions_go_out_the_day_before_and_the_day_after(tmp_path):
     msgs = social.kit_emails(kit, "me@example.com", "me@example.com", ["results"])
     assert msgs and all(" · Results · " in m["Subject"] for m in msgs)
     assert msgs[0]["Subject"].endswith("· Tuesday") and not any("Superbru" in m["Subject"] for m in msgs)
+
+
+def test_what_we_got_wrong_covers_the_round_just_played(tmp_path):
+    import pandas as pd
+    data = make_data(tmp_path)
+    preds = json.loads((data / "predictions" / "2026-10-24.json").read_text())
+    game = preds["games"][0]
+    home_won = game["call"] != "H"
+    (data / "upcoming").mkdir()
+    pd.DataFrame({"fixture_id": [1], "status": ["FT"], "home_team": [game["home_team"]], "away_team": [game["away_team"]],
+                  "home_goals": [2 if home_won else 0], "away_goals": [0 if home_won else 2]}).to_csv(
+        data / "upcoming" / "fixtures.csv", index=False)
+    kit = site.build(data, tmp_path / "site") / "social"
+    posts = [p for p in json.loads((kit / "posts.json").read_text())["posts"] if p["when"] == "What we got wrong"]
+    assert len(posts) == 1 and posts[0]["edition"] == "results"
+    assert posts[0]["x"][0].startswith(f"What we got wrong: {game['home_team']} v {game['away_team']}.")
+    assert "Jury's out" in posts[0]["x"][0] and "xG for this game isn't in yet" in posts[0]["how"]
+    assert "Matchweek 9" in (kit / "cards" / "miss.html").read_text()

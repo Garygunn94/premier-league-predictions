@@ -315,6 +315,7 @@ def record(data: Path, season: int, before=None) -> dict | None:
         "disagree": {"n": len(split), "us": int(split.right.sum()), "fav": int(np.nansum(split.fav_right))},
         "n": len(p), "right": int(p.right.sum()), "exact": int(p.exact.sum()),
         "rate": round(p.right.mean() * 100), "fav_rate": round(fav_rate * 100) if not np.isnan(fav_rate) else None,
+        "fav_n": int(p.fav_right.notna().sum()), "fav_right": int(np.nansum(p.fav_right)),
         "weeks": weeks, "better": better, "worse": worse,
         "last": {"rows": verdict_rows, "right": int(last.right.sum()), "n": len(last),
                  "exact": int(last.exact.sum()), "label": last.date.min().strftime("%d %B")},
@@ -329,17 +330,54 @@ def biggest_miss(rec: dict | None, matches: pd.DataFrame) -> dict | None:
     r = max(wrong, key=lambda r: r["p"])
     m = matches[(matches.season == r["season"]) & (matches.home_team == r["home_team"])
                 & (matches.away_team == r["away_team"])]
-    called = {"H": f"{r['home_team']} to win", "A": f"{r['away_team']} to win", "D": "a draw"}[r["call_code"]]
-    out = {**r, "called": called}
+    called = called_text({**r, "call": r["call_code"]})
+    out = {**r, "called": called, "label": f"games from {rec['last']['label']}"}
     hx, ax = (m.iloc[0].home_xg, m.iloc[0].away_xg) if len(m) else (np.nan, np.nan)
     out.update(xg_story(r["home_team"], r["away_team"], r["call_code"], r["result_code"], hx, ax))
     return out
 
 
+def called_text(v: dict) -> str:
+    return {"H": f"{v['home_team']} to win", "A": f"{v['away_team']} to win", "D": "a draw"}[v["call"]]
+
+
+def round_miss(res: dict) -> dict | None:
+    """The newest round's most confident wrong live call, from the same results as the results posts
+    (FPL scores until football-data.co.uk catches up, so the xG verdict can lag a few days)."""
+    wrong = [r for r in res["rows"] if not r["right"] and not r["g"].get("after_kickoff")]
+    if not wrong:
+        return None
+    r = max(wrong, key=lambda r: r["g"]["our_p"])
+    v = r["g"]
+    return {"match": f"{v['home_team']} v {v['away_team']}", "home_team": v["home_team"], "away_team": v["away_team"],
+            "called": called_text(v), "p": v["our_p"], "result": r["result_text"], "kind": r["kind"],
+            "text": r["text"], "has_xg": r["xg"] is not None, "label": f"Matchweek {res['matchweek']}"}
+
+
+def with_round(rec: dict | None, res: dict | None) -> dict | None:
+    """Our record with the newest round's live calls added, when the Thursday record doesn't have them yet
+    (it stops at the round's calls, and football-data.co.uk can be days behind)."""
+    live = [r for r in (res or {}).get("rows", []) if not r["g"].get("after_kickoff")]
+    if not rec or not live:
+        return rec
+    games = {(r["g"]["home_team"], r["g"]["away_team"]) for r in live}
+    if games <= {(r["home_team"], r["away_team"]) for r in rec["last"]["rows"]}:
+        return rec
+    right, n = rec["right"] + sum(r["right"] for r in live), rec["n"] + len(live)
+    priced = [r for r in live if r["fav_right"] is not None]
+    fav_right, fav_n = rec["fav_right"] + sum(r["fav_right"] for r in priced), rec["fav_n"] + len(priced)
+    first = min(pd.Timestamp(r["g"]["kickoff"]) for r in live)
+    return {**rec, "n": n, "right": right, "exact": rec["exact"] + sum(r["exact"] for r in live),
+            "rate": round(right / n * 100), "fav_rate": round(fav_right / fav_n * 100) if fav_n else rec["fav_rate"],
+            "fav_n": fav_n, "fav_right": fav_right,
+            "last": {"rows": [], "right": sum(r["right"] for r in live), "n": len(live),
+                     "exact": sum(r["exact"] for r in live), "label": first.strftime("%d %B")}}
+
+
 def xg_story(home: str, away: str, call: str, result: str, hx: float, ax: float) -> dict:
     """Whether the chances (xG) backed our call, the result, both or neither."""
     if pd.isna(hx) or pd.isna(ax):
-        return {"kind": "No xG yet", "text": "We don't have the expected goals for this one yet, so the jury is out."}
+        return {"kind": "Jury's out", "text": "We don't have the expected goals for this one yet, so we can't say whether it was bad luck or a bad call."}
     margin = hx - ax
     xg_side = "H" if margin > 0.35 else "A" if margin < -0.35 else "D"
     xg = f"{home} {hx:.1f}, {away} {ax:.1f}"
@@ -787,7 +825,11 @@ def build(data: Path, out: Path) -> Path:
     write("404.html", "missing.html", {**page_meta("404.html", "Page not found", tagline), "noindex": True},
           root=site_url.rstrip("/"))
     write_old_addresses(out, weeks, site_url)
-    social.build_kit({**latest, **common, "fpl": fpl, "proof": next((p for p in proofs if not p["after_kickoff"]), None)}, latest["views"], env, out / "social")
+    # The kit's results posts cover the newest round with results, which the Thursday record and its
+    # biggest miss stop short of.
+    res = latest["results"]
+    kit_extra = {"record": with_round(latest["record"], res), "miss": round_miss(res)} if res else {}
+    social.build_kit({**latest, **common, **kit_extra, "fpl": fpl, "proof": next((p for p in proofs if not p["after_kickoff"]), None)}, latest["views"], env, out / "social")
     write_extras(out, weeks, indexed, site_url, built)
     (out / ".nojekyll").write_text("")
     log.info("Built %d pages for %d matchweeks into %s (%s)", len(written), len(weeks), out,
