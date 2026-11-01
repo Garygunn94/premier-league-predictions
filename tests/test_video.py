@@ -19,9 +19,9 @@ def test_kit_has_a_video_script_for_the_round_and_each_game(tmp_path):
         assert v["scenes"][-1]["kind"] == "outro"
     game = next(v for v in videos if v["name"] == "video-strong-v-weak")
     kinds = [s["kind"] for s in game["scenes"]]
-    assert kinds.index("call") < kinds.index("reasons") and kinds[0] in ("hook", "call")
+    assert kinds[0] == "hook" and kinds[-1] == "outro" and set(kinds) == {"hook", "call", "reasons", "outro"}
     call = next(s for s in game["scenes"] if s["kind"] == "call")
-    assert "Strong" in call["lines"][0] and "Weak" in call["lines"][0]
+    assert "Strong" in call["lines"][0]
     posts = json.loads((kit / "posts.json").read_text())["posts"]
     assert posts[0]["video"] == "video-round"
     assert any(p["video"] == "video-strong-v-weak" for p in posts)
@@ -119,8 +119,13 @@ def played_round(tmp_path, both=True):
 def test_every_video_ends_asking_for_a_comment_and_a_follow(tmp_path):
     kit = site.build(make_data(tmp_path), tmp_path / "site") / "social"
     for v in json.loads((kit / "videos.json").read_text()):
-        ask, follow = v["scenes"][-1]["lines"]
-        assert "?" in ask and follow in video.FOLLOW
+        *ask, follow = v["scenes"][-1]["lines"]
+        assert follow in video.FOLLOW
+        if v.get("style"):  # a game's video leaves the question to its caption, to stay short
+            assert not ask and "👇" in next(p["reel"] for p in json.loads((kit / "posts.json").read_text())["posts"]
+                                            if p.get("video") == v["name"])
+        else:
+            assert "?" in ask[0]
         assert follow in (kit / "videos" / f"{v['name']}.html").read_text()
 
 
@@ -173,3 +178,41 @@ def test_instagram_captions_open_on_the_hook_and_ask_a_question(tmp_path):
         assert game["instagram"].startswith(first["lines"][0])
     assert "👇" in game["instagram"] and social.FOLLOW in game["instagram"]
     assert "👇" in posts[0]["instagram"]
+
+
+def test_half_the_games_keep_the_call_for_the_end(tmp_path):
+    styles = [video.pick_style(9, i) for i in range(6)]
+    assert set(styles) == set(video.STYLES) and all(a != b for a, b in zip(styles, styles[1:]))
+    assert video.pick_style(9, 3) == styles[3]  # rebuilds keep each game's style
+    kit = site.build(make_data(tmp_path), tmp_path / "site") / "social"
+    games = [v for v in json.loads((kit / "videos.json").read_text()) if v.get("style")]
+    assert {v["style"] for v in games} == set(video.STYLES)
+    for v in games:
+        kinds = [s["kind"] for s in v["scenes"]]
+        opener = v["scenes"][0]["lines"]
+        if v["style"] == "reveal":
+            assert kinds == ["hook", "reasons", "call", "outro"] and "at the end" in opener[1]
+            # The reasons chart stops short of our call: that's what the last scene gives away.
+            page = (kit / "videos" / f"{v['name']}.html").read_text()
+            assert "Our call:" not in page and "evidence" in page
+        else:
+            assert kinds == ["hook", "call", "reasons", "outro"] and len(opener) == 1
+
+
+def test_reveal_captions_dont_give_the_call_away(tmp_path):
+    kit = site.build(make_data(tmp_path), tmp_path / "site") / "social"
+    posts = [p for p in json.loads((kit / "posts.json").read_text())["posts"] if p.get("style")]
+    assert posts and all(p["reel"] for p in posts)
+    for p in posts:
+        assert ("Our call:" in p["reel"]) == (p["style"] == "upfront")
+        assert p["reel"].count("#") <= 5
+    fake_render(kit)
+    (kit / "video").mkdir()
+    for v in json.loads((kit / "videos.json").read_text()):
+        (kit / "video" / f"{v['name']}.mp4").write_bytes(b"fake mp4")
+    folders = social.ready_to_post(kit)
+    game = next(f for f in folders if list(f.glob("strong-v-weak-*.mp4")))
+    [clip] = game.glob("*.mp4")
+    assert clip.stem.rsplit("-", 1)[1] in video.STYLES and (game / "reel.txt").exists()
+    msgs = social.kit_emails(kit, "me@example.com", "me@example.com")
+    assert any("---- REEL AND TIKTOK ----" in m.get_body().get_content() for m in msgs)

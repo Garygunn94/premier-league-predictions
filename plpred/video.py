@@ -41,8 +41,10 @@ VOICES = {"charon": {"name": "Charon", "google": "en-GB-Chirp3-HD-Charon", "koko
           "kore": {"name": "Kore", "google": "en-GB-Chirp3-HD-Kore", "kokoro": "bf_emma"}}
 KOKORO_NAMES = {"bm_george": "George", "bf_emma": "Emma"}
 WIDTH, HEIGHT, FPS = 1080, 1920, 30
-SPEED = 1.08
-LEAD, GAP, SCENE_GAP, TAIL = 0.4, 0.25, 0.45, 1.2  # seconds of silence around the lines
+# A brisk read, for Kokoro and Google: short-video viewers swipe away from a slow one.
+SPEED, GOOGLE_RATE = 1.15, 1.1
+# Seconds of silence around the lines. The voice starts almost at once: most viewers decide in the first second.
+LEAD, GAP, SCENE_GAP, TAIL = 0.1, 0.15, 0.3, 0.9
 MODEL_URL = "https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/"
 MODEL_FILES = ("kokoro-v1.0.onnx", "voices-v1.0.bin")
 SPOKEN = {"Nott'm Forest": "Forest"}  # names as a commentator would say them
@@ -92,7 +94,6 @@ ORDINALS = ["", "first", "second", "third", "fourth", "fifth", "sixth", "seventh
             "eleventh", "twelfth", "thirteenth", "fourteenth", "fifteenth", "sixteenth", "seventeenth",
             "eighteenth", "nineteenth", "twentieth"]
 COUNTS = ["no", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"]
-OUTCOME = {"H": "home win", "D": "draw", "A": "away win"}
 
 
 class Phrasing:
@@ -228,8 +229,11 @@ def pick_hooks(games: list[dict]) -> list[tuple[str, float, str]]:
     return picks
 
 
-def step_line(step: dict, v: dict, say: Phrasing, n: int, k: int) -> str:
-    """A reason in words a listener can check, with what it's worth to our call."""
+def step_line(step: dict, v: dict, say: Phrasing, n: int, k: int, reveal: bool = False,
+              after: bool | None = None) -> str:
+    """A reason in words a listener can check, with what it's worth to our call. Before a reveal it's
+    just the fact (the chart shows which way it pulls), joined to the one before it (after: whether
+    that one helped our call)."""
     detail = re.sub(r"(\d+)%", r"\1 percent", step["detail"]).replace("than an average side", "than average")
     if step["label"].endswith("team news"):
         names = [x.strip() for x in detail.split(":", 1)[-1].split(",")]
@@ -237,6 +241,10 @@ def step_line(step: dict, v: dict, say: Phrasing, n: int, k: int) -> str:
         detail = f"{step['team']} are missing {names}"
     detail = spoken(detail)
     say = Phrasing(say.matchweek, say.index + k)
+    if reveal:
+        if after is None:
+            return detail[0].upper() + detail[1:] + "."
+        return ("And " if after == step["helps_call"] else "But ") + detail + "."
     pts = f"{n} {'point' if n == 1 else 'points'}"
     if step["helps_call"]:
         return say("helps", ["{d}. That adds {p}.", "{d}: worth {p}.", "{d}, which is worth {p}."],
@@ -245,44 +253,45 @@ def step_line(step: dict, v: dict, say: Phrasing, n: int, k: int) -> str:
                          "Pulling the other way: {d}. Minus {p}."], d=detail, p=pts)
 
 
-def flip_scene(v: dict) -> dict | None:
-    """'What would change our mind', drawn as our chance now against the chance without the biggest factor."""
-    text = v.get("change_our_mind") or ""
-    factor = re.search(r"If (.+?) were only average", text)
-    swing = re.search(r"swing to (?:a |an )?(home win|away win|draw) \((\d+)%\)", text)
-    drop = re.search(r"chance would drop to (\d+)%", text)
-    if not factor or not (swing or drop):
-        return None
-    outcome, p = (swing.group(1), int(swing.group(2))) if swing else (OUTCOME[v["call"]], int(drop.group(1)))
-    f = spoken(factor.group(1))
-    if swing:
-        lines = [f"What would change our mind? If {f} were only average, it swings to {a_an(outcome)}."]
-    else:
-        lines = [f"What would change our mind? Make {f} average, and the {outcome} falls to {p} percent."]
-    label = {"home win": v["home_short"] + " win", "away win": v["away_short"] + " win", "draw": "Draw"}[outcome]
-    return {"kind": "flip", "lines": lines, "factor": factor.group(1), "rows": [
-        {"label": f"Our call: {v['call_long']}", "v": v["our_p"], "at": "0:0.3"},
-        {"label": f"If {factor.group(1)} were average: {label}", "v": p, "at": "0:2.6"}]}
+STYLES = ("reveal", "upfront")
 
 
-def match_scenes(v: dict, matchweek=None, index: int = 0, hook=None) -> list[dict]:
-    """The script for one game: an opener, the call, the reasons, one more angle, and the sign-off."""
+def pick_style(matchweek, index: int) -> str:
+    """Half the round's games keep our call for the end ("reveal"), half give it straight after the
+    opener ("upfront"), alternating from a start that changes every matchweek, so the two can be
+    compared on watch time. Rebuilds keep each game's style."""
+    start = hashlib.sha256(f"{matchweek}/style".encode()).digest()[0]
+    return STYLES[(start + index) % 2]
+
+
+def match_scenes(v: dict, matchweek=None, index: int = 0, hook=None, style: str | None = None) -> list[dict]:
+    """The script for one game, about 20 seconds: an opener, the two biggest reasons and our call
+    (in that order for "reveal", call first for "upfront"), then the sign-off. Most viewers decide in
+    the first second, so the opener is on screen from frame one and nothing else comes before it."""
     say = Phrasing(matchweek, index)
+    style = style or pick_style(matchweek, index)
     home, away = spoken(v["home_team"]), spoken(v["away_team"])
-    day = (v.get("kickoff_long") or "").split(" ")[0]
     hook = hook or hooks(v)[0]
-    scenes = []
-    if hook[0] != "fixture":
-        scenes.append({"kind": "hook", "story": hook[0], "lines": [hook[2]]})
+    if style == "reveal" and hook[0] == "headline":  # the headline gives our call away
+        hook = next(h for h in hooks(v) if h[0] != "headline")
+    opener = [hook[2]]
+    if style == "reveal":
+        opener.append(say("tease", ["Who do we back? Our call's at the end.", "Guess first. Our call comes at the end.",
+                                    "Make your pick. Ours is at the end."]))
+    scenes = [{"kind": "hook", "story": hook[0], "lines": opener}]
 
-    match = say("match", ["{h} against {a}, {d}.", "{h} host {a} on {d}.", "{a} go to {h} on {d}.",
-                          "{d}: {h} versus {a}."] if day else ["{h} against {a}."], h=home, a=away, d=day)
+    score = say_score(v)
     if v["call"] == "D":
-        call = say("draw", ["Our call: a draw, {s}.", "We think they share it, {s}.", "The model says a draw, {s}."],
-                   s=say_score(v))
+        options = (["So, our call: a draw, {s}.", "Our call? A draw, {s}.", "The verdict: they share it, {s}."]
+                   if style == "reveal" else
+                   ["Our call: a draw, {s}.", "We think they share it, {s}.", "The model says a draw, {s}."])
+        call = say("draw", options, s=score)
     else:
-        call = say("call", ["Our call: {c}, {s}.", "We're going with {t}, {s}.", "The model says {c}, {s}.",
-                            "We have it {s} to {t}."], c=call_words(v), t=name_of(v, v["call"]), s=say_score(v))
+        options = (["So, our call: {c}, {s}.", "Our call? {t}, {s}.", "The verdict: {c}, {s}."]
+                   if style == "reveal" else
+                   ["Our call: {c}, {s}.", "We're going with {t}, {s}.", "The model says {c}, {s}.",
+                    "We have it {s} to {t}."])
+        call = say("call", options, c=call_words(v), t=name_of(v, v["call"]), s=score)
     p = v["our_p"]
     conf = {"strong": ["{p} percent. A strong call.", "We make that {p} percent, one of our strongest.",
                        "{p} percent, so we're confident on this one."],
@@ -290,75 +299,37 @@ def match_scenes(v: dict, matchweek=None, index: int = 0, hook=None) -> list[dic
                                   "{p} percent. Barely a favourite.", "Just {p} percent. It could go any way.",
                                   "{p} percent, which is as close as it gets."]}.get(
         v["confidence"], ["We make it {p} percent.", "{p} percent, a solid call.", "That's {p} percent."])
-    scenes.append({"kind": "call", "lines": [match, call, say("conf." + v["confidence"], conf, p=p)]})
+    call_scene = {"kind": "call", "lines": [call, say("conf." + v["confidence"], conf, p=p)]}
+    if style == "upfront":
+        scenes.append(call_scene)
 
     rows = [dict(r) for r in v["waterfall_rows"]["rows"]]
     steps = (v.get("waterfall") or {}).get("steps", [])
     if len(rows) >= 3 and len(steps) == len(rows) - 2:
         order = sorted(range(len(steps)), key=lambda i: -rows[i + 1]["width"])[:2]
-        lines = []
+        lines, helped = [], None
         rows[0]["at"] = "0:0"
         for i in order:
             step = dict(steps[i], helps_call=not rows[i + 1]["val"].startswith(("−", "-")))
-            lines.append(step_line(step, v, say, int(round(abs(step["change"]))), len(lines)))
+            lines.append(step_line(step, v, say, int(round(abs(step["change"]))), len(lines),
+                                   reveal=style == "reveal", after=helped))
+            helped = step["helps_call"]
             rows[i + 1]["at"] = f"{len(lines) - 1}:0.4"
-        if rows[order[0] + 1]["val"][0] not in "−-":  # "Why? Against that..." wouldn't make sense
+        if style == "upfront" and rows[order[0] + 1]["val"][0] not in "−-":  # not "Why? Against that..."
             lines[0] = say("why", ["Why? {l}", "The big one: {l}", "{l}"], l=lines[0])
         last = len(lines) - 1
         for r in rows[1:-1]:
             r.setdefault("at", f"{last}:0")
         rows[-1]["at"] = f"{last}:1.2"
+        if style == "reveal":  # the last row is our call: that's the reveal, so it waits
+            rows = rows[:-1]
         scenes.append({"kind": "reasons", "lines": lines, "rows": rows})
+    if style == "reveal":
+        scenes.append(call_scene)
 
-    angles = []
-    if v.get("mkt"):
-        fav = max(v["mkt"], key=v["mkt"].get)
-        us = {"H": v["h"], "D": v["d"], "A": v["a"]}
-        name = "a draw" if fav == "D" else name_of(v, fav)
-        agree = fav == v["call"]
-        first = (say("agree", ["The bookies agree.", "The market's with us.", "The bookies see it the same way."])
-                 if agree else say("disagree", ["The bookies see it differently.", "The market disagrees.",
-                                                "Here's where we split from the bookies."]))
-        angles.append(("market", {"kind": "market", "agree": agree, "lines": [
-            first, f"They make it {v['mkt'][fav]} percent {name}, to our {us[fav]}."]}))
-    xg = {(x["side"], x["kind"]): x for x in v.get("xg_rows") or []}
-    if len(xg) == 4:
-        ats = ("0:0.6", "0:1.6", "0:2.6", "0:3.6")
-        hf, ha, af, aa = (xg[k]["v"] for k in (("home", "for"), ("home", "against"), ("away", "for"), ("away", "against")))
-        both = "At home, {h} create {hf:.1f} expected goals a game and allow {ha:.1f}. Away, {a} create {af:.1f} and allow {aa:.1f}."
-        pair = {"H": ["{h} create {hf:.1f} expected goals a game at home. {a} allow {aa:.1f} on the road.",
-                      "On the road, {a} allow {aa:.1f} expected goals a game. At home, {h} create {hf:.1f}."],
-                "A": ["{a} create {af:.1f} expected goals a game on the road. {h} allow {ha:.1f} at home.",
-                      "At home, {h} allow {ha:.1f} expected goals a game. Away, {a} create {af:.1f}."],
-                "D": []}[v["call"]]
-        first = say("xg", pair or [both], h=home, a=away, hf=hf, ha=ha, af=af, aa=aa)
-        second = None
-        luck = v.get("luck") or {}
-        if hook[0] != "luck" and luck.get("home") and luck.get("away"):
-            side = max(("home", "away"), key=lambda s: abs(luck[s]["difference"]))
-            d = luck[side]["difference"]
-            team = home if side == "home" else away
-            if abs(d) >= 3:
-                second = (f"And {owner(team)} results flatter them by {round(d)} points." if d > 0 else
-                          f"And {team} have {round(-d)} points fewer than their chances deserved.")
-        if not second and hook[0] != "form":
-            wins = [sum(r["result"] == "W" for r in v.get("form", {}).get(s, [])) for s in ("home", "away")]
-            second = say("form", ["Form: {h} have won {wh} of five, {a} {wa}.",
-                                  "In their last five, {h} won {wh} and {a} won {wa}."],
-                         h=home, a=away, wh=COUNTS[wins[0]], wa=COUNTS[wins[1]])
-        if second:
-            angles.append(("numbers", {"kind": "numbers", "xg": [dict(xg[k], at=at) for k, at in zip(
-                (("home", "for"), ("home", "against"), ("away", "for"), ("away", "against")), ats)],
-                "lines": [first, second]}))
-    flip = flip_scene(v)
-    if flip:
-        angles.append(("flip", flip))
-    if angles:
-        disagree = next((s for k, s in angles if k == "market" and not s["agree"]), None)
-        scenes.append(disagree or say.choice(f"angle{len(angles)}", angles)[1])
-
-    scenes.append(outro(say, ["Agree? Tell us your score in the comments.", "Think we've got it wrong? Tell us below.",
-                              "What's your score? Comments are open."]))
+    # Just the reason to follow: the question for the comments is in the caption (and, for a reveal,
+    # in the opener), which keeps the video near 20 seconds.
+    scenes.append({"kind": "outro", "lines": [say("follow", FOLLOW)]})
     return scenes
 
 
@@ -442,8 +413,11 @@ def build_videos(ctx: dict, views: list[dict], env: Environment, out: Path) -> l
                        "scenes": round_scenes(ctx, views)})
     games = [v for v in views if videoable(v)]
     videos += [{"name": f"video-{v['slug']}", "slug": v["slug"], "title": f"{v['home_team']} v {v['away_team']}",
-                "g": v, "scenes": match_scenes(v, ctx["matchweek"], i, hook)}
+                "g": v, "style": pick_style(ctx["matchweek"], i),
+                "scenes": match_scenes(v, ctx["matchweek"], i, hook, pick_style(ctx["matchweek"], i))}
                for i, (v, hook) in enumerate(zip(games, pick_hooks(games)))]
+    for vid in videos[1:]:
+        vid["hook"] = vid["scenes"][0]["lines"][0]
     res = ctx.get("results")
     if res and res["complete"] and any(not r["g"].get("after_kickoff") for r in res["rows"]):
         videos.append({"name": "video-results", "slug": "results", "edition": "results",
@@ -457,7 +431,7 @@ def build_videos(ctx: dict, views: list[dict], env: Environment, out: Path) -> l
             video=vid, g=vid.get("g"), width=WIDTH, height=HEIGHT, root="../.."))
     (out / "videos.json").write_text(json.dumps([
         {"name": v["name"], "title": v["title"], "edition": v.get("edition", "predictions"),
-         "voice": v["voice"], "voice_name": VOICES[v["voice"]]["name"],
+         "voice": v["voice"], "voice_name": VOICES[v["voice"]]["name"], "style": v.get("style"),
          "scenes": [{"kind": s["kind"], "lines": s["lines"]} for s in v["scenes"]]} for v in videos], indent=1))
     log.info("Wrote %d video scripts into %s", len(videos), folder)
     return videos
@@ -491,9 +465,12 @@ class Google:
         import requests
         import soundfile as sf
 
-        res = requests.post(self.URL, headers={"X-Goog-Api-Key": self.key}, timeout=60, json={
-            "input": {"text": line}, "voice": {"languageCode": "en-GB", "name": voice},
-            "audioConfig": {"audioEncoding": "LINEAR16", "sampleRateHertz": 24000}})
+        body = {"input": {"text": line}, "voice": {"languageCode": "en-GB", "name": voice},
+                "audioConfig": {"audioEncoding": "LINEAR16", "sampleRateHertz": 24000, "speakingRate": GOOGLE_RATE}}
+        res = requests.post(self.URL, headers={"X-Goog-Api-Key": self.key}, timeout=60, json=body)
+        if res.status_code == 400 and "peaking" in res.text:  # should a voice refuse a rate, read at its own
+            del body["audioConfig"]["speakingRate"]
+            res = requests.post(self.URL, headers={"X-Goog-Api-Key": self.key}, timeout=60, json=body)
         if not res.ok:  # Google's message says what is wrong (API not enabled, key restricted, ...)
             raise RuntimeError(f"HTTP {res.status_code}: {res.text[:300]}")
         audio, sr = sf.read(io.BytesIO(base64.b64decode(res.json()["audioContent"])), dtype="float32")
