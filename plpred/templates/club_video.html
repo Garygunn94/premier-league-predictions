@@ -67,10 +67,11 @@ html,body{margin:0;width:{{ width }}px;height:{{ height }}px;overflow:hidden;bac
 .fin .p{font-size:110px;font-weight:900;line-height:1.05}
 .fin .pts{font-size:32px;font-weight:600}
 .trait .head{font-size:78px;margin-bottom:26px}
-.lad{display:grid;grid-template-columns:44px 170px 1fr 96px;align-items:center;gap:12px;height:37px;font-size:25px}
+.lad{display:grid;grid-template-columns:70px 300px 1fr 130px;align-items:center;gap:20px;height:110px;font-size:46px;border-bottom:1px solid var(--rule)}
+.lad.gap{margin-top:36px;border-top:1px dashed var(--rule)}
 .lad .k{font-weight:600;color:var(--muted)}
 .lad .tm{font-weight:600;white-space:nowrap;overflow:hidden}
-.lad .tr{position:relative;height:24px}
+.lad .tr{position:relative;height:44px}
 .lad .bar{background:var(--draw)}
 .lad .vv{text-align:right;font-weight:600;color:var(--muted)}
 .lad.me .tm,.lad.me .vv,.lad.me .k{color:var(--accent);font-weight:700}
@@ -109,17 +110,17 @@ html,body{margin:0;width:{{ width }}px;height:{{ height }}px;overflow:hidden;bac
 <h1 class="head disp" data-in="0:0">They {{ s.t.words }}.</h1>
 <div class="sub lab muted" data-in="0:0.3">{{ s.t.unit|capitalize }}, {{ p.seasons[-1].label }}{% if p.seasons[-1].now %} so far{% endif %}</div>
 {% for r in s.rows %}
-<div class="lad lab{% if r.me %} me{% endif %}" data-in="0:{{ 0.3 + loop.index0 * 0.05 }}"><span class="k">{{ r.rank }}</span><span class="tm">{{ r.team }}</span>
-<span class="tr"><span class="bar" style="left:{{ r.left }}%" data-bar="{{ '1:0' if r.me else '0:' ~ (0.4 + loop.index0 * 0.05) }}" data-w="{{ r.w }}"></span></span><span class="vv">{{ r.v }}</span></div>
+<div class="lad lab{% if r.me %} me{% endif %}{% if r.gap %} gap{% endif %}" data-in="0:{{ 0.3 + loop.index0 * 0.12 }}"><span class="k">{{ r.rank }}</span><span class="tm">{{ r.team }}</span>
+<span class="tr"><span class="bar" style="left:{{ r.left }}%" data-bar="{{ '1:0' if r.me else '0:' ~ (0.4 + loop.index0 * 0.12) }}" data-w="{{ r.w }}"></span></span><span class="vv">{% if r.me %}{{ r.v }}{% endif %}</span></div>
 {% endfor %}
 <div class="ranks lab" data-in="1:0.4">{% for r in s.t.ranks %}<span>{{ r }}{{ {1:'st',2:'nd',3:'rd'}.get(r, 'th') }} in {{ p.seasons[loop.index0].label }}</span>{% endfor %}</div>
 {% elif s.kind == "change" %}
 <div class="kicker lab accent" data-in="0:0">{{ 'The big change' if s.up else 'The big worry' }} · {{ s.t.family }}</div>
 <h1 class="head disp" data-in="0:0">They now <span class="accent">{{ s.t.words }}.</span></h1>
 <div class="duo">
-<div data-in="1:0"><div class="s lab muted">{{ p.seasons[0].label }}</div><div class="v disp muted">{{ s.vals[0] }}</div><div class="rk lab muted">{{ s.t.ranks[0] }}{{ {1:'st',2:'nd',3:'rd'}.get(s.t.ranks[0], 'th') }} of 20</div></div>
+<div data-in="1:0"><div class="s lab muted">{{ p.seasons[0].label }}</div><div class="v disp muted">{{ s.t.ranks[0] }}{{ {1:'st',2:'nd',3:'rd'}.get(s.t.ranks[0], 'th') }}</div><div class="rk lab muted">{{ s.vals[0] }}</div></div>
 <div class="arrow disp accent" data-in="1:1.5">→</div>
-<div data-in="1:2.2"><div class="s lab accent">{{ p.seasons[1].label }}</div><div class="v disp accent">{{ s.vals[1] }}</div><div class="rk lab accent">{{ s.t.ranks[1] }}{{ {1:'st',2:'nd',3:'rd'}.get(s.t.ranks[1], 'th') }} of 20</div></div>
+<div data-in="1:2.2"><div class="s lab accent">{{ p.seasons[1].label }}</div><div class="v disp accent">{{ s.t.ranks[1] }}{{ {1:'st',2:'nd',3:'rd'}.get(s.t.ranks[1], 'th') }}</div><div class="rk lab accent">{{ s.vals[1] }}</div></div>
 </div>
 <div class="unit muted" data-in="1:0">{{ s.t.unit|capitalize }}</div>
 {% elif s.kind == "now" %}

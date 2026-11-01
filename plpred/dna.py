@@ -282,6 +282,20 @@ def intro_line(p: dict) -> str:
     return f"{name}. {finish_words(s[0]).capitalize()} {w[0]}, {finish_words(s[1])} {w[1]}."
 
 
+def sentence(words: str) -> str:
+    return words[0].upper() + words[1:]
+
+
+def top_rows(rows: list[dict], best: bool, n: int = 5) -> list[dict]:
+    """Five places of a ladder, big enough to read on a phone: the top five (the bottom five for a flaw),
+    or the top three and the club, with a gap marked where places are skipped."""
+    order = rows if best else rows[::-1]
+    me = next(i for i, r in enumerate(order) if r["me"])
+    keep = list(range(n)) if me < n else [*range(n - 2), me]
+    out = [dict(order[i], gap=k > 0 and i != keep[k - 1] + 1) for k, i in enumerate(keep)]
+    return out if best else out[::-1]
+
+
 def ladder(t: dict, team: str) -> list[dict]:
     """The chart: every club's value, best first, bars measured from zero."""
     vals = [v for _, v in t["ladder"]]
@@ -296,31 +310,28 @@ def ladder(t: dict, team: str) -> list[dict]:
 
 def scenes(p: dict) -> list[dict]:
     team, w = p["team"], when(p)
-    out = [{"kind": "intro", "lines": [
-        intro_line(p),
-        f"We ranked them against the league on {NUMBER_WORDS.get(len(STATS), len(STATS))} stats. "
-        "Here's what makes them tick."]}]
+    out = [{"kind": "intro", "lines": [intro_line(p), "Here's what makes them different."]}]
     n = 0
+    # One idea a scene and a place in the league rather than a stat: the values stay on screen and in
+    # the caption for anyone who wants them.
     for t in p["traits"]:
         if t["kind"] == "strength":
-            mean = fmt(t["key"], t["league_avg"][-1])
-            avg = "" if (t["key"] in SIGNED and t["key"] != "home_edge") or mean == fmt(t["key"], t["values"][-1]) \
-                else f" The league average is {mean}."
             out.append({"kind": "trait", "t": t, "label": f"Trait {COUNT[n].lower()} · {t['family']}",
-                        "rows": ladder(t, team), "lines": [
+                        "rows": top_rows(ladder(t, team), True), "lines": [
                             f"{COUNT[n]}: they {t['words']}.",
-                            f"{read_out(t, -1)} {w[-1]}, {rank_phrase(p, t['ranks'])}.{avg}"]})
+                            sentence(rank_phrase(p, t["ranks"]))
+                            + (f" {w[-1]}." if len(t["ranks"]) == 1 else ".")]})
             n += 1
         elif t["kind"] == "weakness":
-            out.append({"kind": "trait", "t": t, "label": f"The flaw · {t['family']}", "rows": ladder(t, team),
+            out.append({"kind": "trait", "t": t, "label": f"The flaw · {t['family']}",
+                        "rows": top_rows(ladder(t, team), False),
                         "lines": [f"The flaw: they {t['words']}.",
-                                  f"{read_out(t, -1)} {w[-1]}, {ORD_WORDS[t['ranks'][-1]]} of twenty."]})
+                                  f"{sentence(ORD_WORDS[t['ranks'][-1]])} of twenty {w[-1]}."]})
         else:
             up = t["change"] > 0
             out.append({"kind": "change", "t": t, "up": up, "vals": [fmt(t["key"], v) for v in t["values"]], "lines": [
                 f"{'The big change' if up else 'The big worry'}: they now {t['words']}.",
-                f"{read_out(t, 0)} {w[0]}, {ORD_WORDS[t['ranks'][0]]}. "
-                f"{read_out(t, -1, unit=False)} {w[-1]}, {ORD_WORDS[t['ranks'][-1]]}."]})
+                f"{sentence(ORD_WORDS[t['ranks'][0]])} for it {w[0]}. {sentence(ORD_WORDS[t['ranks'][-1]])} {w[-1]}."]})
     if p["now"]:
         now = p["now"]
         rows = [{"label": FAMILY_NAME.get(t["family"], t["family"]).capitalize(), "then": t["ranks"][-1],
@@ -331,7 +342,7 @@ def scenes(p: dict) -> list[dict]:
         if slipped:
             verdict += f" But the {slipped[0]['label'].lower()} has slipped to {ORD_WORDS[slipped[0]['rank']]}."
         out.append({"kind": "now", "rows": rows, "now": now, "lines": [
-            f"This season, after {now['games']} games, they're {ORD_WORDS[now['position']]}.",
+            f"{sentence(video.COUNTS[now['games']] if now['games'] < len(video.COUNTS) else str(now['games']))} games in, they're {ORD_WORDS[now['position']]}.",
             verdict.strip() or "The same traits are holding up."]})
     out.append({"kind": "outro", "lines": ["Follow for your club next. More at Inkwell and Algorithm dot com."]})
     return out

@@ -212,6 +212,14 @@ def table(matches: pd.DataFrame, season: int) -> pd.DataFrame:
     return t
 
 
+def ranks(ratings: model.Ratings, clubs: set[str]) -> dict:
+    """This season's clubs in the model's order, best first: by attack, by defence (fewest conceded)
+    and overall. The videos say a reason as a place in these ("the fifth-best attack")."""
+    r = {t: ratings.rating(t) for t in sorted(clubs)}
+    return {"attack": sorted(r, key=lambda t: -r[t][0]), "defence": sorted(r, key=lambda t: r[t][1]),
+            "overall": sorted(r, key=lambda t: r[t][1] - r[t][0])}
+
+
 def market(odds: tuple | None) -> dict | None:
     if odds is None or any(o is None or not o or (isinstance(o, float) and math.isnan(o)) for o in odds):
         return None
@@ -288,6 +296,7 @@ def explain(ratings: model.Ratings, matches: pd.DataFrame, home: str, away: str,
         "form": {"home": form(matches, home), "away": form(matches, away)},
         "head_to_head": head_to_head(matches, home, away),
         "team_news": news_rows,
+        "ranks": ranks(ratings, set(pos) | {home, away}),
     }
     games = luck.team_games(matches)
     result["luck"] = {"home": luck.recent(games, home), "away": luck.recent(games, away)}

@@ -35,7 +35,7 @@ import numpy as np
 import pandas as pd
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from plpred import explain, fantasy, luck, model, proof, pundits, seasons, simulate, social
+from plpred import explain, fantasy, luck, model, proof, pundits, seasons, simulate, social, video
 from plpred.predict import load_settings
 from plpred.sources import api_football
 
@@ -141,6 +141,8 @@ def game_view(g: dict) -> dict:
     for m in view["head_to_head"]:
         m["date_text"] = pd.Timestamp(m["date"]).strftime("%b %Y")
     view["front_reasons"] = front_reasons(view)
+    view["plain_reason"] = video.reason_text(view)  # the main reason as a fan would say it, for social posts
+    view["reason_card"] = video.why_scene(view, video.Phrasing(0))  # and the league ladder that shows it
     view["waterfall_rows"] = waterfall_rows(g)
     view["xg_rows"] = xg_rows(g)
     view["form_rows"] = [{"team": t, "games": g["form"][side]} for t, side in ((home, "home"), (away, "away"))]
@@ -154,7 +156,7 @@ def front_reasons(v: dict) -> list[dict]:
     luck_reason = next((r for r in v["reasons"] if r["topic"] == "Results vs performance"), None)
     for s in [s for s in v["waterfall"]["steps"] if s["change"] > 0][:1 if luck_reason else 2]:
         out.append({"title": s["label"].capitalize() if s["label"][0].islower() else s["label"],
-                    "text": s["detail"] + f". Worth {s['change']:+.0f} points to our call."})
+                    "text": s["detail"] + "."})
     if luck_reason:
         out.append({"title": luck_reason["title"], "text": luck_reason["text"]})
     if v["mkt"]:
@@ -189,7 +191,7 @@ def waterfall_rows(g: dict) -> dict:
         lo, hi = sorted((run, run + s["change"]))
         run += s["change"]
         rows.append({"label": s["label"], "tip": s["detail"],
-                     "val": f"{'+' if s['change'] >= 0 else '−'}{abs(s['change']):.0f}",
+                     "val": f"{'+' if s['change'] >= 0 else '−'}{abs(s['change']):.0f}%",  # chance added, not "points"
                      "left": to_pct(lo), "width": max(to_pct(hi - lo), 0.4),
                      "fill": "up" if s["change"] >= 0 else "down", "bold": False})
     rows.append({"label": f"Our call: {g['call_name']}" if g["call"] == "D"
@@ -377,23 +379,23 @@ def with_round(rec: dict | None, res: dict | None) -> dict | None:
 def xg_story(home: str, away: str, call: str, result: str, hx: float, ax: float) -> dict:
     """Whether the chances (xG) backed our call, the result, both or neither."""
     if pd.isna(hx) or pd.isna(ax):
-        return {"kind": "Jury's out", "text": "We don't have the expected goals for this one yet, so we can't say whether it was bad luck or a bad call."}
+        return {"kind": "Jury's out", "text": "We don't have the chance data for this one yet, so we can't say whether it was bad luck or a bad call."}
     margin = hx - ax
     xg_side = "H" if margin > 0.35 else "A" if margin < -0.35 else "D"
-    xg = f"{home} {hx:.1f}, {away} {ax:.1f}"
+    xg = f"expected goals {home} {hx:.1f}, {away} {ax:.1f}"
     if call == result:
         if xg_side == call:
-            return {"kind": "Deserved", "text": f"The chances backed it too (xG: {xg}), so this one wasn't luck."}
+            return {"kind": "Deserved", "text": f"The chances backed it too ({xg}), so this one wasn't luck."}
         return {"kind": "A bit lucky", "text": f"The result went our way, but the chances were closer than that "
-                                               f"(xG: {xg}). We'll take it, but it doesn't prove much."}
+                                               f"({xg}). We'll take it, but it doesn't prove much."}
     if xg_side == call:
-        return {"kind": "Unlucky", "text": f"The chances backed our call (xG: {xg}). On another day this lands, "
+        return {"kind": "Unlucky", "text": f"The chances backed our call ({xg}). On another day this lands, "
                                            "so it doesn't change how we rate either side much."}
     if xg_side == result:
-        return {"kind": "Our mistake", "text": f"The chances went the way of the result too (xG: {xg}). "
+        return {"kind": "Our mistake", "text": f"The chances went the way of the result too ({xg}). "
                                                "We misread this one, and the ratings will move to reflect it."}
     return {"kind": "Somewhere in between", "text": f"The chances pointed to neither our call nor the result "
-                                                    f"(xG: {xg}). A closer game than either the score or we suggested."}
+                                                    f"({xg}). A closer game than either the score or we suggested."}
 
 
 def outcome(home_goals: int, away_goals: int) -> str:

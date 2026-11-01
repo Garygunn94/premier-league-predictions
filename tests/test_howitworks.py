@@ -60,12 +60,13 @@ def test_the_reel_walks_through_the_process(tmp_path):
     sc, facts = howitworks.scenes(data)
     kinds = [s["kind"] for s in sc]
     assert kinds[0] == "hook" and kinds[1] == "data" and kinds[-1] == "outro"
-    assert kinds.index("model") < kinds.index("example") < kinds.index("calls") < kinds.index("record")
+    assert kinds.index("model") < kinds.index("example") < kinds.index("record")
+    assert "trend" not in kinds and "luck" not in kinds  # their own reels now; still in facts for the caption
     lines = [line for s in sc for line in s["lines"]]
-    assert any(line.startswith("Step one: the data. 840 games from the last three seasons") for line in lines)
-    assert "Take Wall against Hacker, matchweek 8." in lines  # the latest round's most confident call
-    assert any("That adds 15 points" in line or "worth 15 points" in line for line in lines)
-    assert any(line.startswith("We land on 62 percent") for line in lines)
+    assert lines[1] == "Step one: the data. Every game from the last three seasons."
+    assert any(line.endswith("Take Wall against Hacker.") for line in lines)  # the latest round's most confident call
+    assert any(line.startswith("Wall win about six times in ten.") for line in lines)
+    assert "Dixon-Coles" not in " ".join(lines) and "expected goals" not in " ".join(lines)
     assert facts["record"][0]["label"] == "2025/26" and facts["record"][1]["now"]
     # never phrased as betting advice
     text = " ".join(lines).lower()
