@@ -142,6 +142,7 @@ def game_view(g: dict) -> dict:
         m["date_text"] = pd.Timestamp(m["date"]).strftime("%b %Y")
     view["front_reasons"] = front_reasons(view)
     view["plain_reason"] = video.reason_text(view)  # the main reason as a fan would say it, for social posts
+    view["reason_card"] = video.why_scene(view, video.Phrasing(0))  # and the league ladder that shows it
     view["waterfall_rows"] = waterfall_rows(g)
     view["xg_rows"] = xg_rows(g)
     view["form_rows"] = [{"team": t, "games": g["form"][side]} for t, side in ((home, "home"), (away, "away"))]
@@ -155,7 +156,7 @@ def front_reasons(v: dict) -> list[dict]:
     luck_reason = next((r for r in v["reasons"] if r["topic"] == "Results vs performance"), None)
     for s in [s for s in v["waterfall"]["steps"] if s["change"] > 0][:1 if luck_reason else 2]:
         out.append({"title": s["label"].capitalize() if s["label"][0].islower() else s["label"],
-                    "text": s["detail"] + f". Worth {s['change']:+.0f} points to our call."})
+                    "text": s["detail"] + "."})
     if luck_reason:
         out.append({"title": luck_reason["title"], "text": luck_reason["text"]})
     if v["mkt"]:
@@ -190,7 +191,7 @@ def waterfall_rows(g: dict) -> dict:
         lo, hi = sorted((run, run + s["change"]))
         run += s["change"]
         rows.append({"label": s["label"], "tip": s["detail"],
-                     "val": f"{'+' if s['change'] >= 0 else '−'}{abs(s['change']):.0f}",
+                     "val": f"{'+' if s['change'] >= 0 else '−'}{abs(s['change']):.0f}%",  # chance added, not "points"
                      "left": to_pct(lo), "width": max(to_pct(hi - lo), 0.4),
                      "fill": "up" if s["change"] >= 0 else "down", "bold": False})
     rows.append({"label": f"Our call: {g['call_name']}" if g["call"] == "D"

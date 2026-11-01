@@ -338,7 +338,7 @@ def superbru(ctx: dict, views: list[dict]) -> str:
 def carousel(v: dict, day: str | None = None) -> list[dict]:
     """One game's slides: the call, how we got there, the numbers, the likely scores, us v the bookies."""
     teams = f"{v['home_team']} v {v['away_team']}"
-    slides = [("call", teams), ("reasons", f"How we got to {v['our_p']}%: {teams}"),
+    slides = [("call", teams), ("reasons", f"Why: {teams}"),
               ("numbers", f"The numbers: {teams}"), ("scores", f"Most likely scores: {teams}")]
     if v["mkt"]:
         slides.append(("market", f"Us v the bookies: {teams}"))

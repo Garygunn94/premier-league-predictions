@@ -37,6 +37,11 @@ html,body{margin:0;width:{{ size }}px;height:{{ size }}px;overflow:hidden}
 .post .wf .bar{position:absolute;top:0;bottom:0}
 .post .wf .start{background:var(--draw)}.post .wf .up{background:var(--ink)}.post .wf .down{background:var(--accent)}.post .wf .total{background:var(--accent)}
 .post .wf .v{font-size:24px;font-weight:700;text-align:right}
+.post .lad{display:flex;align-items:baseline;gap:24px;padding:12px 0;border-bottom:1px solid var(--rule)}
+.post .lad .n{font-size:28px;font-weight:700;width:44px;text-align:right;color:var(--muted)}
+.post .lad .t{font-size:44px;font-weight:800}
+.post .lad.hot .n,.post .lad.hot .t{color:var(--accent)}
+.post .lad.gap{margin-top:26px;border-top:1px dashed var(--rule)}
 .post .nums{display:flex;gap:56px}
 .post .nums .n{font-size:150px;font-weight:900;line-height:.95}
 .post .nums .u{font-size:24px;color:var(--muted);margin-top:24px}
@@ -91,14 +96,22 @@ html,body{margin:0;width:{{ size }}px;height:{{ size }}px;overflow:hidden}
 {% endif %}
 {% elif card.kind == "reasons" %}
 <div class="kicker lab accent">{{ g.home_team }} v {{ g.away_team }} · {{ g.kickoff_text }}</div>
-<h1 class="head disp">How we got to <span class="accent">{{ g.our_p }}%</span></h1>
-<div class="wf">
-{% for r in g.waterfall_rows.rows %}
-<div class="r"><span class="l"{% if r.bold %} style="font-weight:700"{% endif %}>{{ r.label }}</span>
-<span class="track"><span class="bar {{ r.fill }}" style="left:{{ r.left }}%;width:{{ r.width }}%"></span></span>
-<span class="v lab">{{ r.val }}</span></div>
+{% set rc = g.reason_card %}
+{% if rc %}
+<h1 class="head disp">{{ rc.head }}</h1>
+{% if rc.ladder %}
+<div>
+<div class="sub lab muted">{{ rc.sub }}</div>
+{% for r in rc.ladder %}
+<div class="lad{% if r.hot %} hot{% endif %}{% if r.gap %} gap{% endif %}"><span class="n lab">{{ r.rank }}</span><span class="t disp">{{ r.team }}</span></div>
 {% endfor %}
 </div>
+{% endif %}
+{% if g.plain_reason != rc.head %}<div class="why-text">{{ g.plain_reason }}</div>{% endif %}
+{% else %}
+<h1 class="head disp">Why <span class="accent">{{ g.call_long }}</span></h1>
+<div class="why-text">{{ g.front_reasons[0].text if g.front_reasons else '' }}</div>
+{% endif %}
 {% elif card.kind == "numbers" %}
 <div class="kicker lab accent">{{ g.home_team }} v {{ g.away_team }} · the numbers</div>
 <h1 class="head disp" style="font-size:60px">What the <span class="accent">data</span> says.</h1>

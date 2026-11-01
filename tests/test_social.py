@@ -152,3 +152,11 @@ def test_what_we_got_wrong_covers_the_round_just_played(tmp_path):
     assert posts[0]["x"][0].startswith(f"What we got wrong: {game['home_team']} v {game['away_team']}.")
     assert "Jury's out" in posts[0]["x"][0] and "xG for this game isn't in yet" in posts[0]["how"]
     assert "Matchweek 9" in (kit / "cards" / "miss.html").read_text()
+
+
+def test_reasons_slide_shows_the_league_ladder_not_points(tmp_path):
+    from tests.test_site import make_data
+    from plpred import site
+    kit = site.build(make_data(tmp_path), tmp_path / "site") / "social"
+    page = next((kit / "cards").glob("reasons-*.html")).read_text()
+    assert "How we got to" not in page and "points" not in page
