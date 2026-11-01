@@ -1,6 +1,7 @@
-"""Recent Premier League results, match stats and odds from football-data.co.uk.
+"""Recent results, match stats and odds from football-data.co.uk.
 
-One CSV per season at https://www.football-data.co.uk/mmz4281/<code>/E0.csv.
+One CSV per season and division at https://www.football-data.co.uk/mmz4281/<code>/<div>.csv
+(E0 is the Premier League, SP1 La Liga).
 Past seasons never change, so they are downloaded once and kept; only the current
 season is re-downloaded.
 """
@@ -15,7 +16,7 @@ from plpred.http import session
 
 log = logging.getLogger(__name__)
 
-URL = "https://www.football-data.co.uk/mmz4281/{code}/E0.csv"
+URL = "https://www.football-data.co.uk/mmz4281/{code}/{div}.csv"
 FIXTURES_URL = "https://www.football-data.co.uk/fixtures.csv"  # the coming games in every league, with odds
 
 STAT_COLUMNS = {
@@ -32,21 +33,21 @@ STAT_COLUMNS = {
 ODDS_PREFIXES = ["Avg", "BbAv", "B365", "WH"]
 
 
-def raw_path(data_dir: Path, season: int) -> Path:
-    return data_dir / "raw" / "football-data-uk" / f"E0_{seasons.fd_code(season)}.csv"
+def raw_path(data_dir: Path, season: int, div: str = "E0") -> Path:
+    return data_dir / "raw" / "football-data-uk" / f"{div}_{seasons.fd_code(season)}.csv"
 
 
-def download(data_dir: Path, wanted: list[int] | None = None) -> list[Path]:
+def download(data_dir: Path, wanted: list[int] | None = None, div: str = "E0") -> list[Path]:
     wanted = wanted or seasons.window()
     last = wanted[-1]
     s = session()
     paths = []
     for season in wanted:
-        path = raw_path(data_dir, season)
+        path = raw_path(data_dir, season, div)
         if path.exists() and season < last:
             paths.append(path)
             continue
-        resp = s.get(URL.format(code=seasons.fd_code(season)), timeout=30)
+        resp = s.get(URL.format(code=seasons.fd_code(season), div=div), timeout=30)
         if resp.status_code == 404:
             log.warning("No football-data.co.uk file for %s yet", seasons.label(season))
             continue
@@ -91,13 +92,13 @@ def odds_columns(df: pd.DataFrame) -> list[str] | None:
     return None
 
 
-def parse_upcoming(raw: bytes) -> pd.DataFrame:
-    """Premier League games from the fixtures file, with the market-average 1X2 odds."""
+def parse_upcoming(raw: bytes, div: str = "E0") -> pd.DataFrame:
+    """One division's games from the fixtures file, with the market-average 1X2 odds."""
     df = pd.read_csv(io.BytesIO(raw), encoding="latin-1", on_bad_lines="skip")
     df.columns = df.columns.str.replace("\u00ef\u00bb\u00bf", "", regex=False).str.strip()  # a UTF-8 BOM read as Latin-1
     if "Div" not in df:
         raise ValueError(f"football-data.co.uk fixtures file has no Div column: {list(df.columns)[:5]}")
-    df = df[df["Div"].eq("E0")]
+    df = df[df["Div"].eq(div)]
     cols = odds_columns(df)
     out = pd.DataFrame({"home_team": df["HomeTeam"].map(teams.canonical),
                         "away_team": df["AwayTeam"].map(teams.canonical)})
@@ -106,16 +107,16 @@ def parse_upcoming(raw: bytes) -> pd.DataFrame:
     return out.dropna().reset_index(drop=True)
 
 
-def upcoming_odds() -> pd.DataFrame:
+def upcoming_odds(div: str = "E0") -> pd.DataFrame:
     resp = session().get(FIXTURES_URL, timeout=30)
     resp.raise_for_status()
-    return parse_upcoming(resp.content)
+    return parse_upcoming(resp.content, div)
 
 
-def build_matches(data_dir: Path, wanted: list[int] | None = None) -> pd.DataFrame:
+def build_matches(data_dir: Path, wanted: list[int] | None = None, div: str = "E0") -> pd.DataFrame:
     frames = []
     for season in wanted or seasons.window():
-        path = raw_path(data_dir, season)
+        path = raw_path(data_dir, season, div)
         if path.exists():
             frames.append(parse(path.read_bytes(), season))
     matches = pd.concat(frames, ignore_index=True).sort_values(["date", "home_team"])

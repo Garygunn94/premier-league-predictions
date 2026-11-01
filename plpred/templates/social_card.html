@@ -69,7 +69,7 @@ html,body{margin:0;width:{{ size }}px;height:{{ size }}px;overflow:hidden}
 </head>
 <body>
 <div class="post">
-<div class="top"><span class="brand disp">{{ wordmark() }}</span><span class="tag lab muted">{% if card.kind != "brand" %}Premier League · Matchweek {{ matchweek }}{% else %}Premier League{% endif %}</span></div>
+<div class="top"><span class="brand disp">{{ wordmark() }}</span><span class="tag lab muted">{% if card.kind != "brand" %}{{ league.name if league else "Premier League" }} · Matchweek {{ matchweek }}{% else %}{{ league.name if league else "Premier League" }}{% endif %}</span></div>
 <div class="main">
 {% if card.kind == "round" %}
 <div class="kicker lab accent">{% if late %}{{ late }} of {{ views|length }} called after kick-off, from pre-round data{% else %}Every game called{% endif %}</div>
@@ -218,7 +218,7 @@ html,body{margin:0;width:{{ size }}px;height:{{ size }}px;overflow:hidden}
 {% elif g.front_reasons %}<div><div class="why disp">Why we called it: {{ g.front_reasons[0].title }}</div><div class="why-text">{{ g.plain_reason or g.front_reasons[0].text }} Once the chance data is in, we'll say whether it was luck.</div></div>{% endif %}
 {% elif card.kind == "brand" %}
 <h1 class="head disp" style="font-size:120px;line-height:.95;font-style:normal;font-weight:900">{{ wordmark() }}</h1>
-<p class="why-text" style="font-size:36px;font-style:italic">Data-driven Premier League predictions, with the reasons. New every Thursday.</p>
+<p class="why-text" style="font-size:36px;font-style:italic">{{ league.tagline if league else "Data-driven Premier League predictions, with the reasons. New every Thursday." }}</p>
 {% endif %}
 </div>
 <div class="foot lab muted"><span>Data-driven predictions, with the reasons</span><span>X {{ handle }} · IG {{ ig_handle }}</span></div>

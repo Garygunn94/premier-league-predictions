@@ -25,13 +25,27 @@ GRID = {"half_life_days": [90, 180, 365], "xg_weight": [0.0, 0.5, 1.0],
         "ridge": [0.05, 1.0], "rho": [-0.08, -0.13]}
 
 
-def gameweeks(dates: pd.Series) -> pd.Series:
+def gameweeks(dates: pd.Series, home: pd.Series | None = None, away: pd.Series | None = None) -> pd.Series:
     """Number the rounds: a new round starts after a gap of two or more days, except on a
-    Monday, which closes the weekend round rather than starting a new one."""
-    days = pd.Series(pd.to_datetime(dates).dt.normalize().unique()).sort_values()
+    Monday, which closes the weekend round rather than starting a new one. Given the teams, a
+    day on which a club that has already played in the round plays again starts a new round too:
+    La Liga often runs a weekend round into a midweek one with no gap between them."""
+    days_of = pd.to_datetime(dates).dt.normalize()
+    days = pd.Series(days_of.unique()).sort_values()
     starts = (days.diff().dt.days.fillna(99) >= 2) & (days.dt.dayofweek != 0)
     starts.iloc[0] = True
-    return pd.to_datetime(dates).dt.normalize().map(dict(zip(days, starts.cumsum())))
+    if home is not None and away is not None:
+        playing = {}
+        for d, h, a in zip(days_of, home, away):
+            playing.setdefault(d, set()).update((h, a))
+        seen = set()
+        for i, d in zip(starts.index, days):
+            if starts[i]:
+                seen = set()
+            elif playing[d] & seen:
+                starts[i], seen = True, set()
+            seen |= playing[d]
+    return days_of.map(dict(zip(days, starts.cumsum())))
 
 
 def run(matches: pd.DataFrame, test_seasons: list[int], settings: model.Settings) -> pd.DataFrame:
@@ -40,7 +54,7 @@ def run(matches: pd.DataFrame, test_seasons: list[int], settings: model.Settings
     rows = []
     for season in test_seasons:
         test = matches[matches.season == season]
-        for gw, games in test.groupby(gameweeks(test.date)):
+        for gw, games in test.groupby(gameweeks(test.date, test.home_team, test.away_team)):
             rows += _predict_round(matches, games, int(gw), settings)
     return pd.DataFrame(rows)
 

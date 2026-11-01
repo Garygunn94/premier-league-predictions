@@ -19,7 +19,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from plpred import http, seasons, social
+from plpred import http, leagues, seasons, social
 
 log = logging.getLogger("plpred.proof")
 DATA = Path(__file__).resolve().parent.parent / "data"
@@ -37,12 +37,20 @@ def calls_files(data: Path) -> list[Path]:
     return [f for f in sorted((data / "predictions").glob("*.json")) if not f.name.startswith("replay-")]
 
 
+def repo_path(f: Path) -> str:
+    """Where a calls file sits in the repository, e.g. data/laliga/predictions/2026-11-06.json."""
+    try:
+        return f.resolve().relative_to(DATA.parent.resolve()).as_posix()
+    except ValueError:  # a folder outside the repository (the tests)
+        return f"data/predictions/{f.name}"
+
+
 def proofs(data: Path) -> list[dict]:
     """One row per calls file, newest first: its fingerprint and where to check it."""
     rows = []
     for f in calls_files(data):
         preds = json.loads(f.read_text())
-        rel = f"data/predictions/{f.name}"
+        rel = repo_path(f)
         rows.append({
             "file": f.name, "sha256": fingerprint(f), "short": fingerprint(f)[:16],
             "games": len(preds["games"]), "after_kickoff": f.stem.endswith("-after-kickoff"),
@@ -75,7 +83,8 @@ def site_urls(data: Path) -> list[str]:
     matches = pd.read_csv(data / "matches.csv", parse_dates=["date"])
     season = int(preds["season"][:4])
     week = site.matchweek_of(preds, matches, season)
-    return [social.SITE_URL, f"{social.SITE_URL}{seasons.label(season).replace('/', '-')}/matchweek/{week}/"]
+    home = social.SITE_URL + leagues.of(data).prefix
+    return [home, f"{home}{seasons.label(season).replace('/', '-')}/matchweek/{week}/"]
 
 
 def main(argv=None) -> None:
@@ -92,10 +101,13 @@ def main(argv=None) -> None:
         for p in proofs(args.data):
             print(f"{p['sha256']}  {p['file']}")
         return
-    urls = [f"{RAW}data/predictions/{Path(f).name}" for f in args.calls
+    urls = [f"{RAW}{Path(f).as_posix()}" for f in args.calls
             if f.endswith(".json") and not Path(f).name.startswith("replay-")]
     if args.site:
         urls += site_urls(args.data)
+        laliga = args.data / leagues.FOLDERS[leagues.LA_LIGA.key]
+        if any(calls_files(laliga)) and (laliga / "matches.csv").exists():
+            urls += site_urls(laliga)
     saved = sum(archive(u) for u in urls)
     log.info("Saved %d of %d addresses", saved, len(urls))
 

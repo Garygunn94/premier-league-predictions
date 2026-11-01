@@ -11,7 +11,8 @@ test), the projected final table in table/ (see plpred.simulate), the FPL corner
 (see plpred.pundits), and the posting kit for social media and the weekly newsletter in
 social/ for the newest week (see plpred.social). It also writes sitemap.xml, an Atom feed
 of the matchweeks (feed.xml), robots.txt, a 404 page, contact/, privacy/ and terms/, and in embed/ a card per club for fan sites to
-put on their own pages. Every page has a search title, a
+put on their own pages. La Liga, once it has calls in data/laliga/, gets its own section in
+laliga/ (see build_section and plpred.leagues), with its kit in social/laliga/. Every page has a search title, a
 description, a canonical address and schema.org structured data (see page_meta).
 
 Optional settings, read from the environment (the Publish site workflow passes them from
@@ -35,7 +36,7 @@ import numpy as np
 import pandas as pd
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from plpred import explain, fantasy, luck, model, proof, pundits, seasons, simulate, social, video
+from plpred import explain, fantasy, leagues, luck, model, proof, pundits, seasons, simulate, social, video
 from plpred.predict import load_settings
 from plpred.sources import api_football
 
@@ -46,8 +47,7 @@ TEMPLATES = Path(__file__).resolve().parent / "templates"
 # Change this when the wording of the privacy notice or terms changes.
 POLICY_DATE = "18 October 2026"
 CALL_NAMES = {"H": "Home win", "D": "Draw", "A": "Away win"}
-SHORT = {"Man United": "Man Utd", "Nott'm Forest": "Forest", "Crystal Palace": "Palace",
-         "Bournemouth": "B'mouth", "Aston Villa": "Villa", "Tottenham": "Spurs", "Brighton": "Brighton"}
+SHORT = {**leagues.PREMIER_LEAGUE.short, **leagues.LA_LIGA.short}
 
 
 # ---------------------------------------------------------------- loading
@@ -459,19 +459,26 @@ def league_table(matches: pd.DataFrame, season: int) -> list[dict]:
 
 # ---------------------------------------------------------------- build
 
-def week_context(preds: dict, is_replay: bool, data: Path, matches: pd.DataFrame) -> dict:
+def week_context(preds: dict, is_replay: bool, data: Path, matches: pd.DataFrame,
+                 league: leagues.League = leagues.PREMIER_LEAGUE) -> dict:
     """Everything one matchweek's pages need."""
     season = int(preds["season"][:4])
     matchweek = matchweek_of(preds, matches, season)
     views = [game_view(g) for g in preds["games"]]
-    week_dir = f"{seasons.label(season).replace('/', '-')}/matchweek/{matchweek}/"
+    week_dir = f"{league.prefix}{seasons.label(season).replace('/', '-')}/matchweek/{matchweek}/"
+    before = matches[matches.date < preds["as_of"]]
+    table = league_table(before, season)
+    # The games that get a carousel and a Reel: every game, or in La Liga the big clubs' games and
+    # top-four clashes, by the table going into the round.
+    top_four = {t["team"] for t in table[:4]}
     for v in views:
         v["path"] = f"{week_dir}{v['slug']}.html"
+        v["league"], v["league_tag"] = league.name, league.tag
+        v["featured"] = leagues.featured(league, v["home_team"], v["away_team"], top_four)
     late = [v for v in views if v.get("after_kickoff")]
     # The features (match of the week, banker, upset) are predictions, so they come from live calls.
     features = pick_features([v for v in views if not v.get("after_kickoff")] or views)
     lead = features["lead"]
-    before = matches[matches.date < preds["as_of"]]
     return {
         "matchweek": matchweek,
         "week_dir": week_dir,
@@ -489,7 +496,7 @@ def week_context(preds: dict, is_replay: bool, data: Path, matches: pd.DataFrame
                                    if features["upset"] else set())),
         "record": (rec := record(data, season, preds["as_of"])),
         "miss": biggest_miss(rec, matches),
-        "table": league_table(before, season),
+        "table": table,
         "deserved": luck.deserved_table(before, season),
     }
 
@@ -593,7 +600,7 @@ def match_event(v: dict, site_url: str) -> dict:
              "startDate": ko.isoformat() if (ko.hour or ko.minute) else ko.strftime("%Y-%m-%d"),
              "homeTeam": {"@type": "SportsTeam", "name": v["home_team"]},
              "awayTeam": {"@type": "SportsTeam", "name": v["away_team"]},
-             "superEvent": {"@type": "SportsEvent", "name": "Premier League"}}
+             "superEvent": {"@type": "SportsEvent", "name": v.get("league", "Premier League")}}
     if v.get("venue"):
         event["location"] = {"@type": "Place", "name": v["venue"]}
     if site_url:
@@ -648,10 +655,12 @@ def write_old_addresses(out: Path, weeks: list[dict], site_url: str) -> None:
             (old_dir / name).write_text(REDIRECT.format(url=escape(url, {'"': "&quot;"}), url_js=json.dumps(url)))
 
 
-def build(data: Path, out: Path) -> Path:
+def load_weeks(data: Path, league: leagues.League) -> tuple[list[dict], list[dict], bool, pd.DataFrame]:
+    """Every matchweek's context, oldest first, with the newest brought up to date: its tables,
+    the season projection and the round's results follow the daily data refresh."""
     all_preds, is_replay = all_predictions(data)
     matches = pd.read_csv(data / "matches.csv", parse_dates=["date"])
-    weeks = [week_context(preds, is_replay, data, matches) for preds in merge_weeks(all_preds, matches)]
+    weeks = [week_context(preds, is_replay, data, matches, league) for preds in merge_weeks(all_preds, matches)]
     weeks.sort(key=lambda w: w["as_of"])
     for i, w in enumerate(weeks):
         w["prev"] = weeks[i - 1] if i else None
@@ -660,8 +669,6 @@ def build(data: Path, out: Path) -> Path:
     latest = weeks[-1]
     season = int(latest["season"][:4])
     settings = load_settings(data)
-    built = datetime.now()
-
     # Season projection from every result we have (so a midweek rebuild includes the weekend),
     # and as it stood a week earlier, for the week-on-week moves.
     sim_as_of = max(latest["as_of"], matches.date.max() + pd.Timedelta(days=1))
@@ -674,6 +681,43 @@ def build(data: Path, out: Path) -> Path:
     latest["table_date"] = matches.date.max().strftime("%d %B")
     latest["sim_moves"] = simulate.headline_moves(sim) if sim else []
     latest["results"] = round_results(weeks, matches, data)
+    return weeks, all_preds, is_replay, matches
+
+
+def make_env() -> Environment:
+    return Environment(loader=FileSystemLoader(TEMPLATES), autoescape=select_autoescape(["html"]),
+                       trim_blocks=True, lstrip_blocks=True)
+
+
+def site_common(weeks: list[dict], league: leagues.League, built: datetime) -> dict:
+    """What every page's template is given."""
+    return {
+        "built": built.strftime("%d %B %Y"),
+        "badges": {},
+        "weeks": weeks[::-1],
+        "latest": weeks[-1],
+        "site_url": social.SITE_URL,
+        "goatcounter": os.environ.get("GOATCOUNTER", "").strip(),
+        "newsletter_url": os.environ.get("NEWSLETTER_URL", "").strip(),
+        "contact_email": os.environ.get("CONTACT_EMAIL", "").strip(),
+        "policy_date": POLICY_DATE,
+        # Club pages are the Premier League's only, for now.
+        "clubs": {t["team"]: club_slug(t["team"]) for t in weeks[-1]["table"]} if league.fpl else {},
+        "league": league.view(),
+        "laliga_live": False,
+    }
+
+
+def build(data: Path, out: Path) -> Path:
+    league = leagues.of(data)
+    if league.prefix:
+        return build_section(data, out, league)
+    weeks, all_preds, is_replay, matches = load_weeks(data, league)
+    latest = weeks[-1]
+    season = int(latest["season"][:4])
+    settings = load_settings(data)
+    built = datetime.now()
+    sim = latest["sim"]
     known = matches[matches.date < latest["as_of"]]
     ratings = model.fit(known, as_of=latest["as_of"], settings=settings)
     fpl = {"this_week": fantasy.this_week(latest["views"], settings.rho),
@@ -682,20 +726,10 @@ def build(data: Path, out: Path) -> Path:
     fpl["scoring"] = sorted(fpl["this_week"], key=lambda r: -r["xg_for"])
 
     site_url = social.SITE_URL
-    common = {
-        "built": built.strftime("%d %B %Y"),
-        "badges": {},
-        "weeks": weeks[::-1],
-        "latest": latest,
-        "site_url": site_url,
-        "goatcounter": os.environ.get("GOATCOUNTER", "").strip(),
-        "newsletter_url": os.environ.get("NEWSLETTER_URL", "").strip(),
-        "contact_email": os.environ.get("CONTACT_EMAIL", "").strip(),
-        "policy_date": POLICY_DATE,
-        "clubs": {t["team"]: club_slug(t["team"]) for t in latest["table"]},
-    }
-    env = Environment(loader=FileSystemLoader(TEMPLATES), autoescape=select_autoescape(["html"]),
-                      trim_blocks=True, lstrip_blocks=True)
+    common = site_common(weeks, league, built)
+    # The La Liga section is linked from the Premier League pages once it has calls.
+    common["laliga_live"] = has_calls(data / leagues.FOLDERS[leagues.LA_LIGA.key])
+    env = make_env()
     if out.exists():
         shutil.rmtree(out)
     out.mkdir(parents=True)
@@ -715,7 +749,7 @@ def build(data: Path, out: Path) -> Path:
         target.parent.mkdir(parents=True, exist_ok=True)
         root = root if root is not None else "/".join([".."] * path.count("/")) or "."
         meta = {**meta, "jsonld": structured_data(meta, site_url)}
-        target.write_text(env.get_template(template).render(**common, **ctx, meta=meta, root=root))
+        target.write_text(env.get_template(template).render(**common, **ctx, meta=meta, root=root, lroot=root))
         written.append(path)
         if not meta.get("noindex") and meta["url"] == clean_path(path) and meta["url"] not in indexed:
             indexed.append(meta["url"])
@@ -839,6 +873,96 @@ def build(data: Path, out: Path) -> Path:
     return out
 
 
+def has_calls(data: Path) -> bool:
+    return (data / "matches.csv").exists() and any((data / "predictions").glob("*.json"))
+
+
+def build_section(data: Path, out: Path, league: leagues.League) -> Path:
+    """A league's own section of the site, in out/<prefix> (La Liga in laliga/): its newest
+    matchweek as the section's front page, a page per matchweek and per match, and its season
+    projection, plus its posting kit in out/social/<prefix>. Built after the main site, into the
+    same folder: shared pages (about, contact, the style sheet) are the main site's."""
+    weeks, _, is_replay, matches = load_weeks(data, league)
+    latest = weeks[-1]
+    built = datetime.now()
+    site_url = social.SITE_URL
+    common = site_common(weeks, league, built)
+    env = make_env()
+    out.mkdir(parents=True, exist_ok=True)
+    for asset in ("style.css", "favicon.svg"):
+        if not (out / asset).exists():
+            shutil.copy(TEMPLATES / asset, out / asset)
+    home = league.prefix
+    kit = f"social/{home}png/"
+    written, indexed = [], []
+
+    def write(path: str, template: str, meta: dict, **ctx) -> None:
+        target = out / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        root = "/".join([".."] * path.count("/")) or "."
+        meta = {**meta, "jsonld": structured_data(meta, site_url)}
+        target.write_text(env.get_template(template).render(**common, **ctx, meta=meta, root=root,
+                                                            lroot=f"{root}/{home.rstrip('/')}"))
+        written.append(path)
+        if meta["url"] == clean_path(path) and meta["url"] not in indexed:
+            indexed.append(meta["url"])
+
+    name, season_label = league.name, latest["season"]
+    sim = latest["sim"]
+    if sim:
+        write(f"{home}table/index.html", "projection.html",
+              page_meta(f"{home}table/index.html", f"How the {name} {season_label} season ends: {sim['runs']:,} simulations",
+                        f"Our predicted {season_label} {name} table: title, top-four and relegation chances "
+                        f"for every club from {sim['runs']:,} simulations, updated every week.",
+                        search_title=f"{name} {season_label} predicted table",
+                        crumbs=[(name, home), ("Season projection", f"{home}table/")]),
+              sim=sim, moves=latest["sim_moves"])
+    for w in weeks:
+        is_latest = w is latest
+        week_path = f"{w['week_dir']}index.html"
+        week_title = f"{name} Matchweek {w['matchweek']}: {w['lead']['headline']}"
+        week_search = f"{name} predictions: Matchweek {w['matchweek']}, {w['season']}"
+        week_desc = (f"Predictions for every {name} match in Matchweek {w['matchweek']} "
+                     f"({w['season']}, from {w['first_kickoff']}): our call, the likely score and the reasons behind it.")
+        week_crumbs = [(name, home), (f"Matchweek {w['matchweek']}", w["week_dir"])]
+        write(week_path, "week.html",
+              page_meta(week_path, week_title, week_desc, f"{kit}round.png" if is_latest else None,
+                        search_title=week_search, canonical=home if is_latest else None, crumbs=week_crumbs), **w)
+        if is_latest:
+            write(f"{home}index.html", "week.html",
+                  page_meta(f"{home}index.html", week_title, week_desc, f"{kit}round.png",
+                            search_title=week_search, crumbs=[(name, home)]), **w)
+        for v in w["views"]:
+            call = "draw" if v["call"] == "D" else f"{v['call_team']} win"
+            image = f"{kit}call-{v['slug']}.png" if is_latest and v["featured"] else None
+            write(v["path"], "match.html",
+                  page_meta(v["path"], f"{v['home_team']} v {v['away_team']}: {v['headline']}",
+                            f"{v['home_team']} v {v['away_team']} prediction ({name}), {v['kickoff_long']}. "
+                            f"Our call: {v['call_long'] if v['call'] != 'D' else 'draw'} {v['score_text']} ({v['our_p']}%). "
+                            + (v["front_reasons"][0]["text"] if v["front_reasons"] else ""), image,
+                            search_title=f"{v['home_team']} v {v['away_team']} prediction: {call} {v['score_text']}",
+                            crumbs=week_crumbs + [(f"{v['home_team']} v {v['away_team']}", v["path"])],
+                            ld=[match_event(v, site_url)]), **w, g=v)
+    res = latest["results"]
+    kit_extra = {"record": with_round(latest["record"], res), "miss": round_miss(res)} if res else {}
+    social.build_kit({**latest, **common, **kit_extra, "proof": None}, latest["views"], env,
+                     out / "social" / home.rstrip("/"))
+    add_to_sitemap(out, indexed, site_url, built)
+    log.info("Built %d %s pages for %d matchweeks into %s%s (%s)", len(written), name, len(weeks), out, f"/{home}",
+             "replay" if is_replay else "live")
+    return out
+
+
+def add_to_sitemap(out: Path, pages: list[str], site_url: str, built: datetime) -> None:
+    """Add a section's pages to the main site's sitemap.xml."""
+    path = out / "sitemap.xml"
+    if not path.exists():
+        return
+    lastmod = built.strftime("%Y-%m-%d")
+    urls = "".join(f"<url><loc>{escape(site_url + p)}</loc><lastmod>{lastmod}</lastmod></url>" for p in pages)
+    path.write_text(path.read_text().replace("</urlset>", urls + "</urlset>"))
+
+
 def main(argv=None) -> None:
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
@@ -846,6 +970,10 @@ def main(argv=None) -> None:
     parser.add_argument("--out", type=Path, default=ROOT / "site")
     args = parser.parse_args(argv)
     build(args.data, args.out)
+    # La Liga has its own section, once it has calls (see plpred.leagues).
+    laliga = args.data / leagues.FOLDERS[leagues.LA_LIGA.key]
+    if has_calls(laliga):
+        build(laliga, args.out)
 
 
 if __name__ == "__main__":

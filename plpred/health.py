@@ -19,6 +19,8 @@ from pathlib import Path
 
 import pandas as pd
 
+from plpred import leagues
+
 log = logging.getLogger("plpred.health")
 DATA = Path(__file__).resolve().parent.parent / "data"
 
@@ -27,10 +29,14 @@ DATA = Path(__file__).resolve().parent.parent / "data"
 FPL_LAG = pd.Timedelta(hours=36)
 RESULTS_LAG = pd.Timedelta(days=6)
 CALLS_AHEAD = pd.Timedelta(days=8)
+POSTPONED_AFTER = pd.Timedelta(days=10)
 
 
 def fixture_list(data: Path) -> pd.DataFrame:
+    """The season's fixtures: FPL's for the Premier League, Understat and openfootball's for La Liga."""
     path = data / "upcoming" / "fpl_fixtures.csv"
+    if not path.exists():
+        path = data / "upcoming" / "season_fixtures.csv"
     if not path.exists():
         return pd.DataFrame(columns=["kickoff", "home_team", "away_team", "finished"])
     f = pd.read_csv(path)
@@ -67,22 +73,29 @@ def uncalled(games: pd.DataFrame, data: Path) -> list:
 
 def problems(data: Path, now: pd.Timestamp, calls: bool = False) -> list[str]:
     out = []
+    league = leagues.of(data)
+    name = "" if league.fpl else f"{league.name}: "
+    source = "FPL" if league.fpl else "Understat"
     fixtures = fixture_list(data)
     if fixtures.empty:
-        return ["There is no fixture list (data/upcoming/fpl_fixtures.csv), so the FPL fetch isn't working."]
+        return [f"{name}There is no fixture list, so the {source} fetch isn't working."]
 
     stuck = fixtures[(fixtures.kickoff < now - FPL_LAG) & ~fixtures.finished.astype(bool)]
+    if not league.fpl:
+        # Understat keeps a postponed game at its old kick-off until it is rearranged, so only
+        # the last ten days count.
+        stuck = stuck[stuck.kickoff > now - POSTPONED_AFTER]
     if len(stuck):
-        out.append(f"FPL still hasn't marked {len(stuck)} games as finished, the oldest "
+        out.append(f"{name}{source} still hasn't marked {len(stuck)} games as finished, the oldest "
                    f"{stuck.iloc[0].home_team} v {stuck.iloc[0].away_team} on {stuck.kickoff.min():%d %B}. "
-                   "The FPL fetch may be failing or its format may have changed.")
+                   f"The {source} fetch may be failing or its format may have changed.")
 
     matches = pd.read_csv(data / "matches.csv", parse_dates=["date"])
     have = set(zip(matches.home_team, matches.away_team, matches.date.dt.date))
     due = fixtures[(fixtures.kickoff < now - RESULTS_LAG) & fixtures.finished.astype(bool)]
     missing = [r for r in due.itertuples() if (r.home_team, r.away_team, r.kickoff.date()) not in have]
     if missing:
-        out.append(f"football-data.co.uk is {len(missing)} results behind, the oldest "
+        out.append(f"{name}football-data.co.uk is {len(missing)} results behind, the oldest "
                    f"{missing[0].home_team} v {missing[0].away_team} on {missing[0].kickoff:%d %B}. "
                    "Results, expected goals and our record will be out of date until it catches up.")
 
@@ -98,7 +111,7 @@ def problems(data: Path, now: pd.Timestamp, calls: bool = False) -> list[str]:
         ahead = soon[soon.gameweek == soon.gameweek.min()]
     missing = uncalled(ahead, data) if len(ahead) else []
     if missing:
-        out.append(f"{len(missing)} of the {len(ahead)} games in the next round have no call, starting with "
+        out.append(f"{name}{len(missing)} of the {len(ahead)} games in the next round have no call, starting with "
                    f"{missing[0].home_team} v {missing[0].away_team} on {missing[0].kickoff:%d %B}. "
                    "Run Update data by hand with 'predict' ticked once the cause is fixed.")
     return out

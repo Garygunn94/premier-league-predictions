@@ -42,6 +42,11 @@ jobs:
         env:
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
         run: python -m plpred.update ${{ inputs.steps }}
+      # La Liga (data/laliga/): Understat and openfootball for the fixtures, football-data.co.uk for
+      # results and odds. Its steps never stop the Premier League's; the health check reports them.
+      - name: Fetch La Liga data
+        continue-on-error: true
+        run: python -m plpred.update --league la-liga ${{ inputs.steps }}
       # Calls are published once a week, on Thursday, and then stay as they are. The other
       # daily runs only bring in results, so the record, tables and projections stay current,
       # except that a round starting before the next Thursday (a midweek round) with no calls
@@ -55,8 +60,17 @@ jobs:
       - name: Predict a round starting tomorrow, if it has no calls yet
         if: github.event.schedule != '0 6 * * 4' && !inputs.predict
         run: python -m plpred.predict --if-due
+      # La Liga's model settings come from its own back-test: the first run makes them before any calls.
+      - name: Predict La Liga
+        continue-on-error: true
+        run: |
+          test -f data/laliga/backtest/settings.json || python -m plpred.backtest --data data/laliga
+          python -m plpred.predict --data data/laliga ${{ (github.event.schedule == '0 6 * * 4' || inputs.predict) && ' ' || '--if-due' }}
       - name: Refresh our record
         run: python -m plpred.backtest
+      - name: Refresh our La Liga record
+        continue-on-error: true
+        run: python -m plpred.backtest --data data/laliga
       - name: Commit changes
         if: always()
         run: |
@@ -75,15 +89,20 @@ jobs:
       - name: Save the calls to the Internet Archive
         continue-on-error: true
         run: |
-          calls=$(git diff --name-only ${{ github.sha }} HEAD -- data/predictions)
+          calls=$(git diff --name-only ${{ github.sha }} HEAD -- data/predictions data/laliga/predictions)
           if [ -n "$calls" ]; then python -m plpred.proof archive --calls $calls; else echo "No new calls"; fi
       # A run can succeed and still bring in nothing, when a source stops updating or changes its
       # format. On Thursday this also checks the coming round was called; every day it checks a
       # round starting today or tomorrow was.
       - name: Check the data is healthy
-        run: >-
-          python -m plpred.health --report health.md
-          ${{ (github.event.schedule == '0 6 * * 4' || inputs.predict) && '--calls' || '' }}
+        run: |
+          status=0
+          python -m plpred.health --report health.md $CALLS || status=1
+          python -m plpred.health --data data/laliga --report laliga.md $CALLS || status=1
+          cat laliga.md >> health.md
+          exit $status
+        env:
+          CALLS: ${{ (github.event.schedule == '0 6 * * 4' || inputs.predict) && '--calls' || '' }}
       - name: Raise an issue
         if: failure()
         env:
