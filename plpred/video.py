@@ -257,11 +257,9 @@ STYLES = ("reveal", "upfront")
 
 
 def pick_style(matchweek, index: int) -> str:
-    """Half the round's games keep our call for the end ("reveal"), half give it straight after the
-    opener ("upfront"), alternating from a start that changes every matchweek, so the two can be
-    compared on watch time. Rebuilds keep each game's style."""
-    start = hashlib.sha256(f"{matchweek}/style".encode()).digest()[0]
-    return STYLES[(start + index) % 2]
+    """Every game keeps our call for the end ("reveal"): the wait for it is a reason to watch to the
+    end. "upfront" (the call straight after the opener) stays available to match_scenes."""
+    return "reveal"
 
 
 def match_scenes(v: dict, matchweek=None, index: int = 0, hook=None, style: str | None = None) -> list[dict]:

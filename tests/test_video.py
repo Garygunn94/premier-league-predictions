@@ -180,23 +180,26 @@ def test_instagram_captions_open_on_the_hook_and_ask_a_question(tmp_path):
     assert "👇" in posts[0]["instagram"]
 
 
-def test_half_the_games_keep_the_call_for_the_end(tmp_path):
-    styles = [video.pick_style(9, i) for i in range(6)]
-    assert set(styles) == set(video.STYLES) and all(a != b for a, b in zip(styles, styles[1:]))
-    assert video.pick_style(9, 3) == styles[3]  # rebuilds keep each game's style
+def test_every_game_keeps_the_call_for_the_end(tmp_path):
     kit = site.build(make_data(tmp_path), tmp_path / "site") / "social"
     games = [v for v in json.loads((kit / "videos.json").read_text()) if v.get("style")]
-    assert {v["style"] for v in games} == set(video.STYLES)
+    assert games and {v["style"] for v in games} == {"reveal"}
     for v in games:
-        kinds = [s["kind"] for s in v["scenes"]]
-        opener = v["scenes"][0]["lines"]
-        if v["style"] == "reveal":
-            assert kinds == ["hook", "reasons", "call", "outro"] and "at the end" in opener[1]
-            # The reasons chart stops short of our call: that's what the last scene gives away.
-            page = (kit / "videos" / f"{v['name']}.html").read_text()
-            assert "Our call:" not in page and "evidence" in page
-        else:
-            assert kinds == ["hook", "call", "reasons", "outro"] and len(opener) == 1
+        assert [s["kind"] for s in v["scenes"]] == ["hook", "reasons", "call", "outro"]
+        assert "at the end" in v["scenes"][0]["lines"][1]
+        # The reasons chart stops short of our call: that's what the last scene gives away.
+        page = (kit / "videos" / f"{v['name']}.html").read_text()
+        assert "Our call:" not in page and "evidence" in page
+
+
+def test_upfront_gives_the_call_straight_after_the_opener(tmp_path):
+    kit = site.build(make_data(tmp_path), tmp_path / "site") / "social"
+    game = next(v for v in json.loads((kit / "videos.json").read_text()) if v.get("style"))
+    v = {"home_team": "Leeds", "away_team": "Sunderland", "call": "H", "confidence": "solid", "our_p": 50,
+         "score_text": "2–1", "headline": "Nothing to split them", "waterfall_rows": {"rows": []}}
+    scenes = video.match_scenes(v, 9, 0, style="upfront")
+    assert [s["kind"] for s in scenes] == ["hook", "call", "outro"] and len(scenes[0]["lines"]) == 1
+    assert game["style"] == "reveal"
 
 
 def test_reveal_captions_dont_give_the_call_away(tmp_path):

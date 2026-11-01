@@ -562,8 +562,7 @@ def ready_to_post(kit: Path) -> list[Path]:
                         + ("It's a REVEAL video: our call comes at the end, so its caption doesn't give the call away. "
                            if post["style"] == "reveal" else
                            "It's an UPFRONT video: our call comes straight after the opener. ")
-                        + "Half the round's videos are each kind, so we can see which people watch for longer. "
-                          "Note the voice and the kind.\n")
+                        + "Note the voice.\n")
             else:
                 how += (f"\nThere's also a narrated video, read by {voice}. Post it as a Reel and on X "
                         f"(same captions), as well as the images. Note the voice, to see which one people prefer.\n")
