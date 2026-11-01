@@ -19,7 +19,7 @@ def test_kit_has_a_video_script_for_the_round_and_each_game(tmp_path):
         assert v["scenes"][-1]["kind"] == "outro"
     game = next(v for v in videos if v["name"] == "video-strong-v-weak")
     kinds = [s["kind"] for s in game["scenes"]]
-    assert kinds.index("call") < kinds.index("why") and kinds[0] in ("hook", "call")
+    assert kinds == ["hook", "why", "call", "outro"]  # every game's call is revealed at the end
     named = " ".join(s["lines"][0] for s in game["scenes"][:2])
     assert "Strong" in named and "Weak" in named
     posts = json.loads((kit / "posts.json").read_text())["posts"]
@@ -227,3 +227,36 @@ def test_a_reason_never_points_the_wrong_way():
     assert video.reason_text(v) == "Our model rates Newcastle first and Everton third: almost level."
     v["ranks"]["overall"] = order("Newcastle", *teams[:8], "Everton")
     assert video.reason_text(v) == "Our model rates Newcastle first and Everton tenth overall."
+
+
+def test_every_game_keeps_the_call_for_the_end(tmp_path):
+    kit = site.build(make_data(tmp_path), tmp_path / "site") / "social"
+    games = [v for v in json.loads((kit / "videos.json").read_text()) if v.get("style")]
+    assert games and {v["style"] for v in games} == {"reveal"}
+    for v in games:
+        assert v["scenes"][0]["kind"] == "hook" and "at the end" in v["scenes"][0]["lines"][1]
+        assert [s["kind"] for s in v["scenes"]][-2:] == ["call", "outro"]
+        assert not any(l.startswith(("The reason", "Why?")) for s in v["scenes"] for l in s["lines"])
+
+
+def test_upfront_gives_the_call_straight_after_the_opener():
+    v = {"home_team": "Leeds", "away_team": "Sunderland", "call": "H", "confidence": "solid", "our_p": 50,
+         "score_text": "2–1", "headline": "Nothing to split them", "kickoff_long": "Saturday 15:00"}
+    scenes = video.match_scenes(v, 9, 0, style="upfront")
+    assert [s["kind"] for s in scenes] == ["hook", "call", "outro"] and len(scenes[0]["lines"]) == 1
+
+
+def test_reveal_captions_dont_give_the_call_away(tmp_path):
+    kit = site.build(make_data(tmp_path), tmp_path / "site") / "social"
+    posts = [p for p in json.loads((kit / "posts.json").read_text())["posts"] if p.get("style")]
+    assert posts and all(p["reel"] and "Our call:" not in p["reel"] and p["reel"].count("#") <= 5 for p in posts)
+    fake_render(kit)
+    (kit / "video").mkdir()
+    for v in json.loads((kit / "videos.json").read_text()):
+        (kit / "video" / f"{v['name']}.mp4").write_bytes(b"fake mp4")
+    folders = social.ready_to_post(kit)
+    game = next(f for f in folders if list(f.glob("strong-v-weak-*.mp4")))
+    [clip] = game.glob("*.mp4")
+    assert clip.stem.endswith("-reveal") and (game / "reel.txt").exists()
+    msgs = social.kit_emails(kit, "me@example.com", "me@example.com")
+    assert any("---- REEL AND TIKTOK ----" in m.get_body().get_content() for m in msgs)

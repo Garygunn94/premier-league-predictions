@@ -59,7 +59,7 @@ def test_promoted_clubs_get_this_season_alone():
     p = dna.profile(league(), "Newco")
     assert [s["season"] for s in p["seasons"]] == [2026] and p["now"] is None
     assert not any(t["kind"] == "change" for t in p["traits"])
-    sc = dna.scenes(p)
+    sc = dna.scenes(p, full=True)
     assert sc[0]["lines"][0].startswith("Newco. Promoted last summer, and ")
     assert "so far this season" in sc[1]["lines"][1]
 
@@ -71,12 +71,21 @@ def test_scripts_read_like_speech():
     t = {"key": "hold", "unit": "percent of half-time leads won", "values": [60.0, 94.4]}
     assert dna.read_out(t, 1, unit=False) == "94 percent"
     p = dna.profile(league(), "Wall")
-    lines = [line for s in dna.scenes(p) for line in s["lines"]]
+    lines = [line for s in dna.scenes(p, full=True) for line in s["lines"]]
     assert lines[0].startswith("Wall. ") and "two seasons ago" in lines[0] and "last season" in lines[0]
     assert lines[2] == "One: they give away almost nothing."
     assert lines[3] == "The best in the league, two seasons running."
     assert lines[-1].startswith("Follow for your club next")
     assert not any("-0" in line for line in lines)
+
+
+def test_the_short_cut_opens_on_the_story_and_keeps_two_traits():
+    for team in ("Wall", "Hacker", "Newco"):
+        p = dna.profile(league(), team)
+        short, full = dna.scenes(p), dna.scenes(p, full=True)
+        assert short[0]["lines"][0] == dna.hook_line(p) and short[-1] == full[-1]
+        assert [s["kind"] for s in short[1:-1]] in (["change", "trait"], ["trait", "trait"], ["trait"])
+        assert sum(len(s["lines"]) for s in short) < sum(len(s["lines"]) for s in full)
 
 
 def test_build_writes_a_page_script_and_captions_per_club(tmp_path):

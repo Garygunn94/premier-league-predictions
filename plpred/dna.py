@@ -308,17 +308,38 @@ def ladder(t: dict, team: str) -> list[dict]:
             for name, v in t["ladder"]]
 
 
-def scenes(p: dict) -> list[dict]:
+def hook_line(p: dict) -> str:
+    """The claim on the first frame: the club's story in one line, before anything else."""
+    name, s = video.spoken(p["team"]), p["seasons"]
+    if len(s) == 1:
+        return intro_line(p)
+    fin = [("champions" if x["position"] == 1 and not x["now"] else ORD_WORDS[x["position"]])
+           + (" this season" if x["now"] else "") for x in s]
+    if abs(s[0]["position"] - s[1]["position"]) >= 4:
+        return f"{name} went from {fin[0]} to {fin[1]}."
+    return f"{fin[0].capitalize()}, then {fin[1]}. What makes {name} tick?"
+
+
+def scenes(p: dict, full: bool = False) -> list[dict]:
+    """The script. The short cut (about 25 seconds, the default) opens on the club's story, then
+    gives the biggest change and one strength. The full one has every trait, the flaw and how this
+    season is going."""
     team, w = p["team"], when(p)
-    out = [{"kind": "intro", "lines": [intro_line(p), "Here's what makes them different."]}]
+    out = [{"kind": "intro", "lines": [intro_line(p) if full else hook_line(p), "Here's what makes them different."]}]
+    traits = p["traits"]
+    if not full:
+        change = [t for t in traits if t["kind"] == "change"][:1]
+        traits = change + [t for t in traits if t["kind"] == "strength"][:2 - len(change)]
     n = 0
     # One idea a scene and a place in the league rather than a stat: the values stay on screen and in
     # the caption for anyone who wants them.
-    for t in p["traits"]:
+    for t in traits:
         if t["kind"] == "strength":
+            first = (f"What hasn't changed: they {t['words']}." if not full and traits[0]["kind"] == "change"
+                     else f"{COUNT[n]}: they {t['words']}.")
             out.append({"kind": "trait", "t": t, "label": f"Trait {COUNT[n].lower()} · {t['family']}",
                         "rows": top_rows(ladder(t, team), True), "lines": [
-                            f"{COUNT[n]}: they {t['words']}.",
+                            first,
                             sentence(rank_phrase(p, t["ranks"]))
                             + (f" {w[-1]}." if len(t["ranks"]) == 1 else ".")]})
             n += 1
@@ -332,7 +353,7 @@ def scenes(p: dict) -> list[dict]:
             out.append({"kind": "change", "t": t, "up": up, "vals": [fmt(t["key"], v) for v in t["values"]], "lines": [
                 f"{'The big change' if up else 'The big worry'}: they now {t['words']}.",
                 f"{sentence(ORD_WORDS[t['ranks'][0]])} for it {w[0]}. {sentence(ORD_WORDS[t['ranks'][-1]])} {w[-1]}."]})
-    if p["now"]:
+    if p["now"] and full:
         now = p["now"]
         rows = [{"label": FAMILY_NAME.get(t["family"], t["family"]).capitalize(), "then": t["ranks"][-1],
                  "rank": now["ranks"][t["key"]]} for t in p["traits"] if t["kind"] == "strength"]
@@ -344,7 +365,7 @@ def scenes(p: dict) -> list[dict]:
         out.append({"kind": "now", "rows": rows, "now": now, "lines": [
             f"{sentence(video.COUNTS[now['games']] if now['games'] < len(video.COUNTS) else str(now['games']))} games in, they're {ORD_WORDS[now['position']]}.",
             verdict.strip() or "The same traits are holding up."]})
-    out.append({"kind": "outro", "lines": ["Follow for your club next. More at Inkwell and Algorithm dot com."]})
+    out.append({"kind": "outro", "lines": ["Follow for your club next."]})  # the address is on screen
     return out
 
 
@@ -389,7 +410,7 @@ def clubs_now(matches: pd.DataFrame) -> list[str]:
     return sorted(set(cur.home_team) | set(cur.away_team))
 
 
-def build(data: Path, out: Path, teams: list[str] | None = None) -> list[dict]:
+def build(data: Path, out: Path, teams: list[str] | None = None, full: bool = False) -> list[dict]:
     """Write each club's script, captions and animated page into out/, listed in out/videos.json."""
     matches = pd.read_csv(data / "matches.csv")
     (out / "videos").mkdir(parents=True, exist_ok=True)
@@ -409,7 +430,7 @@ def build(data: Path, out: Path, teams: list[str] | None = None) -> list[dict]:
             log.warning("No data for %s, so no video", team)
             continue
         name = f"dna-{slug(team)}"
-        sc = scenes(p)
+        sc = scenes(p, full)
         voice = video.pick_voice(f"dna-{p['current']}", name)
         (out / "videos" / f"{name}.html").write_text(page.render(
             p=p, video={"title": f"{team}: club DNA", "scenes": sc}, badges=badges, clubs={},
@@ -475,6 +496,7 @@ def main(argv=None) -> None:
     parser.add_argument("--data", type=Path, default=Path("data"))
     parser.add_argument("--only", nargs="*", metavar="CLUB", help="just these clubs, e.g. Arsenal \"Man United\"")
     parser.add_argument("--shard", metavar="I/N", help="every Nth club starting with the Ith, e.g. 1/4")
+    parser.add_argument("--full", action="store_true", help="the full ~70-second cut instead of the short one")
     parser.add_argument("--scripts", action="store_true", help="write the scripts and pages only, don't render")
     parser.add_argument("--email", action="store_true", help="email each club's video and captions to KIT_EMAIL")
     args = parser.parse_args(argv)
@@ -485,7 +507,7 @@ def main(argv=None) -> None:
     if not teams:
         log.info("No clubs for this shard")
         return
-    videos = build(args.data, args.out, teams)
+    videos = build(args.data, args.out, teams, args.full)
     for v in videos:
         print(f"\n{v['title']} ({v['voice_name']})")
         for s in v["scenes"]:

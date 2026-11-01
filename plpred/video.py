@@ -41,8 +41,10 @@ VOICES = {"charon": {"name": "Charon", "google": "en-GB-Chirp3-HD-Charon", "koko
           "kore": {"name": "Kore", "google": "en-GB-Chirp3-HD-Kore", "kokoro": "bf_emma"}}
 KOKORO_NAMES = {"bm_george": "George", "bf_emma": "Emma"}
 WIDTH, HEIGHT, FPS = 1080, 1920, 30
-SPEED = 1.08
-LEAD, GAP, SCENE_GAP, TAIL = 0.4, 0.25, 0.45, 1.2  # seconds of silence around the lines
+# A brisk read, for Kokoro and Google: short-video viewers swipe away from a slow one.
+SPEED, GOOGLE_RATE = 1.15, 1.1
+# Seconds of silence around the lines. The voice starts almost at once: most viewers decide in the first second.
+LEAD, GAP, SCENE_GAP, TAIL = 0.1, 0.15, 0.3, 0.9
 MODEL_URL = "https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/"
 MODEL_FILES = ("kokoro-v1.0.onnx", "voices-v1.0.bin")
 SPOKEN = {"Nott'm Forest": "Forest", "Atletico Madrid": "Atlético Madrid", "Real Betis": "Betis",
@@ -311,8 +313,9 @@ def reason_text(v: dict) -> str | None:
     return r["text"] if r else None
 
 
-def why_scene(v: dict, say: Phrasing) -> dict | None:
-    """The one reason a viewer can repeat, from main_reason, with its place in the league on screen."""
+def why_scene(v: dict, say: Phrasing, reveal: bool = False) -> dict | None:
+    """The one reason a viewer can repeat, from main_reason, with its place in the league on screen.
+    Before a reveal it's a clue, not yet 'the reason' for a call we haven't made."""
     r = main_reason(v)
     if not r:
         return None
@@ -324,60 +327,83 @@ def why_scene(v: dict, say: Phrasing) -> dict | None:
                        h=home, a=away, ph=r["h"], pa=r["a"])
             head = "Almost level."
         else:
-            line = say("overall", ["Simple: our model rates {h} {ph} and {a} {pa}.",
-                                   "The reason: {h} are {ph} in our ratings, {a} {pa}."],
+            line = say("overall", ["Our model rates {h} {ph} and {a} {pa}.", "{h} are {ph} in our ratings, {a} {pa}."]
+                       if reveal else ["Simple: our model rates {h} {ph} and {a} {pa}.",
+                                       "The reason: {h} are {ph} in our ratings, {a} {pa}."],
                        h=home, a=away, ph=r["h"], pa=r["a"])
             head = "The better side."
         return {"kind": "why", "lines": [line], "head": head, "sub": "Our overall ratings",
                 "ladder": ladder(r["order"], [v["home_team"], v["away_team"]], None)}
     if r["kind"] == "news":
-        return {"kind": "why", "lines": [say("why.news", ["The reason: {l}", "It's about who's missing. {l}"],
+        return {"kind": "why", "lines": [say("why.news", ["Here's the clue: {l}", "Look at who's missing. {l}"] if reveal
+                                             else ["The reason: {l}", "It's about who's missing. {l}"],
                                              l=r["text"])], "head": r["text"]}
     if r["kind"] == "old":
-        return {"kind": "why", "lines": [say("why.old", ["The reason: {d}", "The big one: {d}"], d=r["text"])],
+        return {"kind": "why", "lines": [say("why.old", ["Here's the clue: {d}", "One thing to know: {d}"] if reveal
+                                             else ["The reason: {d}", "The big one: {d}"], d=r["text"])],
                 "head": r["text"]}
     words = r["words"]
-    line = say("why", ["The reason: {t} have {w} in the league.", "It comes down to this: {t} have {w} in the league.",
-                       "Why? {t} have {w} in the league."], t=spoken(r["team"]), w=words)
+    line = say("why", ["Here's the clue: {t} have {w} in the league.", "One thing to know: {t} have {w} in the league."]
+               if reveal else ["The reason: {t} have {w} in the league.",
+                               "It comes down to this: {t} have {w} in the league.", "Why? {t} have {w} in the league."],
+               t=spoken(r["team"]), w=words)
     return {"kind": "why", "lines": [line], "head": f"{words[0].upper()}{words[1:]}.",
             "sub": f"{'Attack' if r['kind'] == 'attack' else 'Defence'}: the model's ratings now",
             "ladder": ladder(r["order"], [r["team"]], "top" if words.split()[1].endswith("best") else "bottom")}
 
 
-def match_scenes(v: dict, matchweek=None, index: int = 0, hook=None) -> list[dict]:
-    """The script for one game, one idea a scene: an opener, the call, the one reason, the sign-off.
-    The numbers behind it (percentages, expected goals, the bookies) stay in the caption and on the site."""
+STYLES = ("reveal", "upfront")
+
+
+def pick_style(matchweek, index: int) -> str:
+    """Every game keeps our call for the end ("reveal"): the wait for it is a reason to watch to the
+    end. "upfront" (the call straight after the opener) stays available to match_scenes."""
+    return "reveal"
+
+
+def match_scenes(v: dict, matchweek=None, index: int = 0, hook=None, style: str | None = None) -> list[dict]:
+    """The script for one game, one idea a scene. Most viewers decide in the first second, so it always
+    opens on its hook, on screen from frame one. A "reveal" then teases the call, gives the one reason
+    as a clue and makes the call last; "upfront" makes the call straight after the hook. The numbers
+    behind it (percentages, expected goals, the bookies) stay in the caption and on the site."""
     say = Phrasing(matchweek, index)
+    style = style or pick_style(matchweek, index)
+    reveal = style == "reveal"
     home, away = spoken(v["home_team"]), spoken(v["away_team"])
     day = (v.get("kickoff_long") or "").split(" ")[0]
     hook = hook or hooks(v)[0]
-    scenes = []
-    if hook[0] != "fixture":
-        scenes.append({"kind": "hook", "story": hook[0], "lines": [hook[2]]})
+    if reveal and hook[0] == "headline":  # the headline gives our call away
+        hook = next(h for h in hooks(v) if h[0] != "headline")
+    if hook[0] == "fixture":
+        hook = (hook[0], hook[1], say("match", ["{h} against {a}, {d}.", "{h} host {a} on {d}.", "{a} go to {h} on {d}.",
+                                                "{d}: {h} versus {a}."] if day else ["{h} against {a}."],
+                                      h=home, a=away, d=day))
+    opener = [hook[2]]
+    if reveal:
+        opener.append(say("tease", ["Who do we back? Our call's at the end.", "Guess first. Our call comes at the end.",
+                                    "Make your pick. Ours is at the end."]))
+    scenes = [{"kind": "hook", "story": hook[0], "lines": opener}]
 
-    match = say("match", ["{h} against {a}, {d}.", "{h} host {a} on {d}.", "{a} go to {h} on {d}.",
-                          "{d}: {h} versus {a}."] if day else ["{h} against {a}."], h=home, a=away, d=day)
     if v["call"] == "D":
-        call = say("draw", ["Our call: a draw, {s}.", "We think they share it, {s}."], s=say_score(v))
+        call = say("draw", ["So, our call: a draw, {s}.", "Our call? A draw, {s}."] if reveal else
+                   ["Our call: a draw, {s}.", "We think they share it, {s}."], s=say_score(v))
     else:
-        call = say("call", ["Our call: {c}, {s}.", "We're going with {t}, {s}.", "We have it {s} to {t}."],
+        call = say("call", ["So, our call: {c}, {s}.", "Our call? {t}, {s}.", "The verdict: {c}, {s}."] if reveal else
+                   ["Our call: {c}, {s}.", "We're going with {t}, {s}.", "We have it {s} to {t}."],
                    c=call_words(v), t=name_of(v, v["call"]), s=say_score(v))
     # A hook about draws, or about the bookies, is answered by the call itself.
     if hook[0] == "history" and "draws" in hook[2] and v["call"] != "D":
-        call = "This time, we lean " + name_of(v, v["call"]) + f", {say_score(v)}."
+        call = ("So this time, we lean " if reveal else "This time, we lean ") + name_of(v, v["call"]) + f", {say_score(v)}."
     conf = {"strong": ["A strong call.", "One of our strongest this week.", "We're confident on this one."],
             "too close to call": ["But only just.", "It's close, though.", "It could go any way."]}.get(
         v["confidence"], ["Favourites, not certainties.", "A solid call.", "Clear, but not certain."])
-    named = hook[0] != "fixture" and home in hook[2] and away in hook[2]
-    lines = ([] if named else [match]) + \
-        [call, say("conf." + v["confidence"], conf)]
-    scenes.append({"kind": "call", "lines": lines, "call_line": len(lines) - 2})
-
-    why = why_scene(v, say)
-    if why:
-        scenes.append(why)
-    scenes.append(outro(say, ["Agree? Tell us your score.", "Think we've got it wrong? Tell us below.",
-                              "What's your score? Comments are open."]))
+    call_scene = {"kind": "call", "lines": [call, say("conf." + v["confidence"], conf)], "call_line": 0}
+    why = why_scene(v, say, reveal)
+    scenes += [s for s in ([why, call_scene] if reveal else [call_scene, why]) if s]
+    asks = (["Did you guess right? Tell us below.", "Same pick as you? Tell us below."] if reveal else
+            ["Agree? Tell us your score.", "Think we've got it wrong? Tell us below.",
+             "What's your score? Comments are open."])
+    scenes.append(outro(say, asks))
     return scenes
 
 
@@ -470,8 +496,12 @@ def build_videos(ctx: dict, views: list[dict], env: Environment, out: Path) -> l
     # In La Liga only the featured games get a Reel (see plpred.leagues.featured).
     games = [v for v in views if videoable(v) and v.get("featured", True)]
     videos += [{"name": f"video-{v['slug']}", "slug": v["slug"], "title": f"{v['home_team']} v {v['away_team']}",
-                "g": v, "scenes": match_scenes(v, ctx["matchweek"], i, hook)}
+                "g": v, "style": pick_style(ctx["matchweek"], i),
+                "scenes": match_scenes(v, ctx["matchweek"], i, hook, pick_style(ctx["matchweek"], i))}
                for i, (v, hook) in enumerate(zip(games, pick_hooks(games)))]
+    for vid in videos:
+        if vid.get("style"):
+            vid["hook"] = vid["scenes"][0]["lines"][0]
     res = ctx.get("results")
     if res and res["complete"] and any(not r["g"].get("after_kickoff") for r in res["rows"]):
         videos.append({"name": "video-results", "slug": "results", "edition": "results",
@@ -486,7 +516,7 @@ def build_videos(ctx: dict, views: list[dict], env: Environment, out: Path) -> l
             root="/".join([".."] * (2 + (ctx.get("league") or {}).get("prefix", "").count("/")))))
     (out / "videos.json").write_text(json.dumps([
         {"name": v["name"], "title": v["title"], "edition": v.get("edition", "predictions"),
-         "voice": v["voice"], "voice_name": VOICES[v["voice"]]["name"],
+         "voice": v["voice"], "voice_name": VOICES[v["voice"]]["name"], "style": v.get("style"),
          "scenes": [{"kind": s["kind"], "lines": s["lines"]} for s in v["scenes"]]} for v in videos], indent=1))
     log.info("Wrote %d video scripts into %s", len(videos), folder)
     return videos
@@ -520,9 +550,12 @@ class Google:
         import requests
         import soundfile as sf
 
-        res = requests.post(self.URL, headers={"X-Goog-Api-Key": self.key}, timeout=60, json={
-            "input": {"text": line}, "voice": {"languageCode": "en-GB", "name": voice},
-            "audioConfig": {"audioEncoding": "LINEAR16", "sampleRateHertz": 24000}})
+        body = {"input": {"text": line}, "voice": {"languageCode": "en-GB", "name": voice},
+                "audioConfig": {"audioEncoding": "LINEAR16", "sampleRateHertz": 24000, "speakingRate": GOOGLE_RATE}}
+        res = requests.post(self.URL, headers={"X-Goog-Api-Key": self.key}, timeout=60, json=body)
+        if res.status_code == 400 and "peaking" in res.text:  # should a voice refuse a rate, read at its own
+            del body["audioConfig"]["speakingRate"]
+            res = requests.post(self.URL, headers={"X-Goog-Api-Key": self.key}, timeout=60, json=body)
         if not res.ok:  # Google's message says what is wrong (API not enabled, key restricted, ...)
             raise RuntimeError(f"HTTP {res.status_code}: {res.text[:300]}")
         audio, sr = sf.read(io.BytesIO(base64.b64decode(res.json()["audioContent"])), dtype="float32")

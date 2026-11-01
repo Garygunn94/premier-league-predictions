@@ -13,6 +13,10 @@ on:
         description: "Only these clubs, comma-separated (e.g. Arsenal, Man United). Empty for all."
         type: string
         default: ""
+      full_length:
+        description: "The full ~70-second cut (every trait, the flaw, this season) instead of the ~25-second one"
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -48,11 +52,12 @@ jobs:
           KIT_EMAIL_PASSWORD: ${{ secrets.KIT_EMAIL_PASSWORD }}
           KIT_EMAIL_TO: ${{ vars.KIT_EMAIL_TO }}
           CLUBS: ${{ inputs.clubs }}
+          FULL: ${{ inputs.full_length && '--full' || '' }}
         run: |
           if [ -n "$CLUBS" ]; then
             IFS=',' read -ra picked <<< "$CLUBS"
             only=(); for c in "${picked[@]}"; do c="$(echo "$c" | sed 's/^ *//; s/ *$//')"; [ -n "$c" ] && only+=("$c"); done
-            python -m plpred.dna out/club-dna --shard ${{ matrix.shard }}/4 --email --only "${only[@]}"
+            python -m plpred.dna out/club-dna --shard ${{ matrix.shard }}/4 --email $FULL --only "${only[@]}"
           else
-            python -m plpred.dna out/club-dna --shard ${{ matrix.shard }}/4 --email
+            python -m plpred.dna out/club-dna --shard ${{ matrix.shard }}/4 --email $FULL
           fi

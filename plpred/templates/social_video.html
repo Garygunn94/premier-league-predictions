@@ -50,10 +50,13 @@ html,body{margin:0;width:{{ width }}px;height:{{ height }}px;overflow:hidden;bac
 .list .c{font-size:30px;font-weight:700;white-space:nowrap}
 .outro{text-align:center;align-items:center}
 .hook .badges{display:flex;gap:28px;align-items:center;margin-bottom:56px}
-.hook .badges img{width:150px;height:150px}
-.hook .badges .mono{font-size:64px;height:150px;min-width:180px;border-width:3px}
+.hook .badges img{width:130px;height:130px}
+.hook .badges .mono{font-size:56px;height:130px;min-width:160px;border-width:3px}
 .hook .badges .vs{font-size:48px;font-weight:800;font-style:italic}
-.hook .head{font-size:96px}
+.hook .head{line-height:1;margin:0 0 30px}
+.hook [data-pop]{transform-origin:left center}
+.hook .rule{height:10px;background:var(--accent);width:0}
+.hook .tease{font-size:60px;font-weight:800;font-style:italic;line-height:1.1;margin-top:44px;color:var(--accent)}
 .flip .head{font-size:88px}
 .flip .r{grid-template-columns:1fr;gap:14px;padding:30px 0}
 .flip .r .l{font-size:40px}
@@ -92,9 +95,13 @@ html,body{margin:0;width:{{ width }}px;height:{{ height }}px;overflow:hidden;bac
 {% elif s.kind == "hook" %}
 <div class="kicker lab accent" data-in="0:0">{{ g.home_team }} v {{ g.away_team }} · {{ g.kickoff_text }}</div>
 <div class="badges" data-in="0:0">{{ badge(g.home_team, root) }}<span class="vs disp muted">v</span>{{ badge(g.away_team, root) }}</div>
-<h1 class="head disp" data-in="0:0">{{ s.lines[0] }}</h1>
+{#- The first frame, and the cover: the claim fills the screen and is already moving at 0s. -#}
+{% set n = s.lines[0]|length %}
+<div data-pop><h1 class="head disp" style="font-size:{{ 128 if n <= 40 else 112 if n <= 60 else 96 if n <= 85 else 84 }}px">{{ s.lines[0] }}</h1></div>
+<div class="rule" data-bar="0:0" data-w="100"></div>
+{% if s.lines|length > 1 %}<div class="tease disp" data-in="1:0">{{ s.lines[1] }}</div>{% endif %}
 {% elif s.kind == "why" %}
-<div class="kicker lab accent" data-in="0:0">{{ g.home_team }} v {{ g.away_team }} · the reason</div>
+<div class="kicker lab accent" data-in="0:0">{{ g.home_team }} v {{ g.away_team }} · {{ 'the clue' if video.style == 'reveal' else 'the reason' }}</div>
 <h1 class="head disp" data-in="0:0">{{ s.head }}</h1>
 {% if s.ladder %}
 <div class="sub lab muted" data-in="0:0.3">{{ s.sub }}</div>
@@ -150,6 +157,8 @@ window.render = function (t) {
       const p = ease((t - at(n.dataset.in)) / 0.45);
       n.style.opacity = p; n.style.transform = `translateY(${(1 - p) * 30}px)`;
     });
+    // The opener lands with a punch: a little larger at 0s, settling over half a second.
+    el.querySelectorAll('[data-pop]').forEach(n => { n.style.transform = `scale(${1.06 - 0.06 * ease(t / 0.5)})`; });
     el.querySelectorAll('[data-bar]').forEach(n => { n.style.width = ease((t - at(n.dataset.bar)) / 0.9) * n.dataset.w + '%'; });
     el.querySelectorAll('[data-count]').forEach(n => {
       const p = ease((t - at(n.dataset.count)) / 0.9);

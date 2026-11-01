@@ -161,6 +161,18 @@ def carousel_caption(v: dict, hook: str | None = None) -> str:
             f"{v.get('league_tag', X_TAG)} {club_tag(v['home_team'])} {club_tag(v['away_team'])} #FootballAnalytics #xG")
 
 
+def reel_caption(v: dict, hook: str, style: str) -> str:
+    """The caption for one game's narrated video. A "reveal" video keeps our call for its last seconds,
+    so its caption mustn't give it away: it asks for a guess instead."""
+    tags = f"{v.get('league_tag', X_TAG)} {club_tag(v['home_team'])} {club_tag(v['away_team'])} #FootballAnalytics #xG"
+    if style == "reveal":
+        return (f"{hook}\n\n{v['home_team']} v {v['away_team']}, {v['kickoff_long']}. Our call is at the end of the "
+                f"video. Guess first: put your score in the comments before you watch it 👇\n\n{FOLLOW}\n\n{tags}")
+    close = ", too close to call" if v["confidence"] == "too close to call" else f", {v['confidence']}"
+    return (f"{hook}\n\nOur call: {call_phrase(v).removeprefix('a ')} ({v['our_p']}%{close}).\n"
+            f"Why: {reason(v)}\n\n{ask(v['home_team'] + v['away_team'])}\n\n{FOLLOW}\n\n{tags}")
+
+
 def captions(ctx: dict, views: list[dict]) -> dict:
     mw, lead, upset, rec = ctx["matchweek"], ctx["lead"], ctx["features"]["upset"], ctx["record"]
     lg = league_of(ctx)
@@ -483,6 +495,9 @@ def build_kit(ctx: dict, views: list[dict], env: Environment, out: Path) -> Path
         vid = videos.get(d.get("slug"))
         if vid:
             d["video"], d["voice"] = vid["name"], video.VOICES[vid["voice"]]["name"]
+            if vid.get("style"):
+                d["style"] = vid["style"]
+                d["reel"] = reel_caption(vid["g"], vid["hook"], vid["style"])
     editions = {"predictions": {"matchweek": ctx["matchweek"], "date": str(eve.date())}}
     if res:
         editions["results"] = {"matchweek": res["matchweek"], "date": res["post_date"]}
@@ -490,7 +505,8 @@ def build_kit(ctx: dict, views: list[dict], env: Environment, out: Path) -> Path
                                                 "main": lg["main"], "editions": editions, "posts": [
         {"day": d["day"], "when": d["when"], "how": d["how"], "x": d["x"], "instagram": d["instagram"],
          "edition": d.get("edition", "predictions"), "images": [c["name"] for c in d["cards"]],
-         "video": d.get("video"), "voice": d.get("voice")} for d in days]}))
+         "video": d.get("video"), "voice": d.get("voice"), "style": d.get("style"), "reel": d.get("reel")}
+        for d in days]}))
     letter = ""
     if lg["fpl"]:  # Superbru and the newsletter are the Premier League's
         (out / "superbru.txt").write_text(superbru(ctx, views))
@@ -570,9 +586,19 @@ def ready_to_post(kit: Path) -> list[Path]:
                 what = f"matchweek-{data['editions']['results']['matchweek']}-results"
             if not data.get("main", True) and what.startswith("matchweek-"):
                 what = f"{slugify(data['league'])}-{what}"  # e.g. la-liga-matchweek-12-round
-            shutil.copy(clip, folder / f"{what}-{voice.lower()}.mp4")
-            how += (f"\nThere's also a narrated video, read by {voice}. Post it as a Reel and on X "
-                    f"(same captions), as well as the images. Note the voice, to see which one people prefer.\n")
+            style = f"-{post['style']}" if post.get("style") else ""
+            shutil.copy(clip, folder / f"{what}-{voice.lower()}{style}.mp4")
+            if post.get("reel"):
+                (folder / "reel.txt").write_text(post["reel"] + "\n")
+                how += (f"\nThere's also a narrated video, read by {voice}. Post it as a Reel and on TikTok with the "
+                        "REEL caption below, and on X with the X caption. "
+                        + ("It's a REVEAL video: our call comes at the end, so its caption doesn't give the call away. "
+                           if post["style"] == "reveal" else
+                           "It's an UPFRONT video: our call comes straight after the opener. ")
+                        + "Note the voice.\n")
+            else:
+                how += (f"\nThere's also a narrated video, read by {voice}. Post it as a Reel and on X "
+                        f"(same captions), as well as the images. Note the voice, to see which one people prefer.\n")
         (folder / "how.txt").write_text(how)
         folders.append(folder)
     log.info("Laid out %d posts in %s", len(folders), ready)
@@ -613,8 +639,10 @@ def post_email(post: dict, folder: Path, subject: str, sender: str, to: str) -> 
     msg = EmailMessage()
     msg["Subject"] = f"{subject} · {post['day']}"
     msg["From"], msg["To"] = sender, to
+    reel = folder / "reel.txt"
     msg.set_content(f"{how}\n\n"
-                    f"---- INSTAGRAM ----\n\n{(folder / 'instagram.txt').read_text().strip()}\n\n"
+                    + (f"---- REEL AND TIKTOK ----\n\n{reel.read_text().strip()}\n\n" if reel.exists() else "")
+                    + f"---- INSTAGRAM ----\n\n{(folder / 'instagram.txt').read_text().strip()}\n\n"
                     f"---- X ----\n\n{(folder / 'x.txt').read_text().strip()}\n")
     for img in sorted(folder.glob("*.png")):
         msg.add_attachment(img.read_bytes(), maintype="image", subtype="png", filename=img.name)
