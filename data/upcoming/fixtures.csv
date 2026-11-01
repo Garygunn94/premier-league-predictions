@@ -1,11 +1,11 @@
 fixture_id,kickoff,round,status,venue,home_team,away_team,home_goals,away_goals,home_logo,away_logo
-84,2026-10-31 12:30:00+00:00,Regular Season - 9,NS,,Chelsea,Man United,,,https://resources.premierleague.com/premierleague/badges/100/t8.png,https://resources.premierleague.com/premierleague/badges/100/t1.png
-82,2026-10-31 15:00:00+00:00,Regular Season - 9,NS,,Bournemouth,Leeds,,,https://resources.premierleague.com/premierleague/badges/100/t91.png,https://resources.premierleague.com/premierleague/badges/100/t2.png
-83,2026-10-31 15:00:00+00:00,Regular Season - 9,NS,,Brentford,Nott'm Forest,,,https://resources.premierleague.com/premierleague/badges/100/t94.png,https://resources.premierleague.com/premierleague/badges/100/t17.png
-85,2026-10-31 15:00:00+00:00,Regular Season - 9,NS,,Coventry,Sunderland,,,https://resources.premierleague.com/premierleague/badges/100/t9.png,https://resources.premierleague.com/premierleague/badges/100/t56.png
-86,2026-10-31 15:00:00+00:00,Regular Season - 9,NS,,Hull,Ipswich,,,https://resources.premierleague.com/premierleague/badges/100/t88.png,https://resources.premierleague.com/premierleague/badges/100/t40.png
-88,2026-10-31 15:00:00+00:00,Regular Season - 9,NS,,Man City,Brighton,,,https://resources.premierleague.com/premierleague/badges/100/t43.png,https://resources.premierleague.com/premierleague/badges/100/t36.png
-90,2026-10-31 17:30:00+00:00,Regular Season - 9,NS,,Tottenham,Crystal Palace,,,https://resources.premierleague.com/premierleague/badges/100/t6.png,https://resources.premierleague.com/premierleague/badges/100/t31.png
-81,2026-10-31 20:00:00+00:00,Regular Season - 9,NS,,Aston Villa,Fulham,,,https://resources.premierleague.com/premierleague/badges/100/t7.png,https://resources.premierleague.com/premierleague/badges/100/t54.png
+84,2026-10-31 12:30:00+00:00,Regular Season - 9,FT,,Chelsea,Man United,2.0,0.0,https://resources.premierleague.com/premierleague/badges/100/t8.png,https://resources.premierleague.com/premierleague/badges/100/t1.png
+82,2026-10-31 15:00:00+00:00,Regular Season - 9,FT,,Bournemouth,Leeds,2.0,0.0,https://resources.premierleague.com/premierleague/badges/100/t91.png,https://resources.premierleague.com/premierleague/badges/100/t2.png
+83,2026-10-31 15:00:00+00:00,Regular Season - 9,FT,,Brentford,Nott'm Forest,2.0,0.0,https://resources.premierleague.com/premierleague/badges/100/t94.png,https://resources.premierleague.com/premierleague/badges/100/t17.png
+85,2026-10-31 15:00:00+00:00,Regular Season - 9,FT,,Coventry,Sunderland,3.0,1.0,https://resources.premierleague.com/premierleague/badges/100/t9.png,https://resources.premierleague.com/premierleague/badges/100/t56.png
+86,2026-10-31 15:00:00+00:00,Regular Season - 9,FT,,Hull,Ipswich,2.0,2.0,https://resources.premierleague.com/premierleague/badges/100/t88.png,https://resources.premierleague.com/premierleague/badges/100/t40.png
+88,2026-10-31 15:00:00+00:00,Regular Season - 9,FT,,Man City,Brighton,0.0,1.0,https://resources.premierleague.com/premierleague/badges/100/t43.png,https://resources.premierleague.com/premierleague/badges/100/t36.png
+90,2026-10-31 17:30:00+00:00,Regular Season - 9,FT,,Tottenham,Crystal Palace,2.0,0.0,https://resources.premierleague.com/premierleague/badges/100/t6.png,https://resources.premierleague.com/premierleague/badges/100/t31.png
+81,2026-10-31 20:00:00+00:00,Regular Season - 9,FT,,Aston Villa,Fulham,1.0,1.0,https://resources.premierleague.com/premierleague/badges/100/t7.png,https://resources.premierleague.com/premierleague/badges/100/t54.png
 87,2026-11-01 16:30:00+00:00,Regular Season - 9,NS,,Liverpool,Arsenal,,,https://resources.premierleague.com/premierleague/badges/100/t14.png,https://resources.premierleague.com/premierleague/badges/100/t3.png
 89,2026-11-02 20:00:00+00:00,Regular Season - 9,NS,,Newcastle,Everton,,,https://resources.premierleague.com/premierleague/badges/100/t4.png,https://resources.premierleague.com/premierleague/badges/100/t11.png
