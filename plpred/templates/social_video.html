@@ -51,6 +51,7 @@ html,body{margin:0;width:{{ width }}px;height:{{ height }}px;overflow:hidden;bac
 .outro{text-align:center;align-items:center}
 .hook .badges{display:flex;gap:28px;align-items:center;margin-bottom:56px}
 .hook .badges img{width:150px;height:150px}
+.hook .badges .mono{font-size:64px;height:150px;min-width:180px;border-width:3px}
 .hook .badges .vs{font-size:48px;font-weight:800;font-style:italic}
 .hook .head{font-size:96px}
 .flip .head{font-size:88px}
@@ -75,7 +76,7 @@ html,body{margin:0;width:{{ width }}px;height:{{ height }}px;overflow:hidden;bac
 </style>
 </head>
 <body>
-<div class="top"><span class="brand disp">{{ wordmark() }}</span><span class="tag lab muted">Matchweek {{ matchweek }}</span></div>
+<div class="top"><span class="brand disp">{{ wordmark() }}</span><span class="tag lab muted">{% if league and not league.main %}{{ league.name }} · {% endif %}Matchweek {{ matchweek }}</span></div>
 
 {% for s in video.scenes %}
 <section class="scene {{ s.kind }}" data-scene="{{ loop.index0 }}"{% if s.kind == "hook" %} data-nocap{% endif %}>

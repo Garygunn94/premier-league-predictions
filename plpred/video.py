@@ -45,7 +45,9 @@ SPEED = 1.08
 LEAD, GAP, SCENE_GAP, TAIL = 0.4, 0.25, 0.45, 1.2  # seconds of silence around the lines
 MODEL_URL = "https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/"
 MODEL_FILES = ("kokoro-v1.0.onnx", "voices-v1.0.bin")
-SPOKEN = {"Nott'm Forest": "Forest"}  # names as a commentator would say them
+SPOKEN = {"Nott'm Forest": "Forest", "Atletico Madrid": "Atlético Madrid", "Real Betis": "Betis",
+          "Deportivo La Coruna": "Deportivo", "Racing Santander": "Racing Santander", "Alaves": "Alavés",
+          "Leganes": "Leganés", "Malaga": "Málaga", "Cadiz": "Cádiz", "Almeria": "Almería"}  # names as a commentator would say them
 # The last line of every video: why it's worth following.
 FOLLOW = ["Follow, and we'll tell you if we got it right.", "Follow for the verdict after the game.",
           "Follow to see if the model gets it right."]
@@ -406,6 +408,9 @@ def round_scenes(ctx: dict, views: list[dict]) -> list[dict]:
     n = COUNTS[len(games)] if len(games) < len(COUNTS) else str(len(games))
     first = say("r.open", ["Matchweek {mw}, called.", "{n} games, {m} calls. Here's matchweek {mw}.",
                            "Every call for matchweek {mw}."], mw=ctx["matchweek"], n=n.capitalize(), m=n)
+    league = ctx.get("league") or {}
+    if league and not league.get("main", True):
+        first = f"{league['name']}. {first}"
     strong = [v for v in games if v["confidence"] == "strong"]
     if strong:
         picks = [round_line(v, Phrasing(ctx["matchweek"], i)) for i, v in enumerate(strong[:3])]
@@ -462,7 +467,8 @@ def build_videos(ctx: dict, views: list[dict], env: Environment, out: Path) -> l
     if any(videoable(v) for v in views):
         videos.append({"name": "video-round", "title": f"Matchweek {ctx['matchweek']}, called",
                        "scenes": round_scenes(ctx, views)})
-    games = [v for v in views if videoable(v)]
+    # In La Liga only the featured games get a Reel (see plpred.leagues.featured).
+    games = [v for v in views if videoable(v) and v.get("featured", True)]
     videos += [{"name": f"video-{v['slug']}", "slug": v["slug"], "title": f"{v['home_team']} v {v['away_team']}",
                 "g": v, "scenes": match_scenes(v, ctx["matchweek"], i, hook)}
                for i, (v, hook) in enumerate(zip(games, pick_hooks(games)))]
@@ -476,7 +482,8 @@ def build_videos(ctx: dict, views: list[dict], env: Environment, out: Path) -> l
         vid["voice"] = pick_voice(vid.get("matchweek", ctx["matchweek"]), vid["name"])
         (folder / f"{vid['name']}.html").write_text(page.render(
             **{**ctx, "matchweek": vid.get("matchweek", ctx["matchweek"])},
-            video=vid, g=vid.get("g"), width=WIDTH, height=HEIGHT, root="../.."))
+            video=vid, g=vid.get("g"), width=WIDTH, height=HEIGHT,
+            root="/".join([".."] * (2 + (ctx.get("league") or {}).get("prefix", "").count("/")))))
     (out / "videos.json").write_text(json.dumps([
         {"name": v["name"], "title": v["title"], "edition": v.get("edition", "predictions"),
          "voice": v["voice"], "voice_name": VOICES[v["voice"]]["name"],

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-{% set m = meta or {"path": "", "url": "", "title": "Inkwell & Algorithm", "search_title": "Inkwell & Algorithm", "description": "Data-driven Premier League predictions, with the reasons. New every Thursday.", "image": "social/png/brand.png"} %}
+{% set m = meta or {"path": "", "url": "", "title": "Inkwell & Algorithm", "search_title": "Inkwell & Algorithm", "description": "Data-driven football predictions, with the reasons. New every Thursday.", "image": "social/png/brand.png"} %}
 <title>{% block title %}{{ m.search_title }}{% endblock %}</title>
 <meta name="description" content="{{ m.description }}">
 {% if m.noindex %}<meta name="robots" content="noindex">
@@ -43,15 +43,15 @@ try { var t = localStorage.getItem('theme'); if (t) document.documentElement.dat
 <footer class="method" id="method">
 {% block method %}<div class="grow">
 <h2 class="lab small-head">How we call it</h2>
-<p class="body" style="font-size:16px;line-height:1.6">Every team gets an attack and a defence rating from this season and the two before it, with recent games counting most. The ratings blend goals with expected goals (xG), which measures the quality of chances. They give each side's expected goals, which become win, draw and loss chances and the single most likely score. Team news from the Fantasy Premier League feed adjusts them. The reasons are the factors that moved each call the most, and the steps always add up to our number.</p>
+<p class="body" style="font-size:16px;line-height:1.6">Every team gets an attack and a defence rating from this season and the two before it, with recent games counting most. The ratings blend goals with expected goals (xG), which measures the quality of chances. They give each side's expected goals, which become win, draw and loss chances and the single most likely score. {% if not league or league.fpl %}Team news from the Fantasy Premier League feed adjusts them.{% endif %} The reasons are the factors that moved each call the most, and the steps always add up to our number.</p>
 {% if record %}<p class="body" style="font-size:16px;line-height:1.6;margin-top:12px">Our record replays the model week by week using only results known before each game, without team news.</p>{% endif %}
 </div>
 {% endblock %}
 <div class="side">
-<p class="lab muted" style="font-size:12px;font-weight:600;line-height:1.7">Data: football-data.co.uk, API-Football, Understat, FPL.<br>Odds are a benchmark, not betting advice.<br>Club crests belong to their clubs.<br>Data updated daily, calls every Thursday. Built {{ built }}.</p>
+<p class="lab muted" style="font-size:12px;font-weight:600;line-height:1.7">{% if league and not league.main %}Data: football-data.co.uk, Understat, openfootball.{% else %}Data: football-data.co.uk, API-Football, Understat, FPL.{% endif %}<br>Odds are a benchmark, not betting advice.<br>{% if not league or league.main %}Club crests belong to their clubs.<br>{% endif %}Data updated daily, calls every Thursday. Built {{ built }}.</p>
 <p class="lab" style="font-size:13px;font-weight:700;margin-top:12px">Follow us on <a href="https://x.com/InkwellAlgo">X <span class="accent">@InkwellAlgo</span></a> and <a href="https://www.instagram.com/inkwellandalgorithm/">Instagram <span class="accent">@inkwellandalgorithm</span></a></p>
 {% if newsletter_url %}<p class="lab" style="font-size:13px;font-weight:700;margin-top:12px">Every call in your inbox on Thursdays: <a href="{{ newsletter_url }}">get the newsletter</a></p>{% endif %}
-<p class="lab muted" style="font-size:12px;font-weight:600;margin-top:12px"><a href="{{ root }}/about/">About</a> · <a href="{{ root }}/table/">Season projection</a> · <a href="{{ root }}/fpl/">FPL corner</a> · <a href="{{ root }}/club/">Clubs</a> · <a href="{{ root }}/pundits/">V the pundits</a> · <a href="{{ root }}/embed/">For fan sites</a> · <a href="{{ root }}/feed.xml">Feed</a></p>
+<p class="lab muted" style="font-size:12px;font-weight:600;margin-top:12px"><a href="{{ root }}/about/">About</a> · {% if league and not league.main %}<a href="{{ root }}/">Premier League</a> · {% elif laliga_live %}<a href="{{ root }}/laliga/">La Liga</a> · {% endif %}<a href="{{ root }}/table/">Season projection</a> · <a href="{{ root }}/fpl/">FPL corner</a> · <a href="{{ root }}/club/">Clubs</a> · <a href="{{ root }}/pundits/">V the pundits</a> · <a href="{{ root }}/embed/">For fan sites</a> · <a href="{{ root }}/feed.xml">Feed</a></p>
 <p class="lab muted" style="font-size:12px;font-weight:600;margin-top:6px"><a href="{{ root }}/contact/">Contact</a> · <a href="{{ root }}/privacy/">Privacy</a> · <a href="{{ root }}/terms/">Terms</a> · 18+ <a href="https://www.begambleaware.org/">BeGambleAware.org</a></p>
 <p style="margin-top:12px"><button type="button" class="theme-toggle lab" onclick="toggleTheme()">Light / dark</button></p>
 </div>

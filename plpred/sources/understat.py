@@ -13,13 +13,14 @@ from plpred.http import session
 log = logging.getLogger(__name__)
 
 HOME_URL = "https://understat.com"
-JSON_URL = "https://understat.com/getLeagueData/EPL/{season}"
+JSON_URL = "https://understat.com/getLeagueData/{league}/{season}"
 
 
-def fetch_raw(season: int) -> list[dict]:
+def fetch_raw(season: int, league: str = "EPL") -> list[dict]:
+    """Every game of the season, played or not (La Liga is 'La_liga')."""
     s = session()
     s.get(HOME_URL, timeout=30)  # picks up the cookies the data endpoint expects
-    resp = s.get(JSON_URL.format(season=season), timeout=30,
+    resp = s.get(JSON_URL.format(league=league, season=season), timeout=30,
                  headers={"X-Requested-With": "XMLHttpRequest"})
     resp.raise_for_status()
     try:

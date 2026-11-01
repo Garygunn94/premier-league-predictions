@@ -3,7 +3,11 @@ Inkwell <span class="amp">&amp;</span> Algorithm
 {%- endmacro %}
 
 {% macro badge(team, root) -%}
-{% if team in badges %}<img class="badge" src="{{ root }}/badges/{{ badges[team] }}" alt="" width="40" height="40">{% else %}<span class="mono lab" aria-hidden="true">{{ team[:3] }}</span>{% endif %}
+{% if team in badges %}<img class="badge" src="{{ root }}/badges/{{ badges[team] }}" alt="" width="40" height="40">{% else %}<span class="mono lab" aria-hidden="true">{{ ((league or {}).codes or {}).get(team, team[:3]) }}</span>{% endif %}
+{%- endmacro %}
+
+{% macro other_league(root) -%}
+{% if league and not league.main %}<li><a href="{{ root }}/">Premier League</a></li>{% elif laliga_live %}<li><a href="{{ root }}/laliga/">La Liga</a></li>{% endif %}
 {%- endmacro %}
 
 {% macro split(g, thin=false) -%}
@@ -20,15 +24,16 @@ Inkwell <span class="amp">&amp;</span> Algorithm
 <header>
 <div class="dateline lab">
 <span>{{ built }}</span>
-<span>Premier League {{ latest.season }}</span>
+<span>{{ league.name if league else "Premier League" }} {{ latest.season }}</span>
 <span class="accent">{{ label }}</span>
 </div>
 <h1 class="masthead disp"><a href="{{ root }}/">{{ wordmark() }}</a></h1>
-<p class="tagline">Data-driven Premier League predictions, with the reasons. New every Thursday.</p>
+<p class="tagline">{{ league.tagline if league else "Data-driven Premier League predictions, with the reasons. New every Thursday." }}</p>
 <nav class="sections" aria-label="Sections">
 <ul class="lab">
 <li><a href="{{ root }}/about/">About</a></li>
-<li><a href="{{ root }}/" class="accent">This week's calls</a></li>
+<li><a href="{{ lroot or root }}/" class="accent">This week's calls</a></li>
+{{ other_league(root) }}
 {% for href, text in links %}<li><a href="{{ href }}">{{ text }}</a></li>
 {% endfor %}
 </ul>
