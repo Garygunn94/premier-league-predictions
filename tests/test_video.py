@@ -19,9 +19,8 @@ def test_kit_has_a_video_script_for_the_round_and_each_game(tmp_path):
         assert v["scenes"][-1]["kind"] == "outro"
     game = next(v for v in videos if v["name"] == "video-strong-v-weak")
     kinds = [s["kind"] for s in game["scenes"]]
-    assert kinds == ["hook", "why", "call", "outro"]  # every game's call is revealed at the end
-    named = " ".join(s["lines"][0] for s in game["scenes"][:2])
-    assert "Strong" in named and "Weak" in named
+    assert kinds == ["hook", "clues", "call", "outro"]  # every game's call is revealed at the end
+    assert 2 <= len(game["scenes"][1]["lines"]) <= 3  # enough substance before the reveal
     posts = json.loads((kit / "posts.json").read_text())["posts"]
     assert posts[0]["video"] == "video-round"
     assert any(p["video"] == "video-strong-v-weak" for p in posts)
@@ -234,7 +233,7 @@ def test_every_game_keeps_the_call_for_the_end(tmp_path):
     games = [v for v in json.loads((kit / "videos.json").read_text()) if v.get("style")]
     assert games and {v["style"] for v in games} == {"reveal"}
     for v in games:
-        assert v["scenes"][0]["kind"] == "hook" and "at the end" in v["scenes"][0]["lines"][1]
+        assert v["scenes"][0]["kind"] == "hook" and len(v["scenes"][0]["lines"]) == 2  # the hook, then its question
         assert [s["kind"] for s in v["scenes"]][-2:] == ["call", "outro"]
         assert not any(l.startswith(("The reason", "Why?")) for s in v["scenes"] for l in s["lines"])
 
@@ -260,3 +259,33 @@ def test_reveal_captions_dont_give_the_call_away(tmp_path):
     assert clip.stem.endswith("-reveal") and (game / "reel.txt").exists()
     msgs = social.kit_emails(kit, "me@example.com", "me@example.com")
     assert any("---- REEL AND TIKTOK ----" in m.get_body().get_content() for m in msgs)
+
+
+def test_hooks_raise_a_question_and_a_fixture_is_the_last_resort():
+    base = {"home_team": "Leeds", "away_team": "Sunderland", "call": "H", "confidence": "too close to call",
+            "headline": "Nothing to split them", "mkt": None,
+            "standings": {"home": {"position": 8, "points": 11}, "away": {"position": 11, "points": 10}},
+            "form": {"home": [{"result": r} for r in "WLWLD"], "away": [{"result": r} for r in "WDLLD"]}}
+    kinds = [h[0] for h in video.hooks(base)]
+    assert "points" in kinds and "form" in kinds  # "haven't won in three", "just one point between"
+    picks = video.pick_hooks([base] * 4)
+    assert all(h[0] != "fixture" for h in picks)
+    say = video.Phrasing(9, 0)
+    assert video.tease(("form", 0.6, "Sunderland haven't won in three."), base, say).startswith("Is this where it turns?")
+    assert video.tease(("luck", 0.6, "Forest deserve 10 more points than they've got."), base, say).startswith(
+        "Is their luck about to turn?")
+
+
+def test_clues_give_two_or_three_facts_before_the_reveal():
+    v = {"home_team": "Newcastle", "away_team": "Everton", "confidence": "too close to call", "call": "H",
+         "waterfall": {"steps": [
+             {"kind": "defence", "team": "Newcastle", "change": -7.1, "detail": "Newcastle concede 33% more than an average side"},
+             {"kind": "defence", "team": "Everton", "change": 5.4, "detail": "Everton concede 15% more than an average side"},
+             {"kind": "attack", "team": "Newcastle", "change": 4.1, "detail": "Newcastle create and score 12% more than an average side"},
+             {"kind": "attack", "team": "Everton", "change": 1.8, "detail": "Everton create and score 7% less than an average side"}]},
+         "form": {}, "standings": {}}
+    assert video.clues(v, "points") == ["Everton concede more than most.", "Newcastle score more than most.",
+                                        "But Newcastle concede far more than most."]
+    v["ranks"] = {"defence": ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P",
+                              "Everton", "R", "S", "T"], "attack": []}
+    assert video.clues(v, "points")[0] == "Everton have the fourth-worst defence in the league."

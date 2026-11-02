@@ -62,6 +62,9 @@ html,body{margin:0;width:{{ width }}px;height:{{ height }}px;overflow:hidden;bac
 .flip .r .l{font-size:40px}
 .flip .trk{height:60px}
 .round .head{margin-bottom:24px}
+.clue{display:grid;grid-template-columns:90px 1fr;gap:20px;align-items:baseline;padding:26px 0;border-top:1px solid var(--rule)}
+.clue .n{font-size:84px;font-weight:900;line-height:1}
+.clue .t{font-size:54px;font-weight:800;font-style:italic;line-height:1.12}
 .lad{display:flex;align-items:baseline;gap:36px;padding:16px 0;border-bottom:1px solid var(--rule)}
 .lad .n{font-size:40px;font-weight:700;width:70px;text-align:right;color:var(--muted)}
 .lad .t{font-size:64px;font-weight:800}
@@ -82,7 +85,7 @@ html,body{margin:0;width:{{ width }}px;height:{{ height }}px;overflow:hidden;bac
 <div class="top"><span class="brand disp">{{ wordmark() }}</span><span class="tag lab muted">{% if league and not league.main %}{{ league.name }} · {% endif %}Matchweek {{ matchweek }}</span></div>
 
 {% for s in video.scenes %}
-<section class="scene {{ s.kind }}" data-scene="{{ loop.index0 }}"{% if s.kind == "hook" %} data-nocap{% endif %}>
+<section class="scene {{ s.kind }}" data-scene="{{ loop.index0 }}"{% if s.kind in ("hook", "clues") %} data-nocap{% endif %}>
 {% if s.kind == "call" %}
 {% set c = s.call_line %}
 <div class="kicker lab accent" data-in="0:0">{% if g is sameas features.upset %}The model v the market{% elif g is sameas lead %}Match of the week{% else %}Our call{% endif %} · {{ g.kickoff_text }}</div>
@@ -109,6 +112,13 @@ html,body{margin:0;width:{{ width }}px;height:{{ height }}px;overflow:hidden;bac
 <div class="lad{% if r.hot %} hot{% endif %}{% if r.gap %} gap{% endif %}" data-in="0:{{ 0.4 + loop.index0 * 0.15 }}"><span class="n lab">{{ r.rank }}</span><span class="t disp">{{ r.team }}</span></div>
 {% endfor %}
 {% endif %}
+{% elif s.kind == "clues" %}
+{#- Each clue lands as it's read, numbered, so the build-up to the reveal is visible. -#}
+<div class="kicker lab accent" data-in="0:0">{{ g.home_team }} v {{ g.away_team }} · the clues</div>
+<h1 class="head disp" data-in="0:0">Before <span class="accent">our call.</span></h1>
+{% for c in s.lines %}
+<div class="clue" data-in="{{ loop.index0 }}:0"><span class="n disp accent">{{ loop.index }}</span><span class="t disp">{{ c }}</span></div>
+{% endfor %}
 {% elif s.kind == "round" %}
 <div class="kicker lab accent" data-in="0:0">Every game called</div>
 <h1 class="head disp" data-in="0:0">Matchweek {{ matchweek }}, <span class="accent">called.</span></h1>
