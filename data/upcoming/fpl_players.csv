@@ -11,10 +11,10 @@ Arsenal,Hincapie,DEF,a,100.0,,46,0,0,0,0.0
 Arsenal,White,DEF,a,100.0,,532,7,0,3,1.01
 Arsenal,Mosquera,DEF,a,100.0,,168,2,0,0,0.01
 Arsenal,Saka,MID,i,0.0,Thigh injury - Unknown return date,596,7,3,0,4.83
-Arsenal,Rice,MID,a,100.0,,760,9,0,5,2.44
+Arsenal,Rice,MID,a,100.0,,760,9,0,5,2.45
 Arsenal,Eze,MID,a,,,209,2,0,0,0.34
-Arsenal,Ødegaard,MID,a,,,733,9,2,0,4.32
-Arsenal,Madueke,MID,a,100.0,,338,3,1,0,1.81
+Arsenal,Ødegaard,MID,a,,,733,9,2,0,4.3
+Arsenal,Madueke,MID,a,100.0,,338,3,1,0,1.68
 Arsenal,Merino,MID,a,,,175,1,0,0,0.98
 Arsenal,Martinelli,MID,u,0.0,Has joined Al Hilal permanently,0,0,0,0,0.0
 Arsenal,Zubimendi,MID,a,100.0,,99,0,0,0,0.26
@@ -27,7 +27,7 @@ Arsenal,Havertz,FWD,a,100.0,,669,8,3,0,3.2
 Arsenal,G.Jesus,FWD,u,0.0,Has joined FC Barcelona permanently,0,0,0,0,0.0
 Arsenal,Konsa,DEF,a,100.0,,641,7,1,0,0.64
 Arsenal,Bruno G.,MID,a,100.0,,298,3,2,0,0.55
-Arsenal,Tzolis,MID,a,100.0,,445,6,0,2,1.07
+Arsenal,Tzolis,MID,a,100.0,,445,6,0,2,1.06
 Aston Villa,M.Bizot,GK,a,100.0,,90,1,0,0,0.0
 Aston Villa,Digne,DEF,u,0.0,Has joined Paris Saint-Germain permanently,0,0,0,0,0.0
 Aston Villa,Cash,DEF,s,0.0,Suspended until 21 Nov,656,7,0,0,0.43
@@ -437,9 +437,9 @@ Liverpool,Woodman,GK,a,,,0,0,0,0,0.0
 Liverpool,Pecsi,GK,u,0.0,Has joined TSV Hartberg on loan for the rest of the season,0,0,0,0,0.0
 Liverpool,Jaros,GK,i,0.0,Knee injury - Unknown return date,0,0,0,0,0.0
 Liverpool,Davies,GK,a,,,0,0,0,0,0.0
-Liverpool,Virgil,DEF,a,,,810,9,0,0,0.56
+Liverpool,Virgil,DEF,a,,,810,9,0,0,0.58
 Liverpool,Frimpong,DEF,i,0.0,Hamstring injury - Unknown return date,199,2,0,0,0.25
-Liverpool,Kerkez,DEF,a,,,732,8,0,0,0.55
+Liverpool,Kerkez,DEF,a,,,732,8,0,0,0.5
 Liverpool,Gomez,DEF,a,100.0,,13,0,0,0,0.0
 Liverpool,Bradley,DEF,i,0.0,Knee injury - Unknown return date,0,0,0,0,0.0
 Liverpool,Lucky,DEF,a,,,0,0,0,0,0.0
@@ -447,26 +447,26 @@ Liverpool,Jacquet,DEF,a,100.0,,772,9,0,0,0.54
 Liverpool,Leoni,DEF,i,0.0,Knee injury - Unknown return date,0,0,0,0,0.0
 Liverpool,Tsimikas,DEF,a,,,75,1,0,0,0.12
 Liverpool,Ramsay,DEF,u,0.0,Has joined St Mirren on loan for the rest of the season,0,0,0,0,0.0
-Liverpool,Wirtz,MID,a,100.0,,701,9,0,4,2.61
+Liverpool,Wirtz,MID,a,100.0,,701,9,0,4,2.6
 Liverpool,Gakpo,MID,a,100.0,,526,6,1,3,3.1
-Liverpool,Szoboszlai,MID,a,100.0,,502,6,1,0,2.66
-Liverpool,Ngumoha,MID,a,,,188,1,0,0,0.49
+Liverpool,Szoboszlai,MID,a,100.0,,503,6,1,0,2.63
+Liverpool,Ngumoha,MID,a,,,188,1,0,0,0.47
 Liverpool,Chiesa,MID,a,100.0,,2,0,0,0,0.0
 Liverpool,Gravenberch,MID,a,100.0,,341,4,0,1,0.34
-Liverpool,Mac Allister,MID,a,,,666,7,0,0,1.8
+Liverpool,Mac Allister,MID,a,,,666,7,0,0,1.76
 Liverpool,C.Jones,MID,u,0.0,Has joined Internazionale permanently,0,0,0,0,0.0
 Liverpool,Endo,MID,a,100.0,,0,0,0,0,0.0
-Liverpool,Nyoni,MID,a,,,203,1,0,0,0.24
+Liverpool,Nyoni,MID,a,,,202,1,0,0,0.24
 Liverpool,Bajcetic,MID,u,0.0,Has joined Celta Vigo permanently,0,0,0,0,0.0
-Liverpool,Munoz,MID,a,100.0,,434,5,2,1,1.13
+Liverpool,Munoz,MID,a,100.0,,434,5,2,1,1.12
 Liverpool,McConnell,MID,a,,,0,0,0,0,0.0
-Liverpool,Isak,FWD,a,100.0,,657,8,6,0,4.63
+Liverpool,Isak,FWD,a,100.0,,657,8,6,0,4.61
 Liverpool,Ekitiké,FWD,i,0.0,Achilles injury - Unknown return date,0,0,0,0,0.0
 Liverpool,Koumas,MID,a,,,129,1,0,0,0.44
 Liverpool,Danns,FWD,a,100.0,,0,0,0,0,0.0
 Liverpool,Elliott,MID,u,0.0,Has joined Valencia on loan for the rest of the season,0,0,0,0,0.0
-Liverpool,Araujo,DEF,a,,,573,7,0,0,0.31
-Liverpool,Barcola,MID,a,,,511,6,0,2,1.82
+Liverpool,Araujo,DEF,a,,,573,7,0,0,0.34
+Liverpool,Barcola,MID,a,,,511,6,0,2,1.83
 Man City,Enzo,MID,a,,,543,6,1,0,2.33
 Man City,Ndiaye,MID,a,,,676,8,0,4,2.79
 Man City,Donnarumma,GK,a,,,810,9,0,0,0.0
