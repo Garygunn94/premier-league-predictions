@@ -4,7 +4,7 @@ Arsenal,Arrizabalaga,GK,a,,,0,0,0,0,0.0
 Arsenal,Meslier,GK,a,,,0,0,0,0,0.0
 Arsenal,Gabriel,DEF,a,,,810,9,1,0,1.72
 Arsenal,J.Timber,DEF,a,100.0,,245,2,0,0,0.19
-Arsenal,Saliba,DEF,d,75.0,Back injury - 75% chance of playing,0,0,0,0,0.0
+Arsenal,Saliba,DEF,a,100.0,,0,0,0,0,0.0
 Arsenal,Lewis-Skelly,MID,a,,,428,6,0,0,0.86
 Arsenal,Calafiori,DEF,a,100.0,,699,8,1,2,2.22
 Arsenal,Hincapie,DEF,a,100.0,,46,0,0,0,0.0
@@ -196,7 +196,7 @@ Chelsea,Nicoll-Jazuli,MID,a,,,3,0,0,0,0.0
 Chelsea,Sharman-Lowe,GK,a,,,0,0,0,0,0.0
 Chelsea,Subuloye,DEF,a,,,0,0,0,0,0.0
 Coventry,Pinnock,DEF,a,,,642,7,0,0,0.27
-Coventry,Onyeka,MID,a,100.0,,379,4,0,0,0.29
+Coventry,Onyeka,MID,d,50.0,Groin injury - 50% chance of playing,379,4,0,0,0.29
 Coventry,Rushworth,GK,a,,,810,9,0,1,0.03
 Coventry,Dovin,GK,u,0.0,not included in squad.,0,0,0,0,0.0
 Coventry,Wilson,GK,a,,,0,0,0,0,0.0
