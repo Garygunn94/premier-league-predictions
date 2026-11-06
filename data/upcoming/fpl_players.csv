@@ -25,7 +25,7 @@ Arsenal,Nelson,MID,u,0.0,has departed the club as a free agent.,0,0,0,0,0.0
 Arsenal,Gyökeres,FWD,a,,,153,1,0,1,0.56
 Arsenal,Havertz,FWD,a,100.0,,669,8,3,0,3.21
 Arsenal,G.Jesus,FWD,u,0.0,Has joined FC Barcelona permanently,0,0,0,0,0.0
-Arsenal,Konsa,DEF,a,100.0,,641,7,1,0,0.64
+Arsenal,Konsa,DEF,d,75.0,Knee injury - 75% chance of playing,641,7,1,0,0.64
 Arsenal,Bruno G.,MID,a,100.0,,298,3,2,0,0.56
 Arsenal,Tzolis,MID,a,100.0,,445,6,0,2,1.06
 Aston Villa,M.Bizot,GK,a,100.0,,90,1,0,0,0.0
@@ -90,7 +90,7 @@ Bournemouth,Evanilson,FWD,a,,,753,9,4,4,4.61
 Bournemouth,Enes Ünal,FWD,u,0.0,Has joined Getafe permanently,0,0,0,0,0.0
 Bournemouth,Rodríguez,FWD,a,100.0,,53,0,0,0,0.15
 Bournemouth,Silva,DEF,a,,,810,9,0,0,1.66
-Bournemouth,Sanchez,DEF,a,,,18,0,0,0,0.0
+Bournemouth,Sanchez,DEF,i,0.0,Ankle injury - Unknown return date,18,0,0,0,0.0
 Bournemouth,Jebbison,FWD,a,,,31,0,0,0,0.1
 Bournemouth,Di Gregorio,GK,a,,,0,0,0,0,0.0
 Brentford,Kelleher,GK,a,,,810,9,0,0,0.02
@@ -112,7 +112,7 @@ Brentford,Janelt,MID,a,100.0,,720,8,2,0,1.15
 Brentford,Milambo,MID,i,0.0,Knee injury - Unknown return date,0,0,0,0,0.0
 Brentford,Carvalho,MID,i,0.0,Knock - Expected back 23 Nov,3,0,1,0,0.43
 Brentford,Yarmoliuk,MID,a,100.0,,334,4,1,1,0.51
-Brentford,Dasilva,MID,i,0.0,Hamstring injury - Unknown return date,0,0,0,0,0.0
+Brentford,Dasilva,MID,d,25.0,Hamstring injury - 25% chance of playing,0,0,0,0,0.0
 Brentford,Anthony,MID,a,,,473,5,1,2,2.48
 Brentford,Thiago,FWD,a,,,802,9,2,3,5.32
 Brentford,Furo,FWD,i,0.0,Unspecified injury - Unknown return date,0,0,0,0,0.0
@@ -255,7 +255,7 @@ Crystal Palace,Doucouré,MID,a,,,0,0,0,0,0.0
 Crystal Palace,J.Rak-Sakyi,MID,u,0.0,has joined  Kasimpasa on loan for the rest of the seaon.,0,0,0,0,0.0
 Crystal Palace,Cardines,DEF,u,0.0,Has joined Bristol City on loan for the rest of the season,0,0,0,0,0.0
 Crystal Palace,Drakes-Thomas,MID,a,,,0,0,0,0,0.0
-Crystal Palace,Strand Larsen,FWD,d,75.0,Ankle injury - 75% chance of playing,440,5,1,1,1.94
+Crystal Palace,Strand Larsen,FWD,a,100.0,,440,5,1,1,1.94
 Crystal Palace,Mateta,FWD,s,0.0,Suspended until 2 Dec,164,3,0,0,2.0
 Crystal Palace,Nketiah,FWD,a,100.0,,269,3,0,1,1.76
 Crystal Palace,Uche,FWD,u,0.0,has returned to Getafe CF,0,0,0,0,0.0
@@ -266,7 +266,7 @@ Crystal Palace,Khalaili,DEF,a,100.0,,679,7,1,0,1.89
 Crystal Palace,Gozo,MID,a,,,28,0,0,0,0.0
 Crystal Palace,Ahanor,DEF,a,,,160,2,0,0,0.01
 Crystal Palace,Chilwell,DEF,a,100.0,,29,0,1,0,0.28
-Crystal Palace,Timber,MID,d,75.0,Hamstring injury - 75% chance of playing,388,5,0,1,0.52
+Crystal Palace,Timber,MID,a,100.0,,388,5,0,1,0.52
 Crystal Palace,Osorio,MID,a,,,41,0,0,0,0.27
 Everton,Nørgaard,MID,a,100.0,,5,0,0,0,0.0
 Everton,Johnson,MID,a,,,389,5,0,0,1.46
@@ -274,7 +274,7 @@ Everton,Pickford,GK,a,,,810,9,0,0,0.03
 Everton,Travers,GK,a,,,0,0,0,0,0.0
 Everton,King,GK,a,,,0,0,0,0,0.0
 Everton,Tarkowski,DEF,a,,,810,9,1,1,0.29
-Everton,Branthwaite,DEF,a,100.0,,711,8,0,0,0.48
+Everton,Branthwaite,DEF,d,75.0,Unspecified injury - 75% chance of playing,711,8,0,0,0.48
 Everton,Keane,DEF,a,,,98,1,0,0,0.02
 Everton,O'Brien,DEF,a,,,208,2,0,0,0.29
 Everton,Mykolenko,DEF,a,100.0,,703,8,0,0,0.46
@@ -307,7 +307,7 @@ Fulham,Smith Rowe,MID,a,100.0,,41,0,0,0,0.08
 Fulham,Kevin,MID,a,,,75,0,0,0,0.34
 Fulham,Bobb,MID,a,,,653,9,1,0,3.41
 Fulham,Berge,MID,a,,,646,7,0,1,0.81
-Fulham,Cairney,MID,a,100.0,,36,0,0,0,0.1
+Fulham,Cairney,MID,i,0.0,Knee injury - Expected back 21 Nov,36,0,0,0,0.1
 Fulham,King,MID,a,,,735,9,2,1,3.2
 Fulham,Sessegnon,DEF,a,100.0,,152,1,1,0,0.72
 Fulham,Reed,MID,a,,,0,0,0,0,0.0
@@ -323,7 +323,7 @@ Fulham,Ángel,MID,a,,,19,0,0,0,0.0
 Fulham,Affengruber,DEF,a,100.0,,540,6,0,0,0.34
 Hull,Iroegbunam,MID,a,100.0,,287,2,1,1,0.58
 Hull,Phillips,GK,a,,,0,0,0,0,0.0
-Hull,Butland,GK,d,50.0,Arm injury - 50% chance of playing,0,0,0,0,0.0
+Hull,Butland,GK,a,100.0,,0,0,0,0,0.0
 Hull,Cartwright,GK,u,0.0,Has joined Grimsby Town on loan for the rest of the season,0,0,0,0,0.0
 Hull,Lo-Tutala,GK,u,0.0,Has joined Colchester United on loan for the rest of the season,0,0,0,0,0.0
 Hull,Egan,DEF,a,,,752,9,0,0,0.42
@@ -346,12 +346,12 @@ Hull,Kamara,MID,u,0.0,Has joined Portsmouth permanently,0,0,0,0,0.0
 Hull,Zambrano,MID,a,100.0,,0,0,0,0,0.0
 Hull,McBurnie,FWD,a,,,796,9,2,3,2.46
 Hull,Akintola,MID,u,0.0,Has joined Omonoia FC permanently,0,0,0,0,0.0
-Hull,Gyabi,MID,i,0.0,Thigh injury - Unknown return date,0,0,0,0,0.0
+Hull,Gyabi,MID,d,75.0,Thigh injury - 75% chance of playing,0,0,0,0,0.0
 Hull,Destan,FWD,u,0.0,Has joined Konyaspor permanently,0,0,0,0,0.0
 Hull,Burstow,FWD,u,0.0,Has joined Sheffield Wednesday on loan for the rest of the season,0,0,0,0,0.0
 Hull,Gelhardt,MID,a,100.0,,98,1,1,0,1.3
 Hull,Targett,DEF,i,0.0,Ankle injury - Unknown return date,5,0,0,0,0.0
-Hull,Morita,MID,a,100.0,,106,1,0,0,0.01
+Hull,Morita,MID,i,0.0,Groin injury - Unknown return date,106,1,0,0,0.01
 Hull,Tzolakis,GK,a,,,810,9,0,0,0.0
 Hull,Hjertø-Dahl,MID,a,,,8,0,0,0,0.0
 Hull,Stroud,MID,a,,,424,6,0,1,0.2
@@ -403,14 +403,14 @@ Ipswich,Flemming,FWD,a,,,134,0,2,0,1.57
 Leeds,Wilson,MID,a,100.0,,312,3,0,0,0.45
 Leeds,Perri,GK,u,0.0,Has joined Torino on loan for the rest of the season,0,0,0,0,0.0
 Leeds,Bijol,DEF,a,,,258,3,0,0,0.13
-Leeds,Rodon,DEF,i,0.0,Hamstring injury - Expected back 21 Nov,123,2,0,0,0.09
+Leeds,Rodon,DEF,a,100.0,,123,2,0,0,0.09
 Leeds,Bogle,DEF,a,,,720,9,2,0,2.26
 Leeds,Gudmundsson,DEF,a,100.0,,586,7,0,1,0.34
 Leeds,Justin,DEF,a,,,791,9,1,0,1.55
 Leeds,Bornauw,DEF,u,0.0,Has joined Hamburg SV on loan for the rest of the season,0,0,0,0,0.0
 Leeds,Muharemović,DEF,a,,,810,9,0,2,0.88
-Leeds,Stach,MID,a,100.0,,676,7,1,0,2.03
-Leeds,Okafor,MID,d,75.0,Thigh injury - 75% chance of playing,467,6,1,0,0.76
+Leeds,Stach,MID,d,50.0,Foot injury - 50% chance of playing,676,7,1,0,2.03
+Leeds,Okafor,MID,d,50.0,Thigh injury - 50% chance of playing,467,6,1,0,0.76
 Leeds,Aaronson,MID,a,,,283,3,0,0,0.03
 Leeds,Ampadu,MID,a,,,810,9,0,1,0.58
 Leeds,Longstaff,MID,a,,,45,0,0,0,0.36
@@ -419,7 +419,7 @@ Leeds,Harrison,MID,u,0.0,Has joined New England Revolution permanently,0,0,0,0,0
 Leeds,James,MID,a,100.0,,116,1,0,0,0.39
 Leeds,Gruev,MID,a,100.0,,0,0,0,0,0.0
 Leeds,Tanaka,MID,a,,,557,7,0,2,1.03
-Leeds,Calvert-Lewin,FWD,a,100.0,,773,9,3,1,4.05
+Leeds,Calvert-Lewin,FWD,d,75.0,Foot injury - 75% chance of playing,773,9,3,1,4.05
 Leeds,Nmecha,FWD,a,,,121,0,0,1,0.74
 Leeds,Piroe,FWD,u,0.0,Has joined West Ham United on loan for the rest of the season,0,0,0,0,0.0
 Leeds,Mateo Joseph,FWD,i,0.0,Knee injury - Unknown return date,0,0,0,0,0.0
@@ -549,8 +549,8 @@ Newcastle,Barnes,MID,a,,,796,9,2,3,2.5
 Newcastle,Elanga,MID,a,100.0,,320,4,2,0,1.17
 Newcastle,J.Ramsey,MID,s,0.0,Suspended until 21 Nov,97,0,1,0,0.35
 Newcastle,J.Murphy,MID,a,,,343,4,0,1,1.2
-Newcastle,Joelinton,MID,a,100.0,,278,3,0,0,0.27
-Newcastle,L.Miley,MID,d,75.0,Muscular injury - 75% chance of playing,544,7,0,0,0.5
+Newcastle,Joelinton,MID,i,0.0,Unspecified injury - Unknown return date,278,3,0,0,0.27
+Newcastle,L.Miley,MID,d,50.0,Muscular injury - 50% chance of playing,544,7,0,0,0.5
 Newcastle,Willock,MID,a,,,536,7,2,0,1.66
 Newcastle,Touré,MID,a,100.0,,118,0,1,0,0.65
 Newcastle,Steur,MID,a,,,254,2,0,0,0.11
@@ -589,11 +589,11 @@ Nott'm Forest,Ndoye,MID,a,100.0,,591,9,2,0,3.67
 Nott'm Forest,Hutchinson,MID,u,0.0,Has joined AC Milan on loan for the rest of the season,0,0,0,0,0.0
 Nott'm Forest,Bakwa,MID,u,0.0,Has joined Lille on loan for the rest of the season,0,0,0,0,0.0
 Nott'm Forest,McAtee,MID,a,,,770,9,0,0,2.3
-Nott'm Forest,Dominguez,MID,d,75.0,Muscular injury - 75% chance of playing,74,1,0,0,0.01
+Nott'm Forest,Dominguez,MID,i,0.0,Muscular injury - Expected back 30 Dec,74,1,0,0,0.01
 Nott'm Forest,I.Sangaré,MID,a,100.0,,145,1,0,0,0.13
 Nott'm Forest,Yates,MID,a,100.0,,45,0,0,0,0.29
 Nott'm Forest,Wood,FWD,a,,,111,0,0,0,0.64
-Nott'm Forest,Igor Jesus,FWD,i,0.0,Calf injury - Unknown return date,257,2,1,0,1.33
+Nott'm Forest,Igor Jesus,FWD,d,75.0,Calf injury - 75% chance of playing,257,2,1,0,1.33
 Nott'm Forest,Kalimuendo,FWD,a,,,50,0,0,0,0.03
 Nott'm Forest,Schlager,MID,a,,,666,8,0,0,0.78
 Nott'm Forest,Diomande,DEF,a,,,343,4,0,0,0.25
@@ -653,7 +653,7 @@ Sunderland,O'Nien,DEF,a,,,277,3,0,1,0.47
 Sunderland,Masuaku,DEF,u,0.0,Has joined Konyaspor permanently,0,0,0,0,0.0
 Sunderland,Meunier,DEF,a,100.0,,444,6,0,1,1.1
 Sunderland,E.Le Fée,MID,a,,,776,9,2,1,4.84
-Sunderland,Diarra,MID,d,75.0,Muscular injury - 75% chance of playing,70,0,0,1,0.19
+Sunderland,Diarra,MID,i,0.0,Muscular injury - Unknown return date,70,0,0,1,0.19
 Sunderland,Xhaka,MID,a,,,810,9,0,1,1.97
 Sunderland,Sadiki,MID,a,,,754,9,0,0,0.77
 Sunderland,Adingra,MID,u,0.0,Has joined Ajax on loan for the rest of the season,0,0,0,0,0.0
