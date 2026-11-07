@@ -35,19 +35,29 @@ def fetch_raw(season: int, league: str = "EPL") -> list[dict]:
     """Every game of the season, played or not (La Liga is 'La_liga')."""
     s = session()
     s.get(HOME_URL, timeout=30)  # picks up the cookies the data endpoint expects
+    page_url = PAGE_URL.format(league=league, season=season)
     resp = s.get(JSON_URL.format(league=league, season=season), timeout=30,
-                 headers={"X-Requested-With": "XMLHttpRequest"})
+                 headers={"X-Requested-With": "XMLHttpRequest", "Referer": page_url,
+                          "Accept": "application/json, text/javascript, */*; q=0.01"})
     resp.raise_for_status()
     try:
         return resp.json()["dates"]
     except (ValueError, KeyError, TypeError) as exc:
-        page = s.get(PAGE_URL.format(league=league, season=season), timeout=30)
+        page = s.get(page_url, timeout=30)
         games = from_page(page.text) if page.ok else None
         if games is not None:
             log.warning("Understat's data endpoint sent a web page, so read the league page instead")
             return games
-        raise ValueError(f"Unexpected Understat response ({resp.headers.get('content-type')}): "
-                         f"{resp.text[:200]!r}") from exc
+        # What the page does load, so the next fix doesn't start blind.
+        hints = sorted(set(re.findall(r"""(?:src=|fetch\(|url:\s*|get\()["']([^"']+)["']""", page.text)))[:15]
+        raise ValueError(f"Unexpected Understat response ({resp.status_code}, {resp.headers.get('content-type')}, "
+                         f"{len(resp.text)} chars, title {_title(resp.text)!r}); league page {page.status_code}, "
+                         f"{len(page.text)} chars, loads {hints}") from exc
+
+
+def _title(html: str) -> str:
+    m = re.search(r"<title>(.*?)</title>", html, re.S)
+    return m.group(1).strip() if m else ""
 
 
 def to_frame(raw: list[dict], season: int) -> pd.DataFrame:
