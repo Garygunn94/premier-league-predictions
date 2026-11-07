@@ -1,0 +1,325 @@
+{
+  "as_of": "2026-11-06",
+  "season": "2026/27",
+  "round": "Regular Season - 10",
+  "settings": {
+    "half_life_days": 180.0,
+    "xg_weight": 0.5,
+    "ridge": 1.0,
+    "rho": -0.13
+  },
+  "games": [
+    {
+      "home_team": "Everton",
+      "away_team": "Coventry",
+      "call": "H",
+      "call_name": "home win",
+      "confidence": "solid",
+      "probabilities": {
+        "H": 0.497,
+        "D": 0.294,
+        "A": 0.21
+      },
+      "market": {
+        "H": 0.565,
+        "D": 0.239,
+        "A": 0.197
+      },
+      "expected_goals": {
+        "home": 1.5,
+        "away": 0.9
+      },
+      "score": [
+        1,
+        0
+      ],
+      "top_scores": [
+        {
+          "score": [
+            1,
+            1
+          ],
+          "probability": 0.138
+        },
+        {
+          "score": [
+            1,
+            0
+          ],
+          "probability": 0.121
+        },
+        {
+          "score": [
+            0,
+            0
+          ],
+          "probability": 0.107
+        },
+        {
+          "score": [
+            2,
+            0
+          ],
+          "probability": 0.102
+        },
+        {
+          "score": [
+            2,
+            1
+          ],
+          "probability": 0.092
+        }
+      ],
+      "waterfall": {
+        "start": 39.9,
+        "start_label": "Average home side v average visitor",
+        "steps": [
+          {
+            "label": "Coventry's defence",
+            "detail": "Coventry concede 31% more than an average side",
+            "kind": "defence",
+            "team": "Coventry",
+            "change": 10.4,
+            "helps": "Everton"
+          },
+          {
+            "label": "Coventry's attack",
+            "detail": "Coventry create and score 19% less than an average side",
+            "kind": "attack",
+            "team": "Coventry",
+            "change": 4.8,
+            "helps": "Everton"
+          },
+          {
+            "label": "Everton's attack",
+            "detail": "Everton create and score 8% less than an average side",
+            "kind": "attack",
+            "team": "Everton",
+            "change": -3.1,
+            "helps": "Coventry"
+          },
+          {
+            "label": "Everton's defence",
+            "detail": "Everton concede 10% more than an average side",
+            "kind": "defence",
+            "team": "Everton",
+            "change": -2.3,
+            "helps": "Coventry"
+          }
+        ],
+        "total": 49.7
+      },
+      "standings": {
+        "home": {
+          "position": 7,
+          "points": 13,
+          "played": 9
+        },
+        "away": {
+          "position": 16,
+          "points": 9,
+          "played": 9
+        }
+      },
+      "xg": {
+        "home": {
+          "games": 5,
+          "venue": "home",
+          "xg_for": 1.4,
+          "xg_against": 1.42,
+          "goals_for": 1.2,
+          "goals_against": 1.4
+        },
+        "away": {
+          "games": 4,
+          "venue": "away",
+          "xg_for": 0.97,
+          "xg_against": 1.58,
+          "goals_for": 0.5,
+          "goals_against": 1.75
+        }
+      },
+      "finishing": {
+        "home": {
+          "games": 8,
+          "goals": 8,
+          "xg": 12.4,
+          "difference": -4.4
+        },
+        "away": {
+          "games": 9,
+          "goals": 9,
+          "xg": 9.2,
+          "difference": -0.2
+        }
+      },
+      "form": {
+        "home": [
+          {
+            "result": "W",
+            "line": "Everton 1-0 Ipswich",
+            "date": "2026-09-19"
+          },
+          {
+            "result": "D",
+            "line": "Hull 2-2 Everton",
+            "date": "2026-10-11"
+          },
+          {
+            "result": "L",
+            "line": "Everton 0-2 Chelsea",
+            "date": "2026-10-17"
+          },
+          {
+            "result": "L",
+            "line": "Arsenal 2-0 Everton",
+            "date": "2026-10-24"
+          },
+          {
+            "result": "W",
+            "line": "Newcastle 0-1 Everton",
+            "date": "2026-11-02"
+          }
+        ],
+        "away": [
+          {
+            "result": "W",
+            "line": "Nott'm Forest 0-1 Coventry",
+            "date": "2026-09-19"
+          },
+          {
+            "result": "W",
+            "line": "Coventry 4-1 Newcastle",
+            "date": "2026-10-12"
+          },
+          {
+            "result": "L",
+            "line": "Tottenham 3-1 Coventry",
+            "date": "2026-10-19"
+          },
+          {
+            "result": "L",
+            "line": "Coventry 0-1 Fulham",
+            "date": "2026-10-24"
+          },
+          {
+            "result": "W",
+            "line": "Coventry 3-1 Sunderland",
+            "date": "2026-10-31"
+          }
+        ]
+      },
+      "head_to_head": [],
+      "team_news": [],
+      "ranks": {
+        "attack": [
+          "Man City",
+          "Arsenal",
+          "Brighton",
+          "Chelsea",
+          "Bournemouth",
+          "Liverpool",
+          "Brentford",
+          "Man United",
+          "Aston Villa",
+          "Newcastle",
+          "Leeds",
+          "Nott'm Forest",
+          "Crystal Palace",
+          "Ipswich",
+          "Tottenham",
+          "Fulham",
+          "Everton",
+          "Sunderland",
+          "Coventry",
+          "Hull"
+        ],
+        "defence": [
+          "Arsenal",
+          "Man City",
+          "Brighton",
+          "Liverpool",
+          "Leeds",
+          "Bournemouth",
+          "Everton",
+          "Nott'm Forest",
+          "Fulham",
+          "Tottenham",
+          "Brentford",
+          "Man United",
+          "Hull",
+          "Aston Villa",
+          "Chelsea",
+          "Sunderland",
+          "Coventry",
+          "Newcastle",
+          "Crystal Palace",
+          "Ipswich"
+        ],
+        "overall": [
+          "Arsenal",
+          "Man City",
+          "Brighton",
+          "Liverpool",
+          "Bournemouth",
+          "Chelsea",
+          "Brentford",
+          "Man United",
+          "Leeds",
+          "Aston Villa",
+          "Nott'm Forest",
+          "Everton",
+          "Tottenham",
+          "Newcastle",
+          "Fulham",
+          "Sunderland",
+          "Crystal Palace",
+          "Hull",
+          "Coventry",
+          "Ipswich"
+        ]
+      },
+      "luck": {
+        "home": {
+          "games": 10,
+          "points": 10,
+          "xpts": 12.8,
+          "difference": -2.8
+        },
+        "away": {
+          "games": 9,
+          "points": 9,
+          "xpts": 9.4,
+          "difference": -0.4
+        }
+      },
+      "luck_gap": 0.264,
+      "reasons": [
+        {
+          "topic": "Chances created and allowed",
+          "title": "Everton are creating far more at home",
+          "text": "Expected goals (xG) measures the quality of chances. Over their last 5 home games Everton created 1.4 and allowed 1.4 a game. Over their last 4 away games Coventry created 1.0 and allowed 1.6."
+        },
+        {
+          "topic": "Form",
+          "title": "Coventry arrive in better form",
+          "text": "Last five league games: Everton took 7 points, Coventry took 9."
+        },
+        {
+          "topic": "Finishing",
+          "title": "Everton are scoring below their chances",
+          "text": "Everton have 8 goals from 12.4 xG this season. Finishing like that tends to pick up, so we lean on the chances, not the goals."
+        }
+      ],
+      "headline": "Coventry's leaky defence hands Everton the edge",
+      "change_our_mind": "The biggest single factor is Coventry's defence. If Coventry's defence were only average, the home win chance would drop to 39%.",
+      "kickoff": "2026-11-06T20:00:00+00:00",
+      "venue": null,
+      "after_kickoff": true,
+      "result": [
+        3,
+        1
+      ]
+    }
+  ]
+}

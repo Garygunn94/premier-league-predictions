@@ -1,0 +1,2831 @@
+{
+  "as_of": "2026-11-07",
+  "season": "2026/27",
+  "round": "Regular Season - 12",
+  "settings": {
+    "half_life_days": 365.0,
+    "xg_weight": 0.0,
+    "ridge": 1.0,
+    "rho": -0.08
+  },
+  "games": [
+    {
+      "home_team": "Malaga",
+      "away_team": "Racing Santander",
+      "call": "H",
+      "call_name": "home win",
+      "confidence": "too close to call",
+      "probabilities": {
+        "H": 0.422,
+        "D": 0.249,
+        "A": 0.329
+      },
+      "market": {
+        "H": 0.395,
+        "D": 0.266,
+        "A": 0.339
+      },
+      "expected_goals": {
+        "home": 1.72,
+        "away": 1.5
+      },
+      "score": [
+        2,
+        1
+      ],
+      "top_scores": [
+        {
+          "score": [
+            1,
+            1
+          ],
+          "probability": 0.112
+        },
+        {
+          "score": [
+            2,
+            1
+          ],
+          "probability": 0.089
+        },
+        {
+          "score": [
+            1,
+            2
+          ],
+          "probability": 0.077
+        },
+        {
+          "score": [
+            2,
+            2
+          ],
+          "probability": 0.066
+        },
+        {
+          "score": [
+            1,
+            0
+          ],
+          "probability": 0.061
+        }
+      ],
+      "waterfall": {
+        "start": 43.9,
+        "start_label": "Average home side v average visitor",
+        "steps": [
+          {
+            "label": "Racing Santander's defence",
+            "detail": "Racing Santander concede 87% more than an average side",
+            "kind": "defence",
+            "team": "Racing Santander",
+            "change": 23.5,
+            "helps": "Malaga"
+          },
+          {
+            "label": "Malaga's attack",
+            "detail": "Malaga create and score 32% less than an average side",
+            "kind": "attack",
+            "team": "Malaga",
+            "change": -14.8,
+            "helps": "Racing Santander"
+          },
+          {
+            "label": "Malaga's defence",
+            "detail": "Malaga concede 36% more than an average side",
+            "kind": "defence",
+            "team": "Malaga",
+            "change": -8.0,
+            "helps": "Racing Santander"
+          },
+          {
+            "label": "Racing Santander's attack",
+            "detail": "Racing Santander create and score 10% more than an average side",
+            "kind": "attack",
+            "team": "Racing Santander",
+            "change": -2.4,
+            "helps": "Racing Santander"
+          }
+        ],
+        "total": 42.2
+      },
+      "standings": {
+        "home": {
+          "position": 20,
+          "points": 5,
+          "played": 11
+        },
+        "away": {
+          "position": 16,
+          "points": 11,
+          "played": 11
+        }
+      },
+      "xg": {
+        "home": null,
+        "away": null
+      },
+      "finishing": {
+        "home": null,
+        "away": null
+      },
+      "form": {
+        "home": [
+          {
+            "result": "L",
+            "line": "Getafe 1-0 Malaga",
+            "date": "2026-09-20"
+          },
+          {
+            "result": "D",
+            "line": "Malaga 1-1 Espanyol",
+            "date": "2026-10-09"
+          },
+          {
+            "result": "L",
+            "line": "Malaga 2-5 Real Sociedad",
+            "date": "2026-10-18"
+          },
+          {
+            "result": "D",
+            "line": "Alaves 1-1 Malaga",
+            "date": "2026-10-23"
+          },
+          {
+            "result": "L",
+            "line": "Real Betis 2-1 Malaga",
+            "date": "2026-10-31"
+          }
+        ],
+        "away": [
+          {
+            "result": "L",
+            "line": "Celta Vigo 5-0 Racing Santander",
+            "date": "2026-09-19"
+          },
+          {
+            "result": "D",
+            "line": "Racing Santander 2-2 Valencia",
+            "date": "2026-10-11"
+          },
+          {
+            "result": "L",
+            "line": "Osasuna 2-0 Racing Santander",
+            "date": "2026-10-18"
+          },
+          {
+            "result": "W",
+            "line": "Racing Santander 2-1 Espanyol",
+            "date": "2026-10-24"
+          },
+          {
+            "result": "L",
+            "line": "Racing Santander 0-3 Real Madrid",
+            "date": "2026-11-01"
+          }
+        ]
+      },
+      "head_to_head": [],
+      "team_news": [],
+      "ranks": {
+        "attack": [
+          "Barcelona",
+          "Real Madrid",
+          "Villarreal",
+          "Atletico Madrid",
+          "Real Betis",
+          "Real Sociedad",
+          "Racing Santander",
+          "Levante",
+          "Elche",
+          "Celta Vigo",
+          "Sevilla",
+          "Athletic Club",
+          "Deportivo La Coruna",
+          "Alaves",
+          "Rayo Vallecano",
+          "Osasuna",
+          "Valencia",
+          "Espanyol",
+          "Malaga",
+          "Getafe"
+        ],
+        "defence": [
+          "Real Madrid",
+          "Atletico Madrid",
+          "Barcelona",
+          "Getafe",
+          "Athletic Club",
+          "Celta Vigo",
+          "Villarreal",
+          "Real Betis",
+          "Rayo Vallecano",
+          "Deportivo La Coruna",
+          "Espanyol",
+          "Valencia",
+          "Alaves",
+          "Elche",
+          "Osasuna",
+          "Sevilla",
+          "Real Sociedad",
+          "Levante",
+          "Malaga",
+          "Racing Santander"
+        ],
+        "overall": [
+          "Barcelona",
+          "Real Madrid",
+          "Atletico Madrid",
+          "Villarreal",
+          "Real Betis",
+          "Athletic Club",
+          "Celta Vigo",
+          "Real Sociedad",
+          "Deportivo La Coruna",
+          "Rayo Vallecano",
+          "Elche",
+          "Sevilla",
+          "Levante",
+          "Alaves",
+          "Espanyol",
+          "Valencia",
+          "Osasuna",
+          "Getafe",
+          "Racing Santander",
+          "Malaga"
+        ]
+      },
+      "luck": {
+        "home": null,
+        "away": null
+      },
+      "luck_gap": null,
+      "reasons": [
+        {
+          "topic": "Form",
+          "title": "Racing Santander arrive in better form",
+          "text": "Last five league games: Malaga took 2 points, Racing Santander took 4."
+        }
+      ],
+      "headline": "Nothing to split Malaga and Racing Santander",
+      "change_our_mind": "If Racing Santander's defence were only average, this would swing to an away win (50%).",
+      "kickoff": "2026-11-07T23:00:00+00:00",
+      "venue": null
+    },
+    {
+      "home_team": "Villarreal",
+      "away_team": "Getafe",
+      "call": "H",
+      "call_name": "home win",
+      "confidence": "strong",
+      "probabilities": {
+        "H": 0.591,
+        "D": 0.265,
+        "A": 0.145
+      },
+      "market": {
+        "H": 0.657,
+        "D": 0.212,
+        "A": 0.131
+      },
+      "expected_goals": {
+        "home": 1.6,
+        "away": 0.67
+      },
+      "score": [
+        1,
+        0
+      ],
+      "top_scores": [
+        {
+          "score": [
+            1,
+            0
+          ],
+          "probability": 0.156
+        },
+        {
+          "score": [
+            2,
+            0
+          ],
+          "probability": 0.132
+        },
+        {
+          "score": [
+            1,
+            1
+          ],
+          "probability": 0.119
+        },
+        {
+          "score": [
+            0,
+            0
+          ],
+          "probability": 0.112
+        },
+        {
+          "score": [
+            2,
+            1
+          ],
+          "probability": 0.089
+        }
+      ],
+      "waterfall": {
+        "start": 43.9,
+        "start_label": "Average home side v average visitor",
+        "steps": [
+          {
+            "label": "Villarreal's attack",
+            "detail": "Villarreal create and score 39% more than an average side",
+            "kind": "attack",
+            "team": "Villarreal",
+            "change": 12.9,
+            "helps": "Villarreal"
+          },
+          {
+            "label": "Getafe's attack",
+            "detail": "Getafe create and score 33% less than an average side",
+            "kind": "attack",
+            "team": "Getafe",
+            "change": 8.5,
+            "helps": "Villarreal"
+          },
+          {
+            "label": "Getafe's defence",
+            "detail": "Getafe concede 15% less than an average side",
+            "kind": "defence",
+            "team": "Getafe",
+            "change": -6.2,
+            "helps": "Getafe"
+          },
+          {
+            "label": "Villarreal's defence",
+            "detail": "Villarreal concede 0% more than an average side",
+            "kind": "defence",
+            "team": "Villarreal",
+            "change": -0.1,
+            "helps": "Getafe"
+          }
+        ],
+        "total": 59.1
+      },
+      "standings": {
+        "home": {
+          "position": 9,
+          "points": 12,
+          "played": 11
+        },
+        "away": {
+          "position": 13,
+          "points": 12,
+          "played": 11
+        }
+      },
+      "xg": {
+        "home": null,
+        "away": null
+      },
+      "finishing": {
+        "home": null,
+        "away": null
+      },
+      "form": {
+        "home": [
+          {
+            "result": "W",
+            "line": "Villarreal 3-1 Levante",
+            "date": "2026-09-20"
+          },
+          {
+            "result": "L",
+            "line": "Real Madrid 1-0 Villarreal",
+            "date": "2026-10-10"
+          },
+          {
+            "result": "D",
+            "line": "Villarreal 0-0 Elche",
+            "date": "2026-10-17"
+          },
+          {
+            "result": "W",
+            "line": "Valencia 1-2 Villarreal",
+            "date": "2026-10-24"
+          },
+          {
+            "result": "L",
+            "line": "Villarreal 0-1 Espanyol",
+            "date": "2026-10-30"
+          }
+        ],
+        "away": [
+          {
+            "result": "W",
+            "line": "Getafe 1-0 Malaga",
+            "date": "2026-09-20"
+          },
+          {
+            "result": "L",
+            "line": "Barcelona 3-0 Getafe",
+            "date": "2026-10-10"
+          },
+          {
+            "result": "D",
+            "line": "Getafe 1-1 Rayo Vallecano",
+            "date": "2026-10-19"
+          },
+          {
+            "result": "L",
+            "line": "Athletic Club 4-0 Getafe",
+            "date": "2026-10-25"
+          },
+          {
+            "result": "W",
+            "line": "Getafe 3-1 Sevilla",
+            "date": "2026-11-01"
+          }
+        ]
+      },
+      "head_to_head": [
+        {
+          "date": "2026-02-14",
+          "line": "Getafe 2-1 Villarreal",
+          "margin": 1
+        },
+        {
+          "date": "2025-12-06",
+          "line": "Villarreal 2-0 Getafe",
+          "margin": 2
+        },
+        {
+          "date": "2025-03-30",
+          "line": "Getafe 1-2 Villarreal",
+          "margin": 1
+        },
+        {
+          "date": "2024-10-20",
+          "line": "Villarreal 1-1 Getafe",
+          "margin": 0
+        }
+      ],
+      "team_news": [],
+      "ranks": {
+        "attack": [
+          "Barcelona",
+          "Real Madrid",
+          "Villarreal",
+          "Atletico Madrid",
+          "Real Betis",
+          "Real Sociedad",
+          "Racing Santander",
+          "Levante",
+          "Elche",
+          "Celta Vigo",
+          "Sevilla",
+          "Athletic Club",
+          "Deportivo La Coruna",
+          "Alaves",
+          "Rayo Vallecano",
+          "Osasuna",
+          "Valencia",
+          "Espanyol",
+          "Malaga",
+          "Getafe"
+        ],
+        "defence": [
+          "Real Madrid",
+          "Atletico Madrid",
+          "Barcelona",
+          "Getafe",
+          "Athletic Club",
+          "Celta Vigo",
+          "Villarreal",
+          "Real Betis",
+          "Rayo Vallecano",
+          "Deportivo La Coruna",
+          "Espanyol",
+          "Valencia",
+          "Alaves",
+          "Elche",
+          "Osasuna",
+          "Sevilla",
+          "Real Sociedad",
+          "Levante",
+          "Malaga",
+          "Racing Santander"
+        ],
+        "overall": [
+          "Barcelona",
+          "Real Madrid",
+          "Atletico Madrid",
+          "Villarreal",
+          "Real Betis",
+          "Athletic Club",
+          "Celta Vigo",
+          "Real Sociedad",
+          "Deportivo La Coruna",
+          "Rayo Vallecano",
+          "Elche",
+          "Sevilla",
+          "Levante",
+          "Alaves",
+          "Espanyol",
+          "Valencia",
+          "Osasuna",
+          "Getafe",
+          "Racing Santander",
+          "Malaga"
+        ]
+      },
+      "luck": {
+        "home": null,
+        "away": null
+      },
+      "luck_gap": null,
+      "reasons": [
+        {
+          "topic": "Form",
+          "title": "Similar recent form",
+          "text": "Last five league games: Villarreal took 7 points, Getafe took 7."
+        },
+        {
+          "topic": "Head to head",
+          "title": "Tight when they meet",
+          "text": "3 of the last 4 meetings were drawn or won by one goal. Past meetings count for little in the model."
+        }
+      ],
+      "headline": "Villarreal's attack should be too much for Getafe",
+      "change_our_mind": "The biggest single factor is Villarreal's attack. If Villarreal's attack were only average, the home win chance would drop to 46%.",
+      "kickoff": "2026-11-07T23:00:00+00:00",
+      "venue": null
+    },
+    {
+      "home_team": "Atletico Madrid",
+      "away_team": "Barcelona",
+      "call": "A",
+      "call_name": "away win",
+      "confidence": "too close to call",
+      "probabilities": {
+        "H": 0.328,
+        "D": 0.243,
+        "A": 0.428
+      },
+      "market": {
+        "H": 0.26,
+        "D": 0.223,
+        "A": 0.518
+      },
+      "expected_goals": {
+        "home": 1.54,
+        "away": 1.78
+      },
+      "score": [
+        1,
+        2
+      ],
+      "top_scores": [
+        {
+          "score": [
+            1,
+            1
+          ],
+          "probability": 0.107
+        },
+        {
+          "score": [
+            1,
+            2
+          ],
+          "probability": 0.088
+        },
+        {
+          "score": [
+            2,
+            1
+          ],
+          "probability": 0.076
+        },
+        {
+          "score": [
+            2,
+            2
+          ],
+          "probability": 0.068
+        },
+        {
+          "score": [
+            0,
+            2
+          ],
+          "probability": 0.057
+        }
+      ],
+      "waterfall": {
+        "start": 26.6,
+        "start_label": "Average home side v average visitor",
+        "steps": [
+          {
+            "label": "Barcelona's attack",
+            "detail": "Barcelona create and score 127% more than an average side",
+            "kind": "attack",
+            "team": "Barcelona",
+            "change": 27.7,
+            "helps": "Barcelona"
+          },
+          {
+            "label": "Atletico Madrid's attack",
+            "detail": "Atletico Madrid create and score 39% more than an average side",
+            "kind": "attack",
+            "team": "Atletico Madrid",
+            "change": -8.5,
+            "helps": "Atletico Madrid"
+          },
+          {
+            "label": "Atletico Madrid's defence",
+            "detail": "Atletico Madrid concede 22% less than an average side",
+            "kind": "defence",
+            "team": "Atletico Madrid",
+            "change": -8.2,
+            "helps": "Atletico Madrid"
+          },
+          {
+            "label": "Barcelona's defence",
+            "detail": "Barcelona concede 18% less than an average side",
+            "kind": "defence",
+            "team": "Barcelona",
+            "change": 5.1,
+            "helps": "Barcelona"
+          }
+        ],
+        "total": 42.8
+      },
+      "standings": {
+        "home": {
+          "position": 2,
+          "points": 28,
+          "played": 11
+        },
+        "away": {
+          "position": 1,
+          "points": 30,
+          "played": 11
+        }
+      },
+      "xg": {
+        "home": null,
+        "away": null
+      },
+      "finishing": {
+        "home": null,
+        "away": null
+      },
+      "form": {
+        "home": [
+          {
+            "result": "W",
+            "line": "Atletico Madrid 2-1 Real Madrid",
+            "date": "2026-09-20"
+          },
+          {
+            "result": "W",
+            "line": "Alaves 1-2 Atletico Madrid",
+            "date": "2026-10-10"
+          },
+          {
+            "result": "W",
+            "line": "Espanyol 0-1 Atletico Madrid",
+            "date": "2026-10-17"
+          },
+          {
+            "result": "W",
+            "line": "Atletico Madrid 1-0 Deportivo La Coruna",
+            "date": "2026-10-24"
+          },
+          {
+            "result": "W",
+            "line": "Levante 0-2 Atletico Madrid",
+            "date": "2026-10-31"
+          }
+        ],
+        "away": [
+          {
+            "result": "W",
+            "line": "Sevilla 1-3 Barcelona",
+            "date": "2026-09-19"
+          },
+          {
+            "result": "W",
+            "line": "Barcelona 3-0 Getafe",
+            "date": "2026-10-10"
+          },
+          {
+            "result": "W",
+            "line": "Real Betis 2-5 Barcelona",
+            "date": "2026-10-17"
+          },
+          {
+            "result": "L",
+            "line": "Barcelona 1-2 Real Madrid",
+            "date": "2026-10-25"
+          },
+          {
+            "result": "W",
+            "line": "Barcelona 6-1 Alaves",
+            "date": "2026-10-31"
+          }
+        ]
+      },
+      "head_to_head": [
+        {
+          "date": "2026-04-04",
+          "line": "Atletico Madrid 1-2 Barcelona",
+          "margin": 1
+        },
+        {
+          "date": "2025-12-02",
+          "line": "Barcelona 3-1 Atletico Madrid",
+          "margin": 2
+        },
+        {
+          "date": "2025-03-16",
+          "line": "Atletico Madrid 2-4 Barcelona",
+          "margin": 2
+        },
+        {
+          "date": "2024-12-21",
+          "line": "Barcelona 1-2 Atletico Madrid",
+          "margin": 1
+        }
+      ],
+      "team_news": [],
+      "ranks": {
+        "attack": [
+          "Barcelona",
+          "Real Madrid",
+          "Villarreal",
+          "Atletico Madrid",
+          "Real Betis",
+          "Real Sociedad",
+          "Racing Santander",
+          "Levante",
+          "Elche",
+          "Celta Vigo",
+          "Sevilla",
+          "Athletic Club",
+          "Deportivo La Coruna",
+          "Alaves",
+          "Rayo Vallecano",
+          "Osasuna",
+          "Valencia",
+          "Espanyol",
+          "Malaga",
+          "Getafe"
+        ],
+        "defence": [
+          "Real Madrid",
+          "Atletico Madrid",
+          "Barcelona",
+          "Getafe",
+          "Athletic Club",
+          "Celta Vigo",
+          "Villarreal",
+          "Real Betis",
+          "Rayo Vallecano",
+          "Deportivo La Coruna",
+          "Espanyol",
+          "Valencia",
+          "Alaves",
+          "Elche",
+          "Osasuna",
+          "Sevilla",
+          "Real Sociedad",
+          "Levante",
+          "Malaga",
+          "Racing Santander"
+        ],
+        "overall": [
+          "Barcelona",
+          "Real Madrid",
+          "Atletico Madrid",
+          "Villarreal",
+          "Real Betis",
+          "Athletic Club",
+          "Celta Vigo",
+          "Real Sociedad",
+          "Deportivo La Coruna",
+          "Rayo Vallecano",
+          "Elche",
+          "Sevilla",
+          "Levante",
+          "Alaves",
+          "Espanyol",
+          "Valencia",
+          "Osasuna",
+          "Getafe",
+          "Racing Santander",
+          "Malaga"
+        ]
+      },
+      "luck": {
+        "home": null,
+        "away": null
+      },
+      "luck_gap": null,
+      "reasons": [
+        {
+          "topic": "Form",
+          "title": "Atletico Madrid arrive in better form",
+          "text": "Last five league games: Atletico Madrid took 15 points, Barcelona took 12."
+        },
+        {
+          "topic": "Head to head",
+          "title": "Tight when they meet",
+          "text": "2 of the last 4 meetings were drawn or won by one goal. Past meetings count for little in the model."
+        }
+      ],
+      "headline": "Nothing to split Atletico Madrid and Barcelona",
+      "change_our_mind": "If Barcelona's attack were only average, this would swing to a home win (54%).",
+      "kickoff": "2026-11-07T23:00:00+00:00",
+      "venue": null
+    },
+    {
+      "home_team": "Espanyol",
+      "away_team": "Deportivo La Coruna",
+      "call": "H",
+      "call_name": "home win",
+      "confidence": "too close to call",
+      "probabilities": {
+        "H": 0.394,
+        "D": 0.303,
+        "A": 0.303
+      },
+      "market": {
+        "H": 0.41,
+        "D": 0.286,
+        "A": 0.304
+      },
+      "expected_goals": {
+        "home": 1.24,
+        "away": 1.06
+      },
+      "score": [
+        1,
+        0
+      ],
+      "top_scores": [
+        {
+          "score": [
+            1,
+            1
+          ],
+          "probability": 0.142
+        },
+        {
+          "score": [
+            1,
+            0
+          ],
+          "probability": 0.114
+        },
+        {
+          "score": [
+            0,
+            0
+          ],
+          "probability": 0.11
+        },
+        {
+          "score": [
+            0,
+            1
+          ],
+          "probability": 0.095
+        },
+        {
+          "score": [
+            2,
+            1
+          ],
+          "probability": 0.082
+        }
+      ],
+      "waterfall": {
+        "start": 43.9,
+        "start_label": "Average home side v average visitor",
+        "steps": [
+          {
+            "label": "Espanyol's attack",
+            "detail": "Espanyol create and score 11% less than an average side",
+            "kind": "attack",
+            "team": "Espanyol",
+            "change": -4.3,
+            "helps": "Deportivo La Coruna"
+          },
+          {
+            "label": "Deportivo La Coruna's defence",
+            "detail": "Deportivo La Coruna concede 3% more than an average side",
+            "kind": "defence",
+            "team": "Deportivo La Coruna",
+            "change": 1.2,
+            "helps": "Espanyol"
+          },
+          {
+            "label": "Espanyol's defence",
+            "detail": "Espanyol concede 5% more than an average side",
+            "kind": "defence",
+            "team": "Espanyol",
+            "change": -1.1,
+            "helps": "Deportivo La Coruna"
+          },
+          {
+            "label": "Deportivo La Coruna's attack",
+            "detail": "Deportivo La Coruna create and score 1% more than an average side",
+            "kind": "attack",
+            "team": "Deportivo La Coruna",
+            "change": -0.3,
+            "helps": "Deportivo La Coruna"
+          }
+        ],
+        "total": 39.4
+      },
+      "standings": {
+        "home": {
+          "position": 14,
+          "points": 11,
+          "played": 11
+        },
+        "away": {
+          "position": 8,
+          "points": 14,
+          "played": 11
+        }
+      },
+      "xg": {
+        "home": null,
+        "away": null
+      },
+      "finishing": {
+        "home": null,
+        "away": null
+      },
+      "form": {
+        "home": [
+          {
+            "result": "L",
+            "line": "Espanyol 1-3 Elche",
+            "date": "2026-09-18"
+          },
+          {
+            "result": "D",
+            "line": "Malaga 1-1 Espanyol",
+            "date": "2026-10-09"
+          },
+          {
+            "result": "L",
+            "line": "Espanyol 0-1 Atletico Madrid",
+            "date": "2026-10-17"
+          },
+          {
+            "result": "L",
+            "line": "Racing Santander 2-1 Espanyol",
+            "date": "2026-10-24"
+          },
+          {
+            "result": "W",
+            "line": "Villarreal 0-1 Espanyol",
+            "date": "2026-10-30"
+          }
+        ],
+        "away": [
+          {
+            "result": "D",
+            "line": "Deportivo La Coruna 1-1 Real Betis",
+            "date": "2026-09-20"
+          },
+          {
+            "result": "L",
+            "line": "Real Sociedad 3-2 Deportivo La Coruna",
+            "date": "2026-10-11"
+          },
+          {
+            "result": "D",
+            "line": "Deportivo La Coruna 1-1 Levante",
+            "date": "2026-10-16"
+          },
+          {
+            "result": "L",
+            "line": "Atletico Madrid 1-0 Deportivo La Coruna",
+            "date": "2026-10-24"
+          },
+          {
+            "result": "W",
+            "line": "Deportivo La Coruna 2-1 Osasuna",
+            "date": "2026-11-02"
+          }
+        ]
+      },
+      "head_to_head": [],
+      "team_news": [],
+      "ranks": {
+        "attack": [
+          "Barcelona",
+          "Real Madrid",
+          "Villarreal",
+          "Atletico Madrid",
+          "Real Betis",
+          "Real Sociedad",
+          "Racing Santander",
+          "Levante",
+          "Elche",
+          "Celta Vigo",
+          "Sevilla",
+          "Athletic Club",
+          "Deportivo La Coruna",
+          "Alaves",
+          "Rayo Vallecano",
+          "Osasuna",
+          "Valencia",
+          "Espanyol",
+          "Malaga",
+          "Getafe"
+        ],
+        "defence": [
+          "Real Madrid",
+          "Atletico Madrid",
+          "Barcelona",
+          "Getafe",
+          "Athletic Club",
+          "Celta Vigo",
+          "Villarreal",
+          "Real Betis",
+          "Rayo Vallecano",
+          "Deportivo La Coruna",
+          "Espanyol",
+          "Valencia",
+          "Alaves",
+          "Elche",
+          "Osasuna",
+          "Sevilla",
+          "Real Sociedad",
+          "Levante",
+          "Malaga",
+          "Racing Santander"
+        ],
+        "overall": [
+          "Barcelona",
+          "Real Madrid",
+          "Atletico Madrid",
+          "Villarreal",
+          "Real Betis",
+          "Athletic Club",
+          "Celta Vigo",
+          "Real Sociedad",
+          "Deportivo La Coruna",
+          "Rayo Vallecano",
+          "Elche",
+          "Sevilla",
+          "Levante",
+          "Alaves",
+          "Espanyol",
+          "Valencia",
+          "Osasuna",
+          "Getafe",
+          "Racing Santander",
+          "Malaga"
+        ]
+      },
+      "luck": {
+        "home": null,
+        "away": null
+      },
+      "luck_gap": null,
+      "reasons": [
+        {
+          "topic": "Form",
+          "title": "Deportivo La Coruna arrive in better form",
+          "text": "Last five league games: Espanyol took 4 points, Deportivo La Coruna took 5."
+        }
+      ],
+      "headline": "Nothing to split Espanyol and Deportivo La Coruna",
+      "change_our_mind": "The biggest single factor is Deportivo La Coruna's defence. If Deportivo La Coruna's defence were only average, the home win chance would drop to 38%.",
+      "kickoff": "2026-11-07T23:00:00+00:00",
+      "venue": null
+    },
+    {
+      "home_team": "Real Sociedad",
+      "away_team": "Rayo Vallecano",
+      "call": "H",
+      "call_name": "home win",
+      "confidence": "solid",
+      "probabilities": {
+        "H": 0.483,
+        "D": 0.261,
+        "A": 0.257
+      },
+      "market": {
+        "H": 0.563,
+        "D": 0.229,
+        "A": 0.208
+      },
+      "expected_goals": {
+        "home": 1.67,
+        "away": 1.16
+      },
+      "score": [
+        2,
+        1
+      ],
+      "top_scores": [
+        {
+          "score": [
+            1,
+            1
+          ],
+          "probability": 0.124
+        },
+        {
+          "score": [
+            2,
+            1
+          ],
+          "probability": 0.095
+        },
+        {
+          "score": [
+            1,
+            0
+          ],
+          "probability": 0.089
+        },
+        {
+          "score": [
+            2,
+            0
+          ],
+          "probability": 0.082
+        },
+        {
+          "score": [
+            0,
+            0
+          ],
+          "probability": 0.068
+        }
+      ],
+      "waterfall": {
+        "start": 43.9,
+        "start_label": "Average home side v average visitor",
+        "steps": [
+          {
+            "label": "Real Sociedad's attack",
+            "detail": "Real Sociedad create and score 21% more than an average side",
+            "kind": "attack",
+            "team": "Real Sociedad",
+            "change": 7.4,
+            "helps": "Real Sociedad"
+          },
+          {
+            "label": "Real Sociedad's defence",
+            "detail": "Real Sociedad concede 23% more than an average side",
+            "kind": "defence",
+            "team": "Real Sociedad",
+            "change": -5.1,
+            "helps": "Rayo Vallecano"
+          },
+          {
+            "label": "Rayo Vallecano's attack",
+            "detail": "Rayo Vallecano create and score 5% less than an average side",
+            "kind": "attack",
+            "team": "Rayo Vallecano",
+            "change": 1.4,
+            "helps": "Real Sociedad"
+          },
+          {
+            "label": "Rayo Vallecano's defence",
+            "detail": "Rayo Vallecano concede 2% more than an average side",
+            "kind": "defence",
+            "team": "Rayo Vallecano",
+            "change": 0.8,
+            "helps": "Real Sociedad"
+          }
+        ],
+        "total": 48.3
+      },
+      "standings": {
+        "home": {
+          "position": 5,
+          "points": 19,
+          "played": 11
+        },
+        "away": {
+          "position": 12,
+          "points": 12,
+          "played": 10
+        }
+      },
+      "xg": {
+        "home": null,
+        "away": null
+      },
+      "finishing": {
+        "home": null,
+        "away": null
+      },
+      "form": {
+        "home": [
+          {
+            "result": "W",
+            "line": "Valencia 2-3 Real Sociedad",
+            "date": "2026-09-20"
+          },
+          {
+            "result": "W",
+            "line": "Real Sociedad 3-2 Deportivo La Coruna",
+            "date": "2026-10-11"
+          },
+          {
+            "result": "W",
+            "line": "Malaga 2-5 Real Sociedad",
+            "date": "2026-10-18"
+          },
+          {
+            "result": "W",
+            "line": "Real Sociedad 2-1 Levante",
+            "date": "2026-10-25"
+          },
+          {
+            "result": "L",
+            "line": "Athletic Club 2-1 Real Sociedad",
+            "date": "2026-11-01"
+          }
+        ],
+        "away": [
+          {
+            "result": "W",
+            "line": "Rayo Vallecano 2-1 Espanyol",
+            "date": "2026-09-15"
+          },
+          {
+            "result": "D",
+            "line": "Osasuna 1-1 Rayo Vallecano",
+            "date": "2026-09-19"
+          },
+          {
+            "result": "D",
+            "line": "Getafe 1-1 Rayo Vallecano",
+            "date": "2026-10-19"
+          },
+          {
+            "result": "L",
+            "line": "Rayo Vallecano 0-3 Elche",
+            "date": "2026-10-24"
+          },
+          {
+            "result": "W",
+            "line": "Rayo Vallecano 3-0 Celta Vigo",
+            "date": "2026-10-31"
+          }
+        ]
+      },
+      "head_to_head": [
+        {
+          "date": "2026-04-26",
+          "line": "Rayo Vallecano 3-3 Real Sociedad",
+          "margin": 0
+        },
+        {
+          "date": "2025-10-05",
+          "line": "Real Sociedad 0-1 Rayo Vallecano",
+          "margin": 1
+        },
+        {
+          "date": "2025-03-16",
+          "line": "Rayo Vallecano 2-2 Real Sociedad",
+          "margin": 0
+        },
+        {
+          "date": "2024-08-18",
+          "line": "Real Sociedad 1-2 Rayo Vallecano",
+          "margin": 1
+        }
+      ],
+      "team_news": [],
+      "ranks": {
+        "attack": [
+          "Barcelona",
+          "Real Madrid",
+          "Villarreal",
+          "Atletico Madrid",
+          "Real Betis",
+          "Real Sociedad",
+          "Racing Santander",
+          "Levante",
+          "Elche",
+          "Celta Vigo",
+          "Sevilla",
+          "Athletic Club",
+          "Deportivo La Coruna",
+          "Alaves",
+          "Rayo Vallecano",
+          "Osasuna",
+          "Valencia",
+          "Espanyol",
+          "Malaga",
+          "Getafe"
+        ],
+        "defence": [
+          "Real Madrid",
+          "Atletico Madrid",
+          "Barcelona",
+          "Getafe",
+          "Athletic Club",
+          "Celta Vigo",
+          "Villarreal",
+          "Real Betis",
+          "Rayo Vallecano",
+          "Deportivo La Coruna",
+          "Espanyol",
+          "Valencia",
+          "Alaves",
+          "Elche",
+          "Osasuna",
+          "Sevilla",
+          "Real Sociedad",
+          "Levante",
+          "Malaga",
+          "Racing Santander"
+        ],
+        "overall": [
+          "Barcelona",
+          "Real Madrid",
+          "Atletico Madrid",
+          "Villarreal",
+          "Real Betis",
+          "Athletic Club",
+          "Celta Vigo",
+          "Real Sociedad",
+          "Deportivo La Coruna",
+          "Rayo Vallecano",
+          "Elche",
+          "Sevilla",
+          "Levante",
+          "Alaves",
+          "Espanyol",
+          "Valencia",
+          "Osasuna",
+          "Getafe",
+          "Racing Santander",
+          "Malaga"
+        ]
+      },
+      "luck": {
+        "home": null,
+        "away": null
+      },
+      "luck_gap": null,
+      "reasons": [
+        {
+          "topic": "Form",
+          "title": "Real Sociedad arrive in better form",
+          "text": "Last five league games: Real Sociedad took 12 points, Rayo Vallecano took 8."
+        },
+        {
+          "topic": "Head to head",
+          "title": "Tight when they meet",
+          "text": "All of the last 4 meetings were drawn or won by one goal. Past meetings count for little in the model."
+        }
+      ],
+      "headline": "Real Sociedad's attack should be too much for Rayo Vallecano",
+      "change_our_mind": "The biggest single factor is Real Sociedad's attack. If Real Sociedad's attack were only average, the home win chance would drop to 41%.",
+      "kickoff": "2026-11-07T23:00:00+00:00",
+      "venue": null
+    },
+    {
+      "home_team": "Celta Vigo",
+      "away_team": "Levante",
+      "call": "H",
+      "call_name": "home win",
+      "confidence": "solid",
+      "probabilities": {
+        "H": 0.532,
+        "D": 0.251,
+        "A": 0.217
+      },
+      "market": {
+        "H": 0.504,
+        "D": 0.263,
+        "A": 0.233
+      },
+      "expected_goals": {
+        "home": 1.78,
+        "away": 1.06
+      },
+      "score": [
+        2,
+        1
+      ],
+      "top_scores": [
+        {
+          "score": [
+            1,
+            1
+          ],
+          "probability": 0.119
+        },
+        {
+          "score": [
+            2,
+            1
+          ],
+          "probability": 0.098
+        },
+        {
+          "score": [
+            1,
+            0
+          ],
+          "probability": 0.095
+        },
+        {
+          "score": [
+            2,
+            0
+          ],
+          "probability": 0.092
+        },
+        {
+          "score": [
+            0,
+            0
+          ],
+          "probability": 0.067
+        }
+      ],
+      "waterfall": {
+        "start": 43.9,
+        "start_label": "Average home side v average visitor",
+        "steps": [
+          {
+            "label": "Levante's defence",
+            "detail": "Levante concede 26% more than an average side",
+            "kind": "defence",
+            "team": "Levante",
+            "change": 9.2,
+            "helps": "Celta Vigo"
+          },
+          {
+            "label": "Levante's attack",
+            "detail": "Levante create and score 8% more than an average side",
+            "kind": "attack",
+            "team": "Levante",
+            "change": -1.9,
+            "helps": "Levante"
+          },
+          {
+            "label": "Celta Vigo's attack",
+            "detail": "Celta Vigo create and score 4% more than an average side",
+            "kind": "attack",
+            "team": "Celta Vigo",
+            "change": 1.6,
+            "helps": "Celta Vigo"
+          },
+          {
+            "label": "Celta Vigo's defence",
+            "detail": "Celta Vigo concede 1% less than an average side",
+            "kind": "defence",
+            "team": "Celta Vigo",
+            "change": 0.4,
+            "helps": "Celta Vigo"
+          }
+        ],
+        "total": 53.2
+      },
+      "standings": {
+        "home": {
+          "position": 10,
+          "points": 12,
+          "played": 11
+        },
+        "away": {
+          "position": 18,
+          "points": 10,
+          "played": 11
+        }
+      },
+      "xg": {
+        "home": null,
+        "away": null
+      },
+      "finishing": {
+        "home": null,
+        "away": null
+      },
+      "form": {
+        "home": [
+          {
+            "result": "W",
+            "line": "Celta Vigo 5-0 Racing Santander",
+            "date": "2026-09-19"
+          },
+          {
+            "result": "D",
+            "line": "Elche 0-0 Celta Vigo",
+            "date": "2026-10-11"
+          },
+          {
+            "result": "W",
+            "line": "Celta Vigo 2-1 Alaves",
+            "date": "2026-10-18"
+          },
+          {
+            "result": "D",
+            "line": "Celta Vigo 0-0 Real Betis",
+            "date": "2026-10-25"
+          },
+          {
+            "result": "L",
+            "line": "Rayo Vallecano 3-0 Celta Vigo",
+            "date": "2026-10-31"
+          }
+        ],
+        "away": [
+          {
+            "result": "D",
+            "line": "Levante 3-3 Sevilla",
+            "date": "2026-10-12"
+          },
+          {
+            "result": "D",
+            "line": "Deportivo La Coruna 1-1 Levante",
+            "date": "2026-10-16"
+          },
+          {
+            "result": "W",
+            "line": "Levante 3-1 Athletic Club",
+            "date": "2026-10-21"
+          },
+          {
+            "result": "L",
+            "line": "Real Sociedad 2-1 Levante",
+            "date": "2026-10-25"
+          },
+          {
+            "result": "L",
+            "line": "Levante 0-2 Atletico Madrid",
+            "date": "2026-10-31"
+          }
+        ]
+      },
+      "head_to_head": [
+        {
+          "date": "2026-05-12",
+          "line": "Celta Vigo 2-3 Levante",
+          "margin": 1
+        },
+        {
+          "date": "2025-11-02",
+          "line": "Levante 1-2 Celta Vigo",
+          "margin": 1
+        }
+      ],
+      "team_news": [],
+      "ranks": {
+        "attack": [
+          "Barcelona",
+          "Real Madrid",
+          "Villarreal",
+          "Atletico Madrid",
+          "Real Betis",
+          "Real Sociedad",
+          "Racing Santander",
+          "Levante",
+          "Elche",
+          "Celta Vigo",
+          "Sevilla",
+          "Athletic Club",
+          "Deportivo La Coruna",
+          "Alaves",
+          "Rayo Vallecano",
+          "Osasuna",
+          "Valencia",
+          "Espanyol",
+          "Malaga",
+          "Getafe"
+        ],
+        "defence": [
+          "Real Madrid",
+          "Atletico Madrid",
+          "Barcelona",
+          "Getafe",
+          "Athletic Club",
+          "Celta Vigo",
+          "Villarreal",
+          "Real Betis",
+          "Rayo Vallecano",
+          "Deportivo La Coruna",
+          "Espanyol",
+          "Valencia",
+          "Alaves",
+          "Elche",
+          "Osasuna",
+          "Sevilla",
+          "Real Sociedad",
+          "Levante",
+          "Malaga",
+          "Racing Santander"
+        ],
+        "overall": [
+          "Barcelona",
+          "Real Madrid",
+          "Atletico Madrid",
+          "Villarreal",
+          "Real Betis",
+          "Athletic Club",
+          "Celta Vigo",
+          "Real Sociedad",
+          "Deportivo La Coruna",
+          "Rayo Vallecano",
+          "Elche",
+          "Sevilla",
+          "Levante",
+          "Alaves",
+          "Espanyol",
+          "Valencia",
+          "Osasuna",
+          "Getafe",
+          "Racing Santander",
+          "Malaga"
+        ]
+      },
+      "luck": {
+        "home": null,
+        "away": null
+      },
+      "luck_gap": null,
+      "reasons": [
+        {
+          "topic": "Form",
+          "title": "Celta Vigo arrive in better form",
+          "text": "Last five league games: Celta Vigo took 8 points, Levante took 5."
+        },
+        {
+          "topic": "Head to head",
+          "title": "Not much history to go on",
+          "text": "All of the last 2 meetings were drawn or won by one goal. Past meetings count for little in the model."
+        }
+      ],
+      "headline": "Levante's leaky defence hands Celta Vigo the edge",
+      "change_our_mind": "The biggest single factor is Levante's defence. If Levante's defence were only average, the home win chance would drop to 44%.",
+      "kickoff": "2026-11-07T23:00:00+00:00",
+      "venue": null
+    },
+    {
+      "home_team": "Valencia",
+      "away_team": "Real Madrid",
+      "call": "A",
+      "call_name": "away win",
+      "confidence": "strong",
+      "probabilities": {
+        "H": 0.172,
+        "D": 0.245,
+        "A": 0.584
+      },
+      "market": {
+        "H": 0.102,
+        "D": 0.154,
+        "A": 0.744
+      },
+      "expected_goals": {
+        "home": 0.89,
+        "away": 1.81
+      },
+      "score": [
+        0,
+        1
+      ],
+      "top_scores": [
+        {
+          "score": [
+            1,
+            1
+          ],
+          "probability": 0.117
+        },
+        {
+          "score": [
+            0,
+            1
+          ],
+          "probability": 0.113
+        },
+        {
+          "score": [
+            0,
+            2
+          ],
+          "probability": 0.111
+        },
+        {
+          "score": [
+            1,
+            2
+          ],
+          "probability": 0.098
+        },
+        {
+          "score": [
+            0,
+            0
+          ],
+          "probability": 0.076
+        }
+      ],
+      "waterfall": {
+        "start": 26.6,
+        "start_label": "Average home side v average visitor",
+        "steps": [
+          {
+            "label": "Real Madrid's attack",
+            "detail": "Real Madrid create and score 67% more than an average side",
+            "kind": "attack",
+            "team": "Real Madrid",
+            "change": 18.6,
+            "helps": "Real Madrid"
+          },
+          {
+            "label": "Real Madrid's defence",
+            "detail": "Real Madrid concede 27% less than an average side",
+            "kind": "defence",
+            "team": "Real Madrid",
+            "change": 7.5,
+            "helps": "Real Madrid"
+          },
+          {
+            "label": "Valencia's defence",
+            "detail": "Valencia concede 9% more than an average side",
+            "kind": "defence",
+            "team": "Valencia",
+            "change": 3.0,
+            "helps": "Real Madrid"
+          },
+          {
+            "label": "Valencia's attack",
+            "detail": "Valencia create and score 11% less than an average side",
+            "kind": "attack",
+            "team": "Valencia",
+            "change": 2.7,
+            "helps": "Real Madrid"
+          }
+        ],
+        "total": 58.4
+      },
+      "standings": {
+        "home": {
+          "position": 19,
+          "points": 9,
+          "played": 11
+        },
+        "away": {
+          "position": 3,
+          "points": 27,
+          "played": 11
+        }
+      },
+      "xg": {
+        "home": null,
+        "away": null
+      },
+      "finishing": {
+        "home": null,
+        "away": null
+      },
+      "form": {
+        "home": [
+          {
+            "result": "L",
+            "line": "Valencia 2-3 Real Sociedad",
+            "date": "2026-09-20"
+          },
+          {
+            "result": "D",
+            "line": "Racing Santander 2-2 Valencia",
+            "date": "2026-10-11"
+          },
+          {
+            "result": "D",
+            "line": "Valencia 0-0 Athletic Club",
+            "date": "2026-10-17"
+          },
+          {
+            "result": "L",
+            "line": "Valencia 1-2 Villarreal",
+            "date": "2026-10-24"
+          },
+          {
+            "result": "W",
+            "line": "Elche 0-1 Valencia",
+            "date": "2026-11-01"
+          }
+        ],
+        "away": [
+          {
+            "result": "L",
+            "line": "Atletico Madrid 2-1 Real Madrid",
+            "date": "2026-09-20"
+          },
+          {
+            "result": "W",
+            "line": "Real Madrid 1-0 Villarreal",
+            "date": "2026-10-10"
+          },
+          {
+            "result": "W",
+            "line": "Real Madrid 4-1 Sevilla",
+            "date": "2026-10-18"
+          },
+          {
+            "result": "W",
+            "line": "Barcelona 1-2 Real Madrid",
+            "date": "2026-10-25"
+          },
+          {
+            "result": "W",
+            "line": "Racing Santander 0-3 Real Madrid",
+            "date": "2026-11-01"
+          }
+        ]
+      },
+      "head_to_head": [
+        {
+          "date": "2026-02-08",
+          "line": "Valencia 0-2 Real Madrid",
+          "margin": 2
+        },
+        {
+          "date": "2025-11-01",
+          "line": "Real Madrid 4-0 Valencia",
+          "margin": 4
+        },
+        {
+          "date": "2025-04-05",
+          "line": "Real Madrid 1-2 Valencia",
+          "margin": 1
+        },
+        {
+          "date": "2025-01-03",
+          "line": "Valencia 1-2 Real Madrid",
+          "margin": 1
+        }
+      ],
+      "team_news": [],
+      "ranks": {
+        "attack": [
+          "Barcelona",
+          "Real Madrid",
+          "Villarreal",
+          "Atletico Madrid",
+          "Real Betis",
+          "Real Sociedad",
+          "Racing Santander",
+          "Levante",
+          "Elche",
+          "Celta Vigo",
+          "Sevilla",
+          "Athletic Club",
+          "Deportivo La Coruna",
+          "Alaves",
+          "Rayo Vallecano",
+          "Osasuna",
+          "Valencia",
+          "Espanyol",
+          "Malaga",
+          "Getafe"
+        ],
+        "defence": [
+          "Real Madrid",
+          "Atletico Madrid",
+          "Barcelona",
+          "Getafe",
+          "Athletic Club",
+          "Celta Vigo",
+          "Villarreal",
+          "Real Betis",
+          "Rayo Vallecano",
+          "Deportivo La Coruna",
+          "Espanyol",
+          "Valencia",
+          "Alaves",
+          "Elche",
+          "Osasuna",
+          "Sevilla",
+          "Real Sociedad",
+          "Levante",
+          "Malaga",
+          "Racing Santander"
+        ],
+        "overall": [
+          "Barcelona",
+          "Real Madrid",
+          "Atletico Madrid",
+          "Villarreal",
+          "Real Betis",
+          "Athletic Club",
+          "Celta Vigo",
+          "Real Sociedad",
+          "Deportivo La Coruna",
+          "Rayo Vallecano",
+          "Elche",
+          "Sevilla",
+          "Levante",
+          "Alaves",
+          "Espanyol",
+          "Valencia",
+          "Osasuna",
+          "Getafe",
+          "Racing Santander",
+          "Malaga"
+        ]
+      },
+      "luck": {
+        "home": null,
+        "away": null
+      },
+      "luck_gap": null,
+      "reasons": [
+        {
+          "topic": "Form",
+          "title": "Real Madrid arrive in better form",
+          "text": "Last five league games: Valencia took 5 points, Real Madrid took 12."
+        },
+        {
+          "topic": "Head to head",
+          "title": "Tight when they meet",
+          "text": "2 of the last 4 meetings were drawn or won by one goal. Past meetings count for little in the model."
+        }
+      ],
+      "headline": "Real Madrid's attack should be too much for Valencia",
+      "change_our_mind": "The biggest single factor is Real Madrid's attack. If Real Madrid's attack were only average, the away win chance would drop to 39%.",
+      "kickoff": "2026-11-07T23:00:00+00:00",
+      "venue": null
+    },
+    {
+      "home_team": "Sevilla",
+      "away_team": "Alaves",
+      "call": "H",
+      "call_name": "home win",
+      "confidence": "solid",
+      "probabilities": {
+        "H": 0.46,
+        "D": 0.272,
+        "A": 0.269
+      },
+      "market": {
+        "H": 0.507,
+        "D": 0.277,
+        "A": 0.215
+      },
+      "expected_goals": {
+        "home": 1.55,
+        "away": 1.13
+      },
+      "score": [
+        1,
+        0
+      ],
+      "top_scores": [
+        {
+          "score": [
+            1,
+            1
+          ],
+          "probability": 0.13
+        },
+        {
+          "score": [
+            1,
+            0
+          ],
+          "probability": 0.096
+        },
+        {
+          "score": [
+            2,
+            1
+          ],
+          "probability": 0.093
+        },
+        {
+          "score": [
+            2,
+            0
+          ],
+          "probability": 0.082
+        },
+        {
+          "score": [
+            0,
+            0
+          ],
+          "probability": 0.078
+        }
+      ],
+      "waterfall": {
+        "start": 43.9,
+        "start_label": "Average home side v average visitor",
+        "steps": [
+          {
+            "label": "Sevilla's defence",
+            "detail": "Sevilla concede 20% more than an average side",
+            "kind": "defence",
+            "team": "Sevilla",
+            "change": -4.5,
+            "helps": "Alaves"
+          },
+          {
+            "label": "Alaves' defence",
+            "detail": "Alaves concede 11% more than an average side",
+            "kind": "defence",
+            "team": "Alaves",
+            "change": 3.9,
+            "helps": "Sevilla"
+          },
+          {
+            "label": "Alaves' attack",
+            "detail": "Alaves create and score 5% less than an average side",
+            "kind": "attack",
+            "team": "Alaves",
+            "change": 1.4,
+            "helps": "Sevilla"
+          },
+          {
+            "label": "Sevilla's attack",
+            "detail": "Sevilla create and score 3% more than an average side",
+            "kind": "attack",
+            "team": "Sevilla",
+            "change": 1.3,
+            "helps": "Sevilla"
+          }
+        ],
+        "total": 46.0
+      },
+      "standings": {
+        "home": {
+          "position": 6,
+          "points": 17,
+          "played": 11
+        },
+        "away": {
+          "position": 11,
+          "points": 12,
+          "played": 11
+        }
+      },
+      "xg": {
+        "home": null,
+        "away": null
+      },
+      "finishing": {
+        "home": null,
+        "away": null
+      },
+      "form": {
+        "home": [
+          {
+            "result": "L",
+            "line": "Sevilla 1-3 Barcelona",
+            "date": "2026-09-19"
+          },
+          {
+            "result": "D",
+            "line": "Levante 3-3 Sevilla",
+            "date": "2026-10-12"
+          },
+          {
+            "result": "L",
+            "line": "Real Madrid 4-1 Sevilla",
+            "date": "2026-10-18"
+          },
+          {
+            "result": "W",
+            "line": "Sevilla 2-0 Osasuna",
+            "date": "2026-10-26"
+          },
+          {
+            "result": "L",
+            "line": "Getafe 3-1 Sevilla",
+            "date": "2026-11-01"
+          }
+        ],
+        "away": [
+          {
+            "result": "D",
+            "line": "Athletic Club 0-0 Alaves",
+            "date": "2026-09-19"
+          },
+          {
+            "result": "L",
+            "line": "Alaves 1-2 Atletico Madrid",
+            "date": "2026-10-10"
+          },
+          {
+            "result": "L",
+            "line": "Celta Vigo 2-1 Alaves",
+            "date": "2026-10-18"
+          },
+          {
+            "result": "D",
+            "line": "Alaves 1-1 Malaga",
+            "date": "2026-10-23"
+          },
+          {
+            "result": "L",
+            "line": "Barcelona 6-1 Alaves",
+            "date": "2026-10-31"
+          }
+        ]
+      },
+      "head_to_head": [
+        {
+          "date": "2026-02-14",
+          "line": "Sevilla 1-1 Alaves",
+          "margin": 0
+        },
+        {
+          "date": "2025-09-20",
+          "line": "Alaves 1-2 Sevilla",
+          "margin": 1
+        },
+        {
+          "date": "2025-04-20",
+          "line": "Sevilla 1-1 Alaves",
+          "margin": 0
+        },
+        {
+          "date": "2024-09-20",
+          "line": "Alaves 2-1 Sevilla",
+          "margin": 1
+        }
+      ],
+      "team_news": [],
+      "ranks": {
+        "attack": [
+          "Barcelona",
+          "Real Madrid",
+          "Villarreal",
+          "Atletico Madrid",
+          "Real Betis",
+          "Real Sociedad",
+          "Racing Santander",
+          "Levante",
+          "Elche",
+          "Celta Vigo",
+          "Sevilla",
+          "Athletic Club",
+          "Deportivo La Coruna",
+          "Alaves",
+          "Rayo Vallecano",
+          "Osasuna",
+          "Valencia",
+          "Espanyol",
+          "Malaga",
+          "Getafe"
+        ],
+        "defence": [
+          "Real Madrid",
+          "Atletico Madrid",
+          "Barcelona",
+          "Getafe",
+          "Athletic Club",
+          "Celta Vigo",
+          "Villarreal",
+          "Real Betis",
+          "Rayo Vallecano",
+          "Deportivo La Coruna",
+          "Espanyol",
+          "Valencia",
+          "Alaves",
+          "Elche",
+          "Osasuna",
+          "Sevilla",
+          "Real Sociedad",
+          "Levante",
+          "Malaga",
+          "Racing Santander"
+        ],
+        "overall": [
+          "Barcelona",
+          "Real Madrid",
+          "Atletico Madrid",
+          "Villarreal",
+          "Real Betis",
+          "Athletic Club",
+          "Celta Vigo",
+          "Real Sociedad",
+          "Deportivo La Coruna",
+          "Rayo Vallecano",
+          "Elche",
+          "Sevilla",
+          "Levante",
+          "Alaves",
+          "Espanyol",
+          "Valencia",
+          "Osasuna",
+          "Getafe",
+          "Racing Santander",
+          "Malaga"
+        ]
+      },
+      "luck": {
+        "home": null,
+        "away": null
+      },
+      "luck_gap": null,
+      "reasons": [
+        {
+          "topic": "Form",
+          "title": "Sevilla arrive in better form",
+          "text": "Last five league games: Sevilla took 4 points, Alaves took 2."
+        },
+        {
+          "topic": "Head to head",
+          "title": "Tight when they meet",
+          "text": "All of the last 4 meetings were drawn or won by one goal. Past meetings count for little in the model."
+        }
+      ],
+      "headline": "Alaves' leaky defence hands Sevilla the edge",
+      "change_our_mind": "The biggest single factor is Alaves' defence. If Alaves' defence were only average, the home win chance would drop to 42%.",
+      "kickoff": "2026-11-07T23:00:00+00:00",
+      "venue": null
+    },
+    {
+      "home_team": "Osasuna",
+      "away_team": "Athletic Club",
+      "call": "H",
+      "call_name": "home win",
+      "confidence": "too close to call",
+      "probabilities": {
+        "H": 0.35,
+        "D": 0.3,
+        "A": 0.35
+      },
+      "market": {
+        "H": 0.262,
+        "D": 0.279,
+        "A": 0.459
+      },
+      "expected_goals": {
+        "home": 1.18,
+        "away": 1.18
+      },
+      "score": [
+        1,
+        0
+      ],
+      "top_scores": [
+        {
+          "score": [
+            1,
+            1
+          ],
+          "probability": 0.142
+        },
+        {
+          "score": [
+            0,
+            0
+          ],
+          "probability": 0.104
+        },
+        {
+          "score": [
+            1,
+            0
+          ],
+          "probability": 0.101
+        },
+        {
+          "score": [
+            0,
+            1
+          ],
+          "probability": 0.1
+        },
+        {
+          "score": [
+            2,
+            1
+          ],
+          "probability": 0.078
+        }
+      ],
+      "waterfall": {
+        "start": 43.9,
+        "start_label": "Average home side v average visitor",
+        "steps": [
+          {
+            "label": "Osasuna's defence",
+            "detail": "Osasuna concede 16% more than an average side",
+            "kind": "defence",
+            "team": "Osasuna",
+            "change": -3.6,
+            "helps": "Athletic Club"
+          },
+          {
+            "label": "Osasuna's attack",
+            "detail": "Osasuna create and score 7% less than an average side",
+            "kind": "attack",
+            "team": "Osasuna",
+            "change": -2.5,
+            "helps": "Athletic Club"
+          },
+          {
+            "label": "Athletic Club's defence",
+            "detail": "Athletic Club concede 6% less than an average side",
+            "kind": "defence",
+            "team": "Athletic Club",
+            "change": -2.3,
+            "helps": "Athletic Club"
+          },
+          {
+            "label": "Athletic Club's attack",
+            "detail": "Athletic Club create and score 2% more than an average side",
+            "kind": "attack",
+            "team": "Athletic Club",
+            "change": -0.4,
+            "helps": "Athletic Club"
+          }
+        ],
+        "total": 35.0
+      },
+      "standings": {
+        "home": {
+          "position": 15,
+          "points": 11,
+          "played": 11
+        },
+        "away": {
+          "position": 7,
+          "points": 15,
+          "played": 10
+        }
+      },
+      "xg": {
+        "home": null,
+        "away": null
+      },
+      "finishing": {
+        "home": null,
+        "away": null
+      },
+      "form": {
+        "home": [
+          {
+            "result": "D",
+            "line": "Osasuna 1-1 Rayo Vallecano",
+            "date": "2026-09-19"
+          },
+          {
+            "result": "L",
+            "line": "Real Betis 5-2 Osasuna",
+            "date": "2026-10-11"
+          },
+          {
+            "result": "W",
+            "line": "Osasuna 2-0 Racing Santander",
+            "date": "2026-10-18"
+          },
+          {
+            "result": "L",
+            "line": "Sevilla 2-0 Osasuna",
+            "date": "2026-10-26"
+          },
+          {
+            "result": "L",
+            "line": "Deportivo La Coruna 2-1 Osasuna",
+            "date": "2026-11-02"
+          }
+        ],
+        "away": [
+          {
+            "result": "D",
+            "line": "Athletic Club 0-0 Alaves",
+            "date": "2026-09-19"
+          },
+          {
+            "result": "D",
+            "line": "Valencia 0-0 Athletic Club",
+            "date": "2026-10-17"
+          },
+          {
+            "result": "L",
+            "line": "Levante 3-1 Athletic Club",
+            "date": "2026-10-21"
+          },
+          {
+            "result": "W",
+            "line": "Athletic Club 4-0 Getafe",
+            "date": "2026-10-25"
+          },
+          {
+            "result": "W",
+            "line": "Athletic Club 2-1 Real Sociedad",
+            "date": "2026-11-01"
+          }
+        ]
+      },
+      "head_to_head": [
+        {
+          "date": "2026-04-21",
+          "line": "Athletic Club 1-0 Osasuna",
+          "margin": 1
+        },
+        {
+          "date": "2026-01-03",
+          "line": "Osasuna 1-1 Athletic Club",
+          "margin": 0
+        },
+        {
+          "date": "2025-03-30",
+          "line": "Athletic Club 0-0 Osasuna",
+          "margin": 0
+        },
+        {
+          "date": "2024-12-21",
+          "line": "Osasuna 1-2 Athletic Club",
+          "margin": 1
+        }
+      ],
+      "team_news": [],
+      "ranks": {
+        "attack": [
+          "Barcelona",
+          "Real Madrid",
+          "Villarreal",
+          "Atletico Madrid",
+          "Real Betis",
+          "Real Sociedad",
+          "Racing Santander",
+          "Levante",
+          "Elche",
+          "Celta Vigo",
+          "Sevilla",
+          "Athletic Club",
+          "Deportivo La Coruna",
+          "Alaves",
+          "Rayo Vallecano",
+          "Osasuna",
+          "Valencia",
+          "Espanyol",
+          "Malaga",
+          "Getafe"
+        ],
+        "defence": [
+          "Real Madrid",
+          "Atletico Madrid",
+          "Barcelona",
+          "Getafe",
+          "Athletic Club",
+          "Celta Vigo",
+          "Villarreal",
+          "Real Betis",
+          "Rayo Vallecano",
+          "Deportivo La Coruna",
+          "Espanyol",
+          "Valencia",
+          "Alaves",
+          "Elche",
+          "Osasuna",
+          "Sevilla",
+          "Real Sociedad",
+          "Levante",
+          "Malaga",
+          "Racing Santander"
+        ],
+        "overall": [
+          "Barcelona",
+          "Real Madrid",
+          "Atletico Madrid",
+          "Villarreal",
+          "Real Betis",
+          "Athletic Club",
+          "Celta Vigo",
+          "Real Sociedad",
+          "Deportivo La Coruna",
+          "Rayo Vallecano",
+          "Elche",
+          "Sevilla",
+          "Levante",
+          "Alaves",
+          "Espanyol",
+          "Valencia",
+          "Osasuna",
+          "Getafe",
+          "Racing Santander",
+          "Malaga"
+        ]
+      },
+      "luck": {
+        "home": null,
+        "away": null
+      },
+      "luck_gap": null,
+      "reasons": [
+        {
+          "topic": "Form",
+          "title": "Athletic Club arrive in better form",
+          "text": "Last five league games: Osasuna took 4 points, Athletic Club took 8."
+        },
+        {
+          "topic": "Head to head",
+          "title": "Tight when they meet",
+          "text": "All of the last 4 meetings were drawn or won by one goal. Past meetings count for little in the model."
+        }
+      ],
+      "headline": "Nothing to split Osasuna and Athletic Club",
+      "change_our_mind": "No single factor is driving this call.",
+      "kickoff": "2026-11-07T23:00:00+00:00",
+      "venue": null
+    },
+    {
+      "home_team": "Elche",
+      "away_team": "Real Betis",
+      "call": "A",
+      "call_name": "away win",
+      "confidence": "too close to call",
+      "probabilities": {
+        "H": 0.365,
+        "D": 0.267,
+        "A": 0.368
+      },
+      "market": {
+        "H": 0.292,
+        "D": 0.257,
+        "A": 0.451
+      },
+      "expected_goals": {
+        "home": 1.44,
+        "away": 1.45
+      },
+      "score": [
+        1,
+        2
+      ],
+      "top_scores": [
+        {
+          "score": [
+            1,
+            1
+          ],
+          "probability": 0.125
+        },
+        {
+          "score": [
+            1,
+            2
+          ],
+          "probability": 0.084
+        },
+        {
+          "score": [
+            2,
+            1
+          ],
+          "probability": 0.084
+        },
+        {
+          "score": [
+            0,
+            1
+          ],
+          "probability": 0.071
+        },
+        {
+          "score": [
+            1,
+            0
+          ],
+          "probability": 0.071
+        }
+      ],
+      "waterfall": {
+        "start": 26.6,
+        "start_label": "Average home side v average visitor",
+        "steps": [
+          {
+            "label": "Real Betis' attack",
+            "detail": "Real Betis create and score 26% more than an average side",
+            "kind": "attack",
+            "team": "Real Betis",
+            "change": 7.4,
+            "helps": "Real Betis"
+          },
+          {
+            "label": "Elche's defence",
+            "detail": "Elche concede 15% more than an average side",
+            "kind": "defence",
+            "team": "Elche",
+            "change": 4.4,
+            "helps": "Real Betis"
+          },
+          {
+            "label": "Elche's attack",
+            "detail": "Elche create and score 5% more than an average side",
+            "kind": "attack",
+            "team": "Elche",
+            "change": -1.2,
+            "helps": "Elche"
+          },
+          {
+            "label": "Real Betis' defence",
+            "detail": "Real Betis concede 1% more than an average side",
+            "kind": "defence",
+            "team": "Real Betis",
+            "change": -0.3,
+            "helps": "Elche"
+          }
+        ],
+        "total": 36.8
+      },
+      "standings": {
+        "home": {
+          "position": 17,
+          "points": 10,
+          "played": 11
+        },
+        "away": {
+          "position": 4,
+          "points": 23,
+          "played": 11
+        }
+      },
+      "xg": {
+        "home": null,
+        "away": null
+      },
+      "finishing": {
+        "home": null,
+        "away": null
+      },
+      "form": {
+        "home": [
+          {
+            "result": "W",
+            "line": "Espanyol 1-3 Elche",
+            "date": "2026-09-18"
+          },
+          {
+            "result": "D",
+            "line": "Elche 0-0 Celta Vigo",
+            "date": "2026-10-11"
+          },
+          {
+            "result": "D",
+            "line": "Villarreal 0-0 Elche",
+            "date": "2026-10-17"
+          },
+          {
+            "result": "W",
+            "line": "Rayo Vallecano 0-3 Elche",
+            "date": "2026-10-24"
+          },
+          {
+            "result": "L",
+            "line": "Elche 0-1 Valencia",
+            "date": "2026-11-01"
+          }
+        ],
+        "away": [
+          {
+            "result": "D",
+            "line": "Deportivo La Coruna 1-1 Real Betis",
+            "date": "2026-09-20"
+          },
+          {
+            "result": "W",
+            "line": "Real Betis 5-2 Osasuna",
+            "date": "2026-10-11"
+          },
+          {
+            "result": "L",
+            "line": "Real Betis 2-5 Barcelona",
+            "date": "2026-10-17"
+          },
+          {
+            "result": "D",
+            "line": "Celta Vigo 0-0 Real Betis",
+            "date": "2026-10-25"
+          },
+          {
+            "result": "W",
+            "line": "Real Betis 2-1 Malaga",
+            "date": "2026-10-31"
+          }
+        ]
+      },
+      "head_to_head": [
+        {
+          "date": "2026-05-12",
+          "line": "Real Betis 2-1 Elche",
+          "margin": 1
+        },
+        {
+          "date": "2025-08-18",
+          "line": "Elche 1-1 Real Betis",
+          "margin": 0
+        }
+      ],
+      "team_news": [],
+      "ranks": {
+        "attack": [
+          "Barcelona",
+          "Real Madrid",
+          "Villarreal",
+          "Atletico Madrid",
+          "Real Betis",
+          "Real Sociedad",
+          "Racing Santander",
+          "Levante",
+          "Elche",
+          "Celta Vigo",
+          "Sevilla",
+          "Athletic Club",
+          "Deportivo La Coruna",
+          "Alaves",
+          "Rayo Vallecano",
+          "Osasuna",
+          "Valencia",
+          "Espanyol",
+          "Malaga",
+          "Getafe"
+        ],
+        "defence": [
+          "Real Madrid",
+          "Atletico Madrid",
+          "Barcelona",
+          "Getafe",
+          "Athletic Club",
+          "Celta Vigo",
+          "Villarreal",
+          "Real Betis",
+          "Rayo Vallecano",
+          "Deportivo La Coruna",
+          "Espanyol",
+          "Valencia",
+          "Alaves",
+          "Elche",
+          "Osasuna",
+          "Sevilla",
+          "Real Sociedad",
+          "Levante",
+          "Malaga",
+          "Racing Santander"
+        ],
+        "overall": [
+          "Barcelona",
+          "Real Madrid",
+          "Atletico Madrid",
+          "Villarreal",
+          "Real Betis",
+          "Athletic Club",
+          "Celta Vigo",
+          "Real Sociedad",
+          "Deportivo La Coruna",
+          "Rayo Vallecano",
+          "Elche",
+          "Sevilla",
+          "Levante",
+          "Alaves",
+          "Espanyol",
+          "Valencia",
+          "Osasuna",
+          "Getafe",
+          "Racing Santander",
+          "Malaga"
+        ]
+      },
+      "luck": {
+        "home": null,
+        "away": null
+      },
+      "luck_gap": null,
+      "reasons": [
+        {
+          "topic": "Form",
+          "title": "Similar recent form",
+          "text": "Last five league games: Elche took 8 points, Real Betis took 8."
+        },
+        {
+          "topic": "Head to head",
+          "title": "Not much history to go on",
+          "text": "All of the last 2 meetings were drawn or won by one goal. Past meetings count for little in the model."
+        }
+      ],
+      "headline": "Nothing to split Elche and Real Betis",
+      "change_our_mind": "If Real Betis' attack were only average, this would swing to a home win (43%).",
+      "kickoff": "2026-11-07T23:00:00+00:00",
+      "venue": null
+    }
+  ]
+}
