@@ -1,3 +1,4 @@
+import json
 from datetime import date
 
 from plpred import seasons, teams
@@ -140,3 +141,12 @@ def test_football_data_upcoming_odds_with_a_byte_order_mark():
     csv = ("﻿Div,Date,Time,HomeTeam,AwayTeam,AvgH,AvgD,AvgA\n"
            "E0,19/10/2026,20:00,Tottenham,Coventry,1.6,4.2,5.5\n").encode("utf-8")
     assert list(football_data_uk.parse_upcoming(csv).home_team) == ["Tottenham"]
+
+
+def test_understat_games_read_from_the_league_page():
+    games = [{"id": "1", "isResult": True, "datetime": "2026-11-01 15:00:00",
+              "h": {"title": "Arsenal"}, "a": {"title": "Chelsea"}, "xG": {"h": "1.5", "a": "0.7"}}]
+    encoded = json.dumps(games).encode("unicode_escape").decode().replace('"', "\\x22")
+    html = f"<script>var datesData = JSON.parse('{encoded}');</script>"
+    assert understat.from_page(html) == games
+    assert understat.from_page("<html>no data</html>") is None
