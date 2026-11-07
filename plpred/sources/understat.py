@@ -49,7 +49,8 @@ def fetch_raw(season: int, league: str = "EPL") -> list[dict]:
             log.warning("Understat's data endpoint sent a web page, so read the league page instead")
             return games
         # What the page does load, so the next fix doesn't start blind.
-        hints = sorted(set(re.findall(r"""(?:src=|fetch\(|url:\s*|get\()["']([^"']+)["']""", page.text)))[:15]
+        hints = sorted(set(re.findall(r"""(?:src|href)\s*=\s*["']?([^"'\s>]+\.js[^"'\s>]*)""", page.text)
+                           + re.findall(r"""["'](/(?:get|api|main)[^"']*)["']""", page.text)))[:20]
         raise ValueError(f"Unexpected Understat response ({resp.status_code}, {resp.headers.get('content-type')}, "
                          f"{len(resp.text)} chars, title {_title(resp.text)!r}); league page {page.status_code}, "
                          f"{len(page.text)} chars, loads {hints}") from exc
