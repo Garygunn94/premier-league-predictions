@@ -90,10 +90,10 @@ gameweek,kickoff,home_team,away_team,finished
 9,2026-11-01T16:30:00Z,Liverpool,Arsenal,True
 9,2026-11-02T20:00:00Z,Newcastle,Everton,True
 10,2026-11-06T20:00:00Z,Everton,Coventry,True
-10,2026-11-07T12:30:00Z,Leeds,Tottenham,False
-10,2026-11-07T15:00:00Z,Arsenal,Hull,False
-10,2026-11-07T15:00:00Z,Fulham,Newcastle,False
-10,2026-11-07T17:30:00Z,Nott'm Forest,Man City,False
+10,2026-11-07T12:30:00Z,Leeds,Tottenham,True
+10,2026-11-07T15:00:00Z,Arsenal,Hull,True
+10,2026-11-07T15:00:00Z,Fulham,Newcastle,True
+10,2026-11-07T17:30:00Z,Nott'm Forest,Man City,True
 10,2026-11-08T14:00:00Z,Brighton,Brentford,False
 10,2026-11-08T14:00:00Z,Crystal Palace,Liverpool,False
 10,2026-11-08T14:00:00Z,Ipswich,Bournemouth,False

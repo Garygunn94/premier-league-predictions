@@ -8,10 +8,13 @@ Chelsea,Lacroix,DEF,i,0.0,Hamstring injury - Unknown return date,634,7,0,1,0.62
 Chelsea,Hato,DEF,i,0.0,Unspecified injury - Unknown return date,412,6,0,3,0.24
 Chelsea,Martinez,GK,d,75.0,Head injury - 75% chance of playing,524,6,0,0,0.01
 Coventry,Thomas,DEF,d,50.0,Calf injury - 50% chance of playing,676,8,0,0,0.97
+Fulham,King,MID,d,75.0,Groin injury - 75% chance of playing,806,10,2,1,3.37
 Leeds,Stach,MID,d,50.0,Foot injury - 50% chance of playing,676,7,1,0,2.03
+Man City,Guéhi,DEF,d,75.0,Unspecified injury - 75% chance of playing,720,9,1,1,1.81
 Man City,Semenyo,MID,i,0.0,Knee injury - Unknown return date,553,6,2,3,1.81
+Man City,Gvardiol,DEF,d,75.0,Unspecified injury - 75% chance of playing,700,8,1,4,1.79
 Man United,Martinez,DEF,s,0.0,Suspended until 22 Nov,582,7,0,0,1.09
 Man United,Shaw,DEF,i,0.0,Unspecified injury - Unknown return date,425,5,0,1,0.62
-Newcastle,L.Miley,MID,d,50.0,Muscular injury - 50% chance of playing,544,7,0,0,0.5
 Sunderland,Mukiele,DEF,d,75.0,Concussion - 75% chance of playing,591,7,0,0,1.17
 Sunderland,Ballard,DEF,i,0.0,Hamstring injury - Unknown return date,450,5,0,0,0.47
+Tottenham,Tel,MID,d,75.0,Ankle injury - 75% chance of playing,477,6,1,0,1.19
