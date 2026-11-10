@@ -309,7 +309,7 @@ Fulham,Kevin,MID,a,,,75,0,0,0,0.34
 Fulham,Bobb,MID,a,,,729,10,1,0,3.54
 Fulham,Berge,MID,a,,,736,8,0,1,0.88
 Fulham,Cairney,MID,i,0.0,Knee injury - Expected back 21 Nov,36,0,0,0,0.1
-Fulham,King,MID,d,75.0,Groin injury - 75% chance of playing,806,10,2,1,3.37
+Fulham,King,MID,a,100.0,,806,10,2,1,3.37
 Fulham,Sessegnon,DEF,a,100.0,,165,1,1,0,0.75
 Fulham,Reed,MID,a,,,0,0,0,0,0.0
 Fulham,Muniz,FWD,a,,,96,0,1,0,0.61
@@ -438,7 +438,7 @@ Liverpool,Woodman,GK,a,,,0,0,0,0,0.0
 Liverpool,Pecsi,GK,u,0.0,Has joined TSV Hartberg on loan for the rest of the season,0,0,0,0,0.0
 Liverpool,Jaros,GK,i,0.0,Knee injury - Unknown return date,0,0,0,0,0.0
 Liverpool,Davies,GK,a,,,0,0,0,0,0.0
-Liverpool,Virgil,DEF,a,,,900,10,0,0,0.74
+Liverpool,Virgil,DEF,d,75.0,Unspecified injury - 75% chance of playing,900,10,0,0,0.74
 Liverpool,Frimpong,DEF,i,0.0,Hamstring injury - Unknown return date,199,2,0,0,0.25
 Liverpool,Kerkez,DEF,a,,,822,9,0,0,0.52
 Liverpool,Gomez,DEF,a,100.0,,14,0,0,0,0.0
@@ -664,7 +664,7 @@ Sunderland,Rigg,MID,a,,,229,3,0,0,0.28
 Sunderland,Talbi,MID,a,,,162,1,0,0,0.61
 Sunderland,Jocelin.T,MID,a,,,17,0,0,0,0.03
 Sunderland,N.Angulo,MID,a,,,521,8,1,1,1.04
-Sunderland,Brobbey,FWD,a,100.0,,619,8,3,1,4.34
+Sunderland,Brobbey,FWD,d,75.0,Muscular injury - 75% chance of playing,619,8,3,1,4.34
 Sunderland,Isidor,FWD,a,100.0,,263,1,1,1,2.29
 Sunderland,Methalie,DEF,a,100.0,,107,1,0,0,0.04
 Sunderland,Ahoka,MID,a,,,111,0,0,0,0.02
