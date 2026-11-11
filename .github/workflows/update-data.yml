@@ -42,9 +42,13 @@ jobs:
         env:
           API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
         run: python -m plpred.update ${{ inputs.steps }}
+      # A source that breaks (Understat, say) fails this step and raises the issue below, but the
+      # steps after it still run on the data that did arrive, so the week's calls and the kit
+      # that depends on them still go out.
       # La Liga (data/laliga/): Understat and openfootball for the fixtures, football-data.co.uk for
       # results and odds. Its steps never stop the Premier League's; the health check reports them.
       - name: Fetch La Liga data
+        if: ${{ !cancelled() }}
         continue-on-error: true
         run: python -m plpred.update --league la-liga ${{ inputs.steps }}
       # Calls are published once a week, on Thursday, and then stay as they are. The other
@@ -52,23 +56,26 @@ jobs:
       # except that a round starting before the next Thursday (a midweek round) with no calls
       # yet is called the morning before its first game, in time for its predictions kit.
       - name: Call the games already under way
-        if: inputs.after_kickoff
+        if: ${{ !cancelled() && inputs.after_kickoff }}
         run: python -m plpred.predict --after-kickoff
       - name: Predict the coming round
-        if: github.event.schedule == '0 6 * * 4' || inputs.predict
+        if: ${{ !cancelled() && (github.event.schedule == '0 6 * * 4' || inputs.predict) }}
         run: python -m plpred.predict
       - name: Predict a round starting tomorrow, if it has no calls yet
-        if: github.event.schedule != '0 6 * * 4' && !inputs.predict
+        if: ${{ !cancelled() && github.event.schedule != '0 6 * * 4' && !inputs.predict }}
         run: python -m plpred.predict --if-due
       # La Liga's model settings come from its own back-test: the first run makes them before any calls.
       - name: Predict La Liga
+        if: ${{ !cancelled() }}
         continue-on-error: true
         run: |
           test -f data/laliga/backtest/settings.json || python -m plpred.backtest --data data/laliga
           python -m plpred.predict --data data/laliga ${{ (github.event.schedule == '0 6 * * 4' || inputs.predict) && ' ' || '--if-due' }}
       - name: Refresh our record
+        if: ${{ !cancelled() }}
         run: python -m plpred.backtest
       - name: Refresh our La Liga record
+        if: ${{ !cancelled() }}
         continue-on-error: true
         run: python -m plpred.backtest --data data/laliga
       - name: Commit changes
@@ -87,6 +94,7 @@ jobs:
       # were made before kick-off (see plpred/proof.py). The Wayback Machine is sometimes slow or
       # busy, so this never fails the run.
       - name: Save the calls to the Internet Archive
+        if: ${{ !cancelled() }}
         continue-on-error: true
         run: |
           calls=$(git diff --name-only ${{ github.sha }} HEAD -- data/predictions data/laliga/predictions)
@@ -95,6 +103,7 @@ jobs:
       # format. On Thursday this also checks the coming round was called; every day it checks a
       # round starting today or tomorrow was.
       - name: Check the data is healthy
+        if: ${{ !cancelled() }}
         run: |
           status=0
           python -m plpred.health --report health.md $CALLS || status=1
