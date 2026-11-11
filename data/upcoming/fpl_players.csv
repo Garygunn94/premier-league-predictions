@@ -336,7 +336,7 @@ Hull,Giles,DEF,a,,,698,8,0,1,0.52
 Hull,Jacob,DEF,u,0.0,Has joined Newport County on loan until January,0,0,0,0,0.0
 Hull,McCarthy,DEF,a,,,0,0,0,0,0.0
 Hull,McNair,DEF,a,100.0,,26,0,0,0,0.0
-Hull,Belloumi,MID,a,,,685,8,3,3,2.19
+Hull,Belloumi,MID,d,75.0,Hamstring injury - 75% chance of playing,685,8,3,3,2.19
 Hull,Millar,MID,u,0.0,Has joined Birmingham on loan for the rest of the season,50,0,1,0,0.58
 Hull,Dowell,MID,a,,,0,0,0,0,0.0
 Hull,Crooks,MID,a,100.0,,379,5,0,0,0.14
@@ -511,7 +511,7 @@ Man United,Heaton,GK,a,100.0,,0,0,0,0,0.0
 Man United,Dorgu,MID,a,100.0,,195,2,1,2,1.38
 Man United,De Ligt,DEF,a,100.0,,0,0,0,0,0.0
 Man United,Dalot,DEF,a,,,712,8,0,0,0.68
-Man United,Maguire,DEF,a,,,855,10,0,1,0.84
+Man United,Maguire,DEF,d,75.0,Back injury - 75% chance of playing,855,10,0,1,0.84
 Man United,Martinez,DEF,a,100.0,,582,7,0,0,1.09
 Man United,Yoro,DEF,a,,,440,5,0,0,0.46
 Man United,Heaven,DEF,a,100.0,,224,2,0,0,0.16
