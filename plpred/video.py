@@ -200,11 +200,34 @@ def hooks(v: dict) -> list[tuple[str, float, str]]:
         results = [r["result"] for r in v.get("form", {}).get(side, [])]
         if len(results) == 5 and "W" not in results:
             out.append(("form", 0.75, f"{team} haven't won in five."))
+        else:
+            dry = next((i for i, r in enumerate(reversed(results)) if r == "W"), len(results))
+            if 3 <= dry < 5:
+                out.append(("form", 0.45 + dry / 20, f"{team} haven't won in {COUNTS[dry]}."))
     met = meetings(v)
     if len(met) == 3 and len(set(met)) == 1:
         line = ("The last three meetings have all been draws." if met[0] == "D" else
                 f"{name_of(v, met[0])} have won the last three meetings.")
         out.append(("history", 0.7, line))
+    elif len(met) == 3 and any(met.count(c) == 2 for c in "HA"):
+        out.append(("history", 0.45, f"{name_of(v, next(c for c in 'HA' if met.count(c) == 2))} have won "
+                                     "two of the last three meetings."))
+    ranks = v.get("ranks") or {}
+    for att, dfn in (("home", "away"), ("away", "home")):
+        a_team, d_team = v[f"{att}_team"], v[f"{dfn}_team"]
+        attack, defence = ranks.get("attack", []), ranks.get("defence", [])
+        if a_team in attack and d_team in defence:
+            ra, rd, n = attack.index(a_team) + 1, defence.index(d_team) + 1, len(attack)
+            if ra <= 5 and rd >= n - 4:
+                out.append(("clash", 0.85, f"{spoken(a_team)} have {rank_words(ra, n, 'attack')}. "
+                                           f"{spoken(d_team)} have {rank_words(rd, n, 'defence')}."))
+    if st.get("home") and st.get("away") and "points" in st["home"] and "points" in st["away"]:
+        gap = abs(st["home"]["points"] - st["away"]["points"])
+        if gap == 0:
+            out.append(("points", 0.45, f"{home} and {away} are level on points."))
+        elif gap <= 2:
+            out.append(("points", 0.4, f"Just {COUNTS[gap]} {'point' if gap == 1 else 'points'} "
+                                       f"between {home} and {away}."))
     for n in v.get("team_news", []):
         if n.get("impact") in ("Big", "Medium"):
             team = spoken(n["team"])
@@ -223,7 +246,8 @@ def pick_hooks(games: list[dict]) -> list[tuple[str, float, str]]:
     """One opener per game, mixing the kinds across the round: a kind already used counts for less."""
     used, picks = {}, []
     for v in games:
-        best = max(hooks(v), key=lambda h: h[1] - 0.45 * used.get(h[0], 0))
+        # a bare fixture is the last resort: it gives nobody a reason to stay
+        best = max(hooks(v), key=lambda h: -1 if h[0] == "fixture" else h[1] - 0.45 * used.get(h[0], 0))
         used[best[0]] = used.get(best[0], 0) + 1
         picks.append(best)
     return picks
@@ -313,9 +337,8 @@ def reason_text(v: dict) -> str | None:
     return r["text"] if r else None
 
 
-def why_scene(v: dict, say: Phrasing, reveal: bool = False) -> dict | None:
-    """The one reason a viewer can repeat, from main_reason, with its place in the league on screen.
-    Before a reveal it's a clue, not yet 'the reason' for a call we haven't made."""
+def why_scene(v: dict, say: Phrasing) -> dict | None:
+    """The one reason a viewer can repeat, from main_reason, with its place in the league on screen."""
     r = main_reason(v)
     if not r:
         return None
@@ -327,29 +350,93 @@ def why_scene(v: dict, say: Phrasing, reveal: bool = False) -> dict | None:
                        h=home, a=away, ph=r["h"], pa=r["a"])
             head = "Almost level."
         else:
-            line = say("overall", ["Our model rates {h} {ph} and {a} {pa}.", "{h} are {ph} in our ratings, {a} {pa}."]
-                       if reveal else ["Simple: our model rates {h} {ph} and {a} {pa}.",
-                                       "The reason: {h} are {ph} in our ratings, {a} {pa}."],
+            line = say("overall", ["Simple: our model rates {h} {ph} and {a} {pa}.",
+                                   "The reason: {h} are {ph} in our ratings, {a} {pa}."],
                        h=home, a=away, ph=r["h"], pa=r["a"])
             head = "The better side."
         return {"kind": "why", "lines": [line], "head": head, "sub": "Our overall ratings",
                 "ladder": ladder(r["order"], [v["home_team"], v["away_team"]], None)}
     if r["kind"] == "news":
-        return {"kind": "why", "lines": [say("why.news", ["Here's the clue: {l}", "Look at who's missing. {l}"] if reveal
-                                             else ["The reason: {l}", "It's about who's missing. {l}"],
+        return {"kind": "why", "lines": [say("why.news", ["The reason: {l}", "It's about who's missing. {l}"],
                                              l=r["text"])], "head": r["text"]}
     if r["kind"] == "old":
-        return {"kind": "why", "lines": [say("why.old", ["Here's the clue: {d}", "One thing to know: {d}"] if reveal
-                                             else ["The reason: {d}", "The big one: {d}"], d=r["text"])],
+        return {"kind": "why", "lines": [say("why.old", ["The reason: {d}", "The big one: {d}"], d=r["text"])],
                 "head": r["text"]}
     words = r["words"]
-    line = say("why", ["Here's the clue: {t} have {w} in the league.", "One thing to know: {t} have {w} in the league."]
-               if reveal else ["The reason: {t} have {w} in the league.",
-                               "It comes down to this: {t} have {w} in the league.", "Why? {t} have {w} in the league."],
-               t=spoken(r["team"]), w=words)
+    line = say("why", ["The reason: {t} have {w} in the league.", "It comes down to this: {t} have {w} in the league.",
+                       "Why? {t} have {w} in the league."], t=spoken(r["team"]), w=words)
     return {"kind": "why", "lines": [line], "head": f"{words[0].upper()}{words[1:]}.",
             "sub": f"{'Attack' if r['kind'] == 'attack' else 'Defence'}: the model's ratings now",
             "ladder": ladder(r["order"], [r["team"]], "top" if words.split()[1].endswith("best") else "bottom")}
+
+
+def step_fact(v: dict, step: dict) -> str | None:
+    """One factor behind the call as a fact a fan can check, or None when it's too small to say: a
+    place in the league when the ranks are kept and it's striking, otherwise how far from average."""
+    team = spoken(step["team"])
+    if step["kind"] == "news":
+        return f"{team} are missing {news_names(step)}." if abs(step["change"]) >= 1.5 else None
+    order = (v.get("ranks") or {}).get(step["kind"], [])
+    if step["team"] in order:
+        rank, n = order.index(step["team"]) + 1, len(order)
+        if min(rank, n + 1 - rank) <= 6:
+            return f"{team} have {rank_words(rank, n, step['kind'])} in the league."
+    pct = re.search(r"(\d+)%", step["detail"])
+    pct, more = (int(pct.group(1)) if pct else 0), " more " in step["detail"]
+    if pct < 10 or step["kind"] not in ("attack", "defence"):
+        return None
+    far = "far " if pct >= 25 else ""
+    phrase = ({True: f"score {far}more than most", False: "struggle to score"} if step["kind"] == "attack" else
+              {True: f"concede {far}more than most", False: "are hard to score against"})[more]
+    return f"{team} {phrase}."
+
+
+def clues(v: dict, hook_kind: str) -> list[str]:
+    """Up to three facts before the reveal: the two biggest things behind the call, then the biggest
+    one against it when the call is close, topped up with form or the table so no reel is thin."""
+    steps = sorted((v.get("waterfall") or {}).get("steps", []), key=lambda st: -abs(st["change"]))
+    pro = [f for f in (step_fact(v, st) for st in steps if st["change"] > 0) if f][:2]
+    con = next((f for f in (step_fact(v, st) for st in steps if st["change"] <= -3) if f), None)
+    out = pro + ([f"But {con}"] if con and pro and v["confidence"] != "strong" else [])
+    home, away = spoken(v["home_team"]), spoken(v["away_team"])
+    extra = []
+    form = v.get("form") or {}
+    if hook_kind != "form" and len(form.get("home", [])) == 5 and len(form.get("away", [])) == 5:
+        wh, wa = (sum(r["result"] == "W" for r in form[s]) for s in ("home", "away"))
+        if abs(wh - wa) >= 2:
+            (bt, bw), (wt, ww) = sorted(((home, wh), (away, wa)), key=lambda x: -x[1])
+            extra.append(f"{bt} have won {COUNTS[bw]} of their last five. {wt}, {COUNTS[ww] if ww else 'none'}.")
+    st = v.get("standings") or {}
+    if hook_kind not in ("table", "points") and st.get("home") and st.get("away"):
+        extra.append(f"In the table, {home} are {ORDINALS[st['home']['position']]} "
+                     f"and {away} {ORDINALS[st['away']['position']]}.")
+    for line in extra:
+        if len(out) < 3:
+            out.append(line)
+    return out[:3]
+
+
+def tease(hook: tuple, v: dict, say: Phrasing) -> str:
+    """The second line of a reveal's opener: the question the hook raises, and that the call answers."""
+    kind, line = hook[0], hook[2]
+    question = {
+        "market": "Who's right?",
+        "table": ("Who blinks first?" if "at the bottom" in line else
+                  "Who comes out on top?" if "top-six" in line else "As one-sided as it looks?"),
+        "luck": "Is their luck about to turn?" if "deserve " in line else "Can they keep it up?",
+        "form": "Can anyone stop them?" if " won " in line and "haven't" not in line else "Is this where it turns?",
+        "history": "Another draw?" if "draws" in line else "Again?",
+        "news": "How much does it hurt?",
+        "clash": "Something has to give.",
+        "points": "Who pulls away?",
+        "close": "Three clues, then our call.",
+    }.get(kind)
+    end = say("tease.end", ["Our call's at the end.", "Guess, then watch.", "Our call comes last."])
+    if question and question.endswith("our call."):
+        return question
+    return f"{question} {end}" if question else say("tease", ["Who do we back? Our call's at the end.",
+                                                              "Guess first. Our call comes at the end.",
+                                                              "Make your pick. Ours is at the end."])
 
 
 STYLES = ("reveal", "upfront")
@@ -380,8 +467,7 @@ def match_scenes(v: dict, matchweek=None, index: int = 0, hook=None, style: str 
                                       h=home, a=away, d=day))
     opener = [hook[2]]
     if reveal:
-        opener.append(say("tease", ["Who do we back? Our call's at the end.", "Guess first. Our call comes at the end.",
-                                    "Make your pick. Ours is at the end."]))
+        opener.append(tease(hook, v, say))
     scenes = [{"kind": "hook", "story": hook[0], "lines": opener}]
 
     if v["call"] == "D":
@@ -398,8 +484,13 @@ def match_scenes(v: dict, matchweek=None, index: int = 0, hook=None, style: str 
             "too close to call": ["But only just.", "It's close, though.", "It could go any way."]}.get(
         v["confidence"], ["Favourites, not certainties.", "A solid call.", "Clear, but not certain."])
     call_scene = {"kind": "call", "lines": [call, say("conf." + v["confidence"], conf)], "call_line": 0}
-    why = why_scene(v, say, reveal)
-    scenes += [s for s in ([why, call_scene] if reveal else [call_scene, why]) if s]
+    if reveal:
+        facts = clues(v, hook[0])
+        if facts:
+            scenes.append({"kind": "clues", "lines": facts})
+        scenes.append(call_scene)
+    else:
+        scenes += [s for s in (call_scene, why_scene(v, say)) if s]
     asks = (["Did you guess right? Tell us below.", "Same pick as you? Tell us below."] if reveal else
             ["Agree? Tell us your score.", "Think we've got it wrong? Tell us below.",
              "What's your score? Comments are open."])
