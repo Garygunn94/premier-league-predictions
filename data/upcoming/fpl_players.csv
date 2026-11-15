@@ -30,7 +30,7 @@ Arsenal,Bruno G.,MID,a,100.0,,386,4,2,0,0.73
 Arsenal,Tzolis,MID,a,100.0,,513,7,0,2,1.34
 Aston Villa,M.Bizot,GK,a,100.0,,90,1,0,0,0.0
 Aston Villa,Digne,DEF,u,0.0,Has joined Paris Saint-Germain permanently,0,0,0,0,0.0
-Aston Villa,Cash,DEF,a,100.0,,656,7,0,0,0.43
+Aston Villa,Cash,DEF,d,75.0,Concussion - 75% chance of playing,656,7,0,0,0.43
 Aston Villa,Mings,DEF,a,,,441,4,0,0,0.23
 Aston Villa,Pau,DEF,a,100.0,,470,6,0,0,0.38
 Aston Villa,Bogarde,MID,a,,,16,0,0,0,0.0
@@ -155,9 +155,9 @@ Brighton,Vuskovic,DEF,a,,,887,10,1,2,1.47
 Brighton,David,FWD,a,,,23,0,0,0,0.42
 Brighton,Osman,MID,a,,,40,0,0,0,0.12
 Brighton,Yalcouyé,MID,a,,,322,3,2,0,2.08
-Brighton,Hadjam,DEF,a,,,37,0,1,0,0.15
+Brighton,Hadjam,DEF,d,75.0,Unspecified injury - 75% chance of playing,37,0,1,0,0.15
 Brighton,Cozier-Duberry,MID,u,0.0,Has joined Middlesbrough on loan for the rest of the season,0,0,0,0,0.0
-Brighton,Andrés,MID,a,100.0,,450,6,1,1,0.85
+Brighton,Andrés,MID,d,75.0,Hip injury - 75% chance of playing,450,6,1,1,0.85
 Brighton,Azeez,MID,i,0.0,Hamstring injury - Expected back 8 Nov,0,0,0,0,0.0
 Brighton,Ibrahim,MID,a,,,0,0,0,0,0.0
 Chelsea,Martinez,GK,d,75.0,Head injury - 75% chance of playing,524,6,0,0,0.01

@@ -1,7 +1,9 @@
 team,player,position,status,chance_next_round,news,minutes,starts,goals,assists,expected_goal_involvements
 Arsenal,Saka,MID,i,0.0,Thigh injury - Unknown return date,596,7,3,0,4.83
 Aston Villa,Manzambi,MID,d,75.0,Calf injury - 75% chance of playing,461,6,2,3,2.54
+Aston Villa,Cash,DEF,d,75.0,Concussion - 75% chance of playing,656,7,0,0,0.43
 Brentford,Thiago,FWD,s,0.0,Suspended until 5 Dec,824,10,2,3,5.38
+Brighton,Andrés,MID,d,75.0,Hip injury - 75% chance of playing,450,6,1,1,0.85
 Chelsea,João Pedro,FWD,i,0.0,Thigh injury - Unknown return date,521,6,5,3,3.36
 Chelsea,Lacroix,DEF,i,0.0,Hamstring injury - Unknown return date,634,7,0,1,0.62
 Chelsea,Acheampong,DEF,d,75.0,Unspecified injury - 75% chance of playing,581,6,0,0,0.13
