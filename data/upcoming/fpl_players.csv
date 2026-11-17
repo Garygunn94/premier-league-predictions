@@ -17,7 +17,7 @@ Arsenal,Ødegaard,MID,a,,,823,10,3,0,4.88
 Arsenal,Madueke,MID,a,100.0,,428,4,1,1,2.44
 Arsenal,Merino,MID,a,,,202,1,0,0,1.18
 Arsenal,Martinelli,MID,u,0.0,Has joined Al Hilal permanently,0,0,0,0,0.0
-Arsenal,Zubimendi,MID,a,100.0,,100,0,0,0,0.26
+Arsenal,Zubimendi,MID,d,75.0,Hamstring injury - 75% chance of playing,100,0,0,0,0.26
 Arsenal,Dowman,MID,s,0.0,Suspended until 29 Nov,19,0,0,0,0.09
 Arsenal,Nwaneri,MID,u,0.0,Has joined Borussia Dortmund on loan for the rest of the season,0,0,0,0,0.0
 Arsenal,Fábio Vieira,MID,u,0.0,Has joined Hamburger SV permanently,0,0,0,0,0.0
@@ -96,13 +96,13 @@ Bournemouth,Jebbison,FWD,a,,,31,0,0,0,0.1
 Bournemouth,Di Gregorio,GK,a,,,0,0,0,0,0.0
 Brentford,Kelleher,GK,a,,,900,10,0,0,0.04
 Brentford,Valdimarsson,GK,a,,,0,0,0,0,0.0
-Brentford,Collins,DEF,a,100.0,,241,3,0,0,0.56
+Brentford,Collins,DEF,d,75.0,Knee injury - 75% chance of playing,241,3,0,0,0.56
 Brentford,Van den Berg,DEF,a,100.0,,318,4,0,0,0.37
 Brentford,Lewis-Potter,MID,a,,,773,10,2,1,2.43
 Brentford,Ajer,DEF,a,,,900,10,1,0,0.73
 Brentford,Kayode,DEF,a,,,744,9,1,0,1.35
 Brentford,Henry,DEF,i,0.0,Hip injury - Unknown return date,2,0,0,0,0.0
-Brentford,Hickey,DEF,a,,,350,3,0,0,0.16
+Brentford,Hickey,DEF,d,75.0,Hamstring injury - 75% chance of playing,350,3,0,0,0.16
 Brentford,Ji-soo,DEF,a,,,0,0,0,0,0.0
 Brentford,Schuster,DEF,a,100.0,,298,3,0,1,0.64
 Brentford,Schade,MID,a,100.0,,777,9,3,2,2.78
@@ -357,7 +357,7 @@ Hull,Tzolakis,GK,a,,,900,10,0,0,0.0
 Hull,Hjertø-Dahl,MID,a,,,8,0,0,0,0.0
 Hull,Stroud,MID,a,,,498,7,0,1,0.25
 Hull,Herrington,DEF,a,,,353,3,0,0,0.07
-Hull,Mendy,DEF,a,100.0,,519,7,1,0,0.62
+Hull,Mendy,DEF,d,75.0,Knee injury - 75% chance of playing,519,7,1,0,0.62
 Hull,Gourna-Douath,MID,a,100.0,,228,2,0,0,0.07
 Hull,Cho,MID,a,100.0,,186,1,1,0,1.73
 Hull,Ansah,FWD,i,0.0,Back injury - Unknown return date,0,0,0,0,0.0
@@ -573,7 +573,7 @@ Nott'm Forest,Delap,FWD,a,,,678,8,3,0,3.46
 Nott'm Forest,Muñoz,DEF,a,,,636,7,0,1,1.78
 Nott'm Forest,Sels,GK,a,,,900,10,0,0,0.02
 Nott'm Forest,John,GK,a,,,0,0,0,0,0.0
-Nott'm Forest,N.Williams,DEF,a,100.0,,893,10,1,1,2.12
+Nott'm Forest,N.Williams,DEF,d,75.0,Ankle injury - 75% chance of playing,893,10,1,1,2.12
 Nott'm Forest,Morato,DEF,u,0.0,Has joined West Ham on loan for the rest of the season,0,0,0,0,0.0
 Nott'm Forest,Milenković,DEF,a,100.0,,540,6,0,0,0.32
 Nott'm Forest,Murillo,DEF,a,100.0,,899,10,0,1,1.91
