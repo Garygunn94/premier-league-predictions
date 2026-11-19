@@ -201,7 +201,7 @@ Coventry,Onyeka,MID,d,50.0,Groin injury - 50% chance of playing,379,4,0,0,0.29
 Coventry,Rushworth,GK,a,,,900,10,0,1,0.03
 Coventry,Dovin,GK,u,0.0,not included in squad.,0,0,0,0,0.0
 Coventry,Wilson,GK,a,,,0,0,0,0,0.0
-Coventry,Thomas,DEF,d,50.0,Calf injury - 50% chance of playing,676,8,0,0,0.97
+Coventry,Thomas,DEF,d,75.0,Calf injury - 75% chance of playing,676,8,0,0,0.97
 Coventry,Kitching,DEF,u,0.0,Has joined Sheffield United on loan for the rest of the season,0,0,0,0,0.0
 Coventry,van Ewijk,DEF,a,100.0,,810,9,0,1,0.59
 Coventry,Dasilva,DEF,a,,,894,10,1,1,1.29
@@ -406,11 +406,11 @@ Leeds,Perri,GK,u,0.0,Has joined Torino on loan for the rest of the season,0,0,0,
 Leeds,Bijol,DEF,a,,,258,3,0,0,0.13
 Leeds,Rodon,DEF,a,100.0,,124,2,0,0,0.09
 Leeds,Bogle,DEF,a,,,810,10,2,0,2.58
-Leeds,Gudmundsson,DEF,d,75.0,Hamstring injury - 75% chance of playing,631,8,0,1,0.39
+Leeds,Gudmundsson,DEF,a,100.0,,631,8,0,1,0.39
 Leeds,Justin,DEF,a,,,881,10,1,0,1.66
 Leeds,Bornauw,DEF,u,0.0,Has joined Hamburg SV on loan for the rest of the season,0,0,0,0,0.0
 Leeds,Muharemović,DEF,a,,,900,10,0,2,0.89
-Leeds,Stach,MID,d,50.0,Foot injury - 50% chance of playing,676,7,1,0,2.03
+Leeds,Stach,MID,a,100.0,,676,7,1,0,2.03
 Leeds,Okafor,MID,a,100.0,,480,6,2,0,1.29
 Leeds,Aaronson,MID,a,,,283,3,0,0,0.03
 Leeds,Ampadu,MID,a,,,900,10,0,1,0.75
@@ -656,7 +656,7 @@ Sunderland,Masuaku,DEF,u,0.0,Has joined Konyaspor permanently,0,0,0,0,0.0
 Sunderland,Meunier,DEF,a,100.0,,534,7,0,1,1.1
 Sunderland,E.Le Fée,MID,a,,,863,10,3,1,5.69
 Sunderland,Diarra,MID,i,0.0,Muscular injury - Unknown return date,70,0,0,1,0.19
-Sunderland,Xhaka,MID,d,75.0,Calf injury - 75% chance of playing,813,10,0,1,1.97
+Sunderland,Xhaka,MID,i,0.0,Calf injury - Unknown return date,813,10,0,1,1.97
 Sunderland,Sadiki,MID,a,,,844,10,0,0,0.85
 Sunderland,Adingra,MID,u,0.0,Has joined Ajax on loan for the rest of the season,0,0,0,0,0.0
 Sunderland,Mundle,MID,i,0.0,Knee injury - Unknown return date,1,0,0,0,0.17
@@ -664,7 +664,7 @@ Sunderland,Rigg,MID,a,,,229,3,0,0,0.28
 Sunderland,Talbi,MID,a,,,162,1,0,0,0.61
 Sunderland,Jocelin.T,MID,a,,,17,0,0,0,0.03
 Sunderland,N.Angulo,MID,a,,,521,8,1,1,1.04
-Sunderland,Brobbey,FWD,d,75.0,Muscular injury - 75% chance of playing,619,8,3,1,4.34
+Sunderland,Brobbey,FWD,i,0.0,Muscular injury - Unknown return date,619,8,3,1,4.34
 Sunderland,Isidor,FWD,a,100.0,,263,1,1,1,2.29
 Sunderland,Methalie,DEF,a,100.0,,107,1,0,0,0.04
 Sunderland,Ahoka,MID,a,,,111,0,0,0,0.02
