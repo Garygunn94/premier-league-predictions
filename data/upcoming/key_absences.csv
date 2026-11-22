@@ -1,18 +1,17 @@
 team,player,position,status,chance_next_round,news,minutes,starts,goals,assists,expected_goal_involvements
 Arsenal,Saka,MID,i,0.0,Thigh injury - Expected back 20 Dec,596,7,3,0,4.83
+Arsenal,Raya,GK,d,75.0,Shoulder injury - 75% chance of playing,969,11,0,0,0.01
+Aston Villa,Lindelöf,DEF,d,75.0,Illness - 75% chance of playing,900,10,0,0,0.62
 Aston Villa,Cash,DEF,i,0.0,Concussion - Expected back 28 Nov,656,7,0,0,0.43
 Brentford,Thiago,FWD,s,0.0,Suspended until 5 Dec,824,10,2,3,5.38
 Chelsea,João Pedro,FWD,i,0.0,Thigh injury - Unknown return date,521,6,5,3,3.36
 Chelsea,Lacroix,DEF,i,0.0,Hamstring injury - Unknown return date,634,7,0,1,0.62
-Coventry,Thomas,DEF,d,75.0,Calf injury - 75% chance of playing,676,8,0,0,0.97
 Coventry,Yirenkyi,MID,d,75.0,Unspecified injury - 75% chance of playing,647,8,0,0,0.35
-Crystal Palace,Strand Larsen,FWD,d,75.0,Ankle injury - 75% chance of playing,511,6,1,1,2.01
+Crystal Palace,Yeremy,MID,s,0.0,Suspended until 2 Dec,762,10,2,3,3.61
+Ipswich,Davis,DEF,d,75.0,Calf injury - 75% chance of playing,982,11,2,2,2.36
 Man City,Semenyo,MID,i,0.0,Knee injury - Unknown return date,553,6,2,3,1.81
 Man City,Matheus N.,DEF,d,50.0,Unspecified injury - 50% chance of playing,513,5,0,0,0.73
 Man United,Maguire,DEF,d,75.0,Back injury - 75% chance of playing,855,10,0,1,0.84
-Nott'm Forest,N.Williams,DEF,d,75.0,Ankle injury - 75% chance of playing,893,10,1,1,2.12
-Nott'm Forest,Schlager,MID,d,75.0,Thigh injury - 75% chance of playing,756,9,0,1,0.78
+Newcastle,Hall,DEF,d,75.0,Unspecified injury - 75% chance of playing,989,11,1,1,1.57
 Sunderland,Brobbey,FWD,i,0.0,Muscular injury - Unknown return date,619,8,3,1,4.34
 Sunderland,Xhaka,MID,i,0.0,Calf injury - Unknown return date,813,10,0,1,1.97
-Sunderland,Ballard,DEF,i,0.0,Hamstring injury - Unknown return date,450,5,0,0,0.47
-Tottenham,Tel,MID,i,0.0,Ankle injury - Expected back 6 Dec,477,6,1,0,1.19
