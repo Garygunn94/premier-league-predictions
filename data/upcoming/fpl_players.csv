@@ -35,7 +35,7 @@ Aston Villa,Mings,DEF,a,,,441,4,0,0,0.23
 Aston Villa,Pau,DEF,a,100.0,,560,7,0,0,0.46
 Aston Villa,Bogarde,MID,a,,,16,0,0,0,0.0
 Aston Villa,Maatsen,DEF,a,100.0,,695,8,0,0,1.02
-Aston Villa,Lindelöf,DEF,d,75.0,Illness - 75% chance of playing,900,10,0,0,0.62
+Aston Villa,Lindelöf,DEF,a,100.0,,900,10,0,0,0.62
 Aston Villa,A.García,DEF,u,0.0,Has joined Getafe on loan for the rest of the season,0,0,0,0,0.0
 Aston Villa,Nedeljkovic,DEF,u,0.0,Has joined Rangers on loan for the rest of the season,0,0,0,0,0.0
 Aston Villa,Buendía,MID,a,,,642,8,1,1,2.44
@@ -71,7 +71,7 @@ Bournemouth,Dennis,GK,u,0.0,Has joined MK Dons permanently,0,0,0,0,0.0
 Bournemouth,Hill,DEF,a,,,990,11,0,1,1.37
 Bournemouth,Truffert,DEF,a,,,983,11,0,1,1.21
 Bournemouth,Diakité,DEF,a,,,20,0,0,0,0.0
-Bournemouth,Milosavljević,DEF,i,0.0,Thigh injury - Expected back 31 Oct,0,0,0,0,0.0
+Bournemouth,Milosavljević,DEF,i,0.0,Thigh injury - Unknown return date,0,0,0,0,0.0
 Bournemouth,Smith,DEF,a,,,933,11,0,0,1.04
 Bournemouth,J.Araujo,DEF,i,0.0,Thigh injury - Unknown return date,0,0,0,0,0.0
 Bournemouth,Soler,DEF,a,100.0,,6,0,0,0,0.0
@@ -94,32 +94,32 @@ Bournemouth,Silva,DEF,a,,,990,11,0,0,1.92
 Bournemouth,Sanchez,DEF,i,0.0,Ankle injury - Unknown return date,18,0,0,0,0.0
 Bournemouth,Jebbison,FWD,a,,,31,0,0,0,0.1
 Bournemouth,Di Gregorio,GK,a,,,0,0,0,0,0.0
-Brentford,Kelleher,GK,a,,,900,10,0,0,0.04
+Brentford,Kelleher,GK,a,,,990,11,0,0,0.04
 Brentford,Valdimarsson,GK,a,,,0,0,0,0,0.0
 Brentford,Collins,DEF,i,0.0,Knee injury - Expected back 2 Dec,241,3,0,0,0.56
-Brentford,Van den Berg,DEF,a,100.0,,318,4,0,0,0.37
-Brentford,Lewis-Potter,MID,a,,,773,10,2,1,2.43
-Brentford,Ajer,DEF,a,,,900,10,1,0,0.73
-Brentford,Kayode,DEF,a,,,744,9,1,0,1.35
+Brentford,Van den Berg,DEF,a,100.0,,408,5,0,0,0.38
+Brentford,Lewis-Potter,MID,a,,,846,11,4,1,3.28
+Brentford,Ajer,DEF,a,,,990,11,1,0,0.75
+Brentford,Kayode,DEF,a,,,834,10,1,0,1.78
 Brentford,Henry,DEF,i,0.0,Hip injury - Unknown return date,2,0,0,0,0.0
 Brentford,Hickey,DEF,i,0.0,Hamstring injury - Expected back 2 Dec,350,3,0,0,0.16
 Brentford,Ji-soo,DEF,a,,,0,0,0,0,0.0
 Brentford,Schuster,DEF,a,100.0,,298,3,0,1,0.64
-Brentford,Schade,MID,a,100.0,,777,9,3,2,2.78
-Brentford,O.Dango,MID,a,,,440,6,1,1,1.83
-Brentford,Damsgaard,MID,a,100.0,,352,3,0,1,1.21
-Brentford,Jensen,MID,a,100.0,,316,4,0,1,0.69
-Brentford,Janelt,MID,a,100.0,,810,9,2,0,1.16
+Brentford,Schade,MID,a,100.0,,801,9,3,2,2.89
+Brentford,O.Dango,MID,a,,,505,7,1,1,2.02
+Brentford,Damsgaard,MID,a,100.0,,442,4,0,1,2.04
+Brentford,Jensen,MID,a,100.0,,332,4,0,2,0.9
+Brentford,Janelt,MID,a,100.0,,891,10,3,0,1.35
 Brentford,Milambo,MID,i,0.0,Knee injury - Unknown return date,0,0,0,0,0.0
-Brentford,Carvalho,MID,d,75.0,Knock - 75% chance of playing,3,0,1,0,0.43
-Brentford,Yarmoliuk,MID,a,100.0,,379,4,1,1,0.51
+Brentford,Carvalho,MID,a,100.0,,12,0,2,0,1.25
+Brentford,Yarmoliuk,MID,a,100.0,,452,5,1,1,1.05
 Brentford,Dasilva,MID,i,0.0,Hamstring injury - Unknown return date,0,0,0,0,0.0
-Brentford,Anthony,MID,a,,,473,5,1,2,2.48
+Brentford,Anthony,MID,a,,,553,6,1,4,2.69
 Brentford,Thiago,FWD,s,0.0,Suspended until 5 Dec,824,10,2,3,5.38
 Brentford,Furo,FWD,i,0.0,Unspecified injury - Unknown return date,0,0,0,0,0.0
-Brentford,Wilson,FWD,a,,,57,0,0,0,0.29
-Brentford,M.Sangaré,MID,a,,,613,7,0,2,1.26
-Brentford,Diouf,DEF,a,,,185,1,0,0,0.2
+Brentford,Wilson,FWD,a,,,147,1,0,0,0.62
+Brentford,M.Sangaré,MID,a,,,621,7,0,2,1.29
+Brentford,Diouf,DEF,a,,,201,1,0,0,0.23
 Brentford,Nunes,MID,a,,,0,0,0,0,0.0
 Brentford,Fredrick,DEF,a,,,0,0,0,0,0.0
 Brentford,Balcombe,GK,a,,,0,0,0,0,0.0
@@ -269,29 +269,29 @@ Crystal Palace,Ahanor,DEF,a,,,160,2,0,0,0.01
 Crystal Palace,Chilwell,DEF,a,100.0,,29,0,1,0,0.28
 Crystal Palace,Timber,MID,a,100.0,,519,7,0,1,0.67
 Crystal Palace,Osorio,MID,a,,,72,0,0,1,0.55
-Everton,Nørgaard,MID,a,100.0,,5,0,0,0,0.0
-Everton,Johnson,MID,a,,,406,5,0,0,1.46
-Everton,Pickford,GK,a,,,900,10,0,0,0.04
+Everton,Nørgaard,MID,a,100.0,,10,0,0,0,0.0
+Everton,Johnson,MID,a,,,427,5,0,0,1.54
+Everton,Pickford,GK,a,,,990,11,0,0,0.04
 Everton,Travers,GK,a,,,0,0,0,0,0.0
 Everton,King,GK,a,,,0,0,0,0,0.0
-Everton,Tarkowski,DEF,a,,,900,10,1,1,0.29
-Everton,Branthwaite,DEF,a,100.0,,799,9,0,0,0.58
-Everton,Keane,DEF,a,,,99,1,0,0,0.02
-Everton,O'Brien,DEF,a,,,225,2,0,0,0.29
-Everton,Mykolenko,DEF,a,100.0,,793,9,0,1,0.79
+Everton,Tarkowski,DEF,s,0.0,Suspended until 13 Dec,939,11,1,1,0.29
+Everton,Branthwaite,DEF,a,100.0,,889,10,0,0,0.58
+Everton,Keane,DEF,a,,,120,1,0,0,0.02
+Everton,O'Brien,DEF,a,,,315,3,0,0,0.29
+Everton,Mykolenko,DEF,a,100.0,,883,10,0,1,0.79
 Everton,Patterson,DEF,u,0.0,Has joined Torino permanently,0,0,0,0,0.0
 Everton,Aznou,DEF,u,0.0,Has joined Malaga on loan for the rest of the season,0,0,0,0,0.0
-Everton,Dewsbury-Hall,MID,a,,,895,10,3,1,3.17
-Everton,Grealish,MID,a,100.0,,304,3,0,0,0.92
-Everton,Garner,MID,a,100.0,,778,9,0,0,1.21
-Everton,George,MID,a,,,637,7,1,1,1.76
+Everton,Dewsbury-Hall,MID,a,,,963,11,3,1,3.19
+Everton,Grealish,MID,a,100.0,,349,3,0,0,0.92
+Everton,Garner,MID,a,100.0,,862,10,0,0,1.23
+Everton,George,MID,a,,,682,8,1,1,1.76
 Everton,Alcaraz,MID,a,,,14,0,0,0,0.15
-Everton,Armstrong,MID,a,100.0,,859,10,0,1,1.63
+Everton,Armstrong,MID,a,100.0,,949,11,0,1,1.65
 Everton,Dibling,MID,a,,,118,1,0,0,0.79
-Everton,Röhl,MID,a,100.0,,591,7,0,0,0.43
-Everton,Hackney,MID,a,100.0,,183,1,0,1,0.29
+Everton,Röhl,MID,a,100.0,,659,8,0,0,0.43
+Everton,Hackney,MID,a,100.0,,204,1,0,1,0.29
 Everton,Beto,FWD,u,0.0,Has joined Fiorentina permanently,31,0,0,0,0.09
-Everton,Barry,FWD,a,,,851,10,6,1,7.77
+Everton,Barry,FWD,a,,,919,11,6,1,7.89
 Everton,Maitland-Niles,DEF,a,,,308,4,1,1,0.8
 Everton,Graham,MID,a,,,0,0,0,0,0.0
 Fulham,Leno,GK,a,,,990,11,0,0,0.0
@@ -443,10 +443,10 @@ Liverpool,Virgil,DEF,a,100.0,,990,11,0,0,0.98
 Liverpool,Frimpong,DEF,a,100.0,,211,2,0,0,0.26
 Liverpool,Kerkez,DEF,a,,,912,10,0,0,0.58
 Liverpool,Gomez,DEF,a,100.0,,19,0,0,0,0.0
-Liverpool,Bradley,DEF,i,0.0,Knee injury - Unknown return date,0,0,0,0,0.0
+Liverpool,Bradley,DEF,i,0.0,Knee injury - Expected back 12 Dec,0,0,0,0,0.0
 Liverpool,Lucky,DEF,a,,,0,0,0,0,0.0
 Liverpool,Jacquet,DEF,a,100.0,,952,11,0,0,0.83
-Liverpool,Leoni,DEF,i,0.0,Knee injury - Unknown return date,0,0,0,0,0.0
+Liverpool,Leoni,DEF,i,0.0,Knee injury - Expected back 12 Dec,0,0,0,0,0.0
 Liverpool,Tsimikas,DEF,a,,,75,1,0,0,0.12
 Liverpool,Ramsay,DEF,u,0.0,Has joined St Mirren on loan for the rest of the season,0,0,0,0,0.0
 Liverpool,Wirtz,MID,a,100.0,,881,11,2,6,4.5
@@ -517,7 +517,7 @@ Man United,Martinez,DEF,a,100.0,,672,8,0,0,1.09
 Man United,Yoro,DEF,s,0.0,Suspended until 2 Dec,447,6,0,0,0.46
 Man United,Heaven,DEF,a,100.0,,224,2,0,0,0.16
 Man United,Mazraoui,DEF,a,100.0,,257,2,0,1,0.36
-Man United,Shaw,DEF,i,0.0,Unspecified injury - Unknown return date,425,5,0,1,0.62
+Man United,Shaw,DEF,d,75.0,Unspecified injury - 75% chance of playing,425,5,0,1,0.62
 Man United,Amass,DEF,a,,,0,0,0,0,0.0
 Man United,Fredricson,DEF,u,0.0,Has joined Lausanne-Sport permanently,0,0,0,0,0.0
 Man United,B.Fernandes,MID,a,,,900,10,4,2,6.68
