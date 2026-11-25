@@ -126,7 +126,7 @@ Brentford,Balcombe,GK,a,,,0,0,0,0,0.0
 Brighton,Verbruggen,GK,a,,,990,11,0,0,0.21
 Brighton,Steele,GK,a,,,0,0,0,0,0.0
 Brighton,F.Kadıoğlu,DEF,a,100.0,,527,7,0,0,0.31
-Brighton,Boscagli,DEF,a,,,848,11,0,1,1.49
+Brighton,Boscagli,DEF,d,75.0,Illness - 75% chance of playing,848,11,0,1,1.49
 Brighton,De Cuyper,DEF,a,,,912,11,2,4,4.35
 Brighton,Dunk,DEF,a,100.0,,839,9,1,0,0.26
 Brighton,Coppola,DEF,a,,,0,0,0,0,0.0
@@ -450,11 +450,11 @@ Liverpool,Leoni,DEF,i,0.0,Knee injury - Expected back 12 Dec,0,0,0,0,0.0
 Liverpool,Tsimikas,DEF,a,,,75,1,0,0,0.12
 Liverpool,Ramsay,DEF,u,0.0,Has joined St Mirren on loan for the rest of the season,0,0,0,0,0.0
 Liverpool,Wirtz,MID,a,100.0,,881,11,2,6,4.5
-Liverpool,Gakpo,MID,d,75.0,Calf injury - 75% chance of playing,601,7,1,3,3.15
+Liverpool,Gakpo,MID,i,0.0,Calf injury - Expected back 2 Dec,601,7,1,3,3.15
 Liverpool,Szoboszlai,MID,a,100.0,,661,8,2,1,3.63
 Liverpool,Ngumoha,MID,a,,,279,2,1,1,2.26
 Liverpool,Chiesa,MID,a,100.0,,2,0,0,0,0.0
-Liverpool,Gravenberch,MID,d,75.0,Foot injury - 75% chance of playing,341,4,0,1,0.34
+Liverpool,Gravenberch,MID,i,0.0,Foot injury - Unknown return date,341,4,0,1,0.34
 Liverpool,Mac Allister,MID,a,,,827,9,1,0,2.2
 Liverpool,C.Jones,MID,u,0.0,Has joined Internazionale permanently,0,0,0,0,0.0
 Liverpool,Endo,MID,a,100.0,,0,0,0,0,0.0
@@ -514,7 +514,7 @@ Man United,De Ligt,DEF,a,100.0,,90,1,0,0,0.02
 Man United,Dalot,DEF,a,,,802,9,0,0,0.68
 Man United,Maguire,DEF,a,100.0,,923,10,0,1,0.87
 Man United,Martinez,DEF,a,100.0,,672,8,0,0,1.09
-Man United,Yoro,DEF,s,0.0,Suspended until 2 Dec,447,6,0,0,0.46
+Man United,Yoro,DEF,a,100.0,,447,6,0,0,0.46
 Man United,Heaven,DEF,a,100.0,,224,2,0,0,0.16
 Man United,Mazraoui,DEF,a,100.0,,257,2,0,1,0.36
 Man United,Shaw,DEF,d,75.0,Unspecified injury - 75% chance of playing,425,5,0,1,0.62
